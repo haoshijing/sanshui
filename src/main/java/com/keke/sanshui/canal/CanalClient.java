@@ -27,7 +27,7 @@ import java.net.InetSocketAddress;
  * @version 1.0
  * @since 2017-08-25 17:26:00
  */
-@Component
+//@Component
 public class CanalClient implements DisposableBean {
     private static final Logger logger = LoggerFactory.getLogger(CanalClient.class);
     private CanalConnector canalConnector;
