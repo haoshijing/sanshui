@@ -59,4 +59,9 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
 
+    <task:annotation-driven executor="executor" scheduler="defaultTaskScheduler" />
+
+    <task:executor id="defaultTaskExecutor" pool-size="5" />
+    <task:scheduler id="defaultTaskScheduler" pool-size="1" />
+
 </beans>
