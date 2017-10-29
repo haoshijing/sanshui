@@ -1,0 +1,32 @@
+﻿@charset "utf-8";
+html{ background:#fff;}
+body{ background:#f1f1ef none repeat scroll 0 0;}
+header{ background:#fd6a02;border-bottom:1px solid #b4c59b; color:#fff;}
+.WapContent{font-family:"微软雅黑"; background:#f1f1ef none repeat scroll 0 0;}
+.topWrap {
+    width: 94%;
+    margin: 0 auto;
+    padding: 0.8rem 0;
+}
+.topWrap .back {
+    width: 22%;
+    display: inline-block;
+	font-size:1.8rem;
+}
+.topWrap .hTitle {
+    width: 50%;
+    display: inline-block;
+    text-align: center;
+    font-size: 1.6rem;
+}
+.wrapBox{ width:92%; margin:0 auto;}
+.price_list{ padding-top:3rem;}
+.price_list ul{ overflow:hidden;}
+.price_list li,.price_list li a{ display:inline-block;}
+.price_list li{ width:49%; text-align:center;}
+.price_list li a{ padding:0.8rem 2rem; text-align:center; width:80%; border:2px solid #c1c1c1; margin:1rem 0; border-radius:5px; font-size:1.5rem; color:#000; background:#fff;}
+.price_list li.current a{ border:2px solid #fd6a02; color:#fd6a02;}
+.price_list  .subBtn{ background:#fd6a02; color:#fff; font-weight:bold; font-size:1.6rem; width:100%; text-align:center; padding:1rem 0; margin-top:2rem; border-radius:5px; border:0 none; margin-bottom:2rem; cursor:pointer;}
+.success_div{ margin:2rem auto; width:92%;}
+.success_div p{ font-size:2rem; text-align:center;}
+.success_div p i{ color:rgb(0, 207, 54);}

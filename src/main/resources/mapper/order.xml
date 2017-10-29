@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.keke.sanshui.dao.OrderDAO">
+    <sql id="all_columns">
+        *
+    </sql>
+    <sql id="tableName">
+        t_order
+    </sql>
+    <select id="getByOrderId" resultType="Order" parameterType="java.lang.String">
+        <!-- 具体的sql -->
+        SELECT
+        <include refid="all_columns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE selfOrderNo = #{selfOrderNo}
+    </select>
+
+    <insert id="insert" parameterType="Order">
+        INSERT INTO t_order(
+          id,
+          selfOrderNo,
+          clientGuid ,
+          title,
+          money,
+          price,
+          insertTime,
+          orderStatus,
+         sendStatus,
+         lastUpdateTime)
+         select
+          #{order.id},
+          #{order.selfOrderNo},
+           #{order.clientGuid} ,
+          #{order.title} ,
+          #{order.money },
+          #{order.price},
+          #{order.insertTime},
+         #{order.orderStatus},
+         #{order.sendStatus},
+         #{order.lastUpdateTime}
+
+    </insert>
+
+    <update id="updateByOrderId" parameterType="Order">
+        update t_order
+        <set>
+            <if test="order.sendStatus != null ">
+                sendStatus = #{order.sendStatus},
+            </if>
+            <if test="order.orderStatus != null ">
+                orderStatus = #{order.orderStatus},
+             </if>
+            <if test="order.payType != null">
+                payType = #{order.payType},
+            </if>
+            <if test="order.payTime != null">
+                payTime = #{order.payTime},
+            </if>
+            <if test="order.payState != null">
+                payState = #{order.payState},
+            </if>
+            <if test="order.sendTime != null">
+                sendTime = #{order.sendTime}
+            </if>
+            <if test="order.orderNo != null">
+                orderNo = #{order.orderNo},
+            </if>
+            <if test="order.lastUpdateTime != null">
+                lastUpdateTime = #{order.lastUpdateTime},
+            </if>
+        </set>
+        where selfOrderNo = #{order.selfOrderNo}
+    </update>
+</mapper>
