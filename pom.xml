@@ -3,8 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.keke</groupId>
     <artifactId>sanshui</artifactId>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>sanshuiadmin</module>
+    </modules>
     <name>chdis Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
