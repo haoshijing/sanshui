@@ -1,4 +1,7 @@
 .idea
 .idea/*
 sanshui.iml
+*.iml
 catalina.base_IS_UNDEFINED
+target
+*/target/*

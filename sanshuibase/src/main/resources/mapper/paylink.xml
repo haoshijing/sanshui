@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.keke.sanshui.base.admin.dao.PayLinkDAO">
+    <sql id="all_columns">
+        *
+    </sql>
+    <sql id = "tableName">
+        pay_link
+    </sql>
+    <select id="getById" resultType="PayLink" parameterType="java.lang.Integer">
+        <!-- 具体的sql -->
+        SELECT <include refid="all_columns"/> FROM
+        <include refid="tableName"/>
+        WHERE id = #{id}
+    </select>
+
+    <insert id="batchInsert"  parameterType="java.util.List">
+     INSERT INTO pay_link(
+        id,
+        cIdNo,
+        pickCouponVal,
+        pickRmb
+        )
+        values
+        <foreach collection="list" item="link" index="index" separator="," >
+            (
+            #{link.id},
+            #{link.cIdNo} ,
+            #{link.pickCouponVal} ,
+            #{link.pickRmb}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectAll" resultType="PayLink">
+        select id , pickCouponVal , cIdNo ,pickRmb  from pay_link order by  pickCouponVal asc
+    </select>
+    <insert id="insert" parameterType="PayLink">
+        INSERT INTO pay_link(
+        id,
+        cIdNo,
+        pickCouponVal,
+        pickRmb
+        ) select
+        #{link.id},
+        #{link.cIdNo} ,
+        #{link.pickCouponVal} ,
+        #{link.pickRmb}
+    </insert>
+
+
+</mapper>

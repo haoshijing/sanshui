@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.keke.sanshui.base.admin.dao.OperLogDAO">
+    <sql id="all_columns">
+        *
+    </sql>
+    <sql id="tableName">
+        t_oper_log
+    </sql>
+    <select id="getById" resultType="OperLogPo" parameterType="java.lang.Integer">
+        <!-- 具体的sql -->
+        SELECT
+        <include refid="all_columns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="OperLog">
+        INSERT INTO t_oper_log
+        (
+          id,
+          operType,
+          operTarget ,
+          mark,
+          openUserId,
+          insertTime
+          )
+         select
+          #{log.id},
+          #{log.operType},
+          #{log.operTarget} ,
+          #{log.mark} ,
+          #{log.openUserId },
+          #{log.insertTime}
+
+    </insert>
+
+
+    <select id = "selectList" parameterType="OperLog" resultType="OperLog">
+        SELECT
+        <include refid="all_columns"/>
+        FROM
+        <include refid="tableName"/>
+        <where>
+            <if test = "operTarget != null">
+                AND operTarget = #{log.operTarget}
+            </if>
+        </where>
+    </select>
+</mapper>
