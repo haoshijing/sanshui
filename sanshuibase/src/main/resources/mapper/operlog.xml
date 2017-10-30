@@ -17,7 +17,7 @@
         WHERE id = #{id}
     </select>
 
-    <insert id="insert" parameterType="OperLog">
+    <insert id="insert" parameterType="OperLogPo">
         INSERT INTO t_oper_log
         (
           id,
@@ -38,7 +38,7 @@
     </insert>
 
 
-    <select id = "selectList" parameterType="OperLog" resultType="OperLog">
+    <select id = "selectList" parameterType="OperLogPo" resultType="OperLogPo">
         SELECT
         <include refid="all_columns"/>
         FROM

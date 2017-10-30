@@ -10,7 +10,6 @@ public class AdminPo {
     private Integer id;
     private String userName;
     private String password;
-    private String saltePassword;
     private Long insertTime;
     private Long lastUpdateTime;
     private Integer status;

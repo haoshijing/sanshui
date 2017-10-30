@@ -48,6 +48,7 @@ insertTime bigint comment '写入时间'
 ) comment '操作日志表';
 
 
+
 create table t_head_agent(
 id int primary key auto_increment comment '主键id',
 playerId int comment '游戏账号id',
