@@ -94,7 +94,6 @@ public class GatewayController {
             bodyData = new String(getRequestPostBytes(request), "utf-8");
             payVo = JSON.parseObject(bodyData, PayVo.class);
         } catch (Exception e) {
-            log.error("bodyData = {}", bodyData, e);
         }
         return payVo;
     }
