@@ -41,7 +41,6 @@ public class SignUtil {
             stringBuilder.append(entry.getKey()).append("=").append(entry.getValue());
         }
         stringBuilder.append("&pkey=").append(signKey);
-        log.info("key={}",stringBuilder.toString());
         String md5Sign = MD5Util.md5(stringBuilder.toString());
         return  md5Sign;
     }
