@@ -6,13 +6,18 @@
         *
     </sql>
     <sql id = "tableName">
-        t_head
+        t_head_agent
     </sql>
-    <select id="selectByUsername" resultType="AdminPo" parameterType="java.lang.String">
+    <select id="selectList" resultType="HeadAgentPo">
         <!-- 具体的sql -->
         SELECT <include refid="all_columns"/> FROM
         <include refid="tableName"/>
-        WHERE userName = #{userName}
+
+        <where>
+            <if test = "headAgentName != null and headAgentName != ''">
+                headAgentName = #{headAgentName}
+            </if>
+        </where>
     </select>
 
 

@@ -16,6 +16,7 @@ public class OperLogListener implements ApplicationListener<OperLogEvent> {
     public void onApplicationEvent(OperLogEvent event) {
         try{
             int insertRet = operLogDAO.insertLog(event.getOperLogPo());
+            log.info("insertRet = {}",insertRet);
         }catch (Exception e){
 
         }

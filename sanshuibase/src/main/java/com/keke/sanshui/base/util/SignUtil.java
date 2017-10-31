@@ -27,8 +27,8 @@ public class SignUtil {
             if (!field.getName().equals("sign")) {
                 field.setAccessible(true);
                 String data = (String) ReflectionUtils.getField(field, payVo);
-                if (StringUtils.isEmpty(data)) {
-                    data = "";
+                 if(StringUtils.isEmpty(data)) {
+                   data="";
                 }
                 sortedMap.put(field.getName(),data);
             }
@@ -59,9 +59,21 @@ public class SignUtil {
 
     public static void main(String[] args) {
         PayVo payVo = new PayVo();
-        payVo.setP_no("201725454545");
+        payVo.setP_attach("10000241509418833398");
+        payVo.setP_no("2017103121001004320256415856");
+        payVo.setP_title("测试商品");
+        payVo.setP_city("杭州");
+        payVo.setP_country("中国");
+        payVo.setP_num("1");
+        payVo.setP_price("0.01");
+        payVo.setP_money("0.01");
+        payVo.setP_province("浙江");
         payVo.setP_type("alipay");
-        payVo.setSign("sssssss");
+        payVo.setP_state("2");
+        payVo.setP_time("2017/10/31 11:00:48");
+        payVo.setP_url("http://game.youthgamer.com:8080/sanshui/goPayPage");
+        System.out.println(SignUtil.createPaySign(payVo,"1dfXbJl2wyz1IAiAEdmjTR5q"));
+
     }
 }
 
