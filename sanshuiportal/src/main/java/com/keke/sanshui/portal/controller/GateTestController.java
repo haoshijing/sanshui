@@ -1,7 +1,6 @@
 package com.keke.sanshui.portal.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.keke.sanshui.base.admin.event.OrderEvent;
 import com.keke.sanshui.base.util.SignUtil;
 import com.keke.sanshui.base.vo.PayVo;
 import org.eclipse.jetty.client.HttpClient;
@@ -70,7 +69,6 @@ public class GateTestController implements ApplicationContextAware{
     @RequestMapping("/testEvent")
     @ResponseBody
     public String testRequest(String orderId,Integer type){
-        context.publishEvent(new OrderEvent(context,orderId,type));
         return "success";
     }
 

@@ -1,6 +1,7 @@
 package com.keke.sanshui.portal.controller;
 
-import com.keke.sanshui.po.PayLink;
+
+import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.PayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

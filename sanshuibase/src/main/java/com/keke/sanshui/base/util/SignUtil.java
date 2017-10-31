@@ -27,9 +27,10 @@ public class SignUtil {
             if (!field.getName().equals("sign")) {
                 field.setAccessible(true);
                 String data = (String) ReflectionUtils.getField(field, payVo);
-                if (!StringUtils.isEmpty(data)) {
-                    sortedMap.put(field.getName(), data);
+                if (StringUtils.isEmpty(data)) {
+                    data = "";
                 }
+                sortedMap.put(field.getName(),data);
             }
         }
         StringBuilder stringBuilder = new StringBuilder();
