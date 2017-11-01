@@ -5,7 +5,10 @@ import java.security.MessageDigest;
         import java.security.MessageDigest;
 
 public final class MD5Util {
-    public static String md5(String message) {
+    public static String md5(String message){
+        return md5(message,false);
+    }
+    public static String md5(String message,Boolean upper) {
         String md5str = "";
         try {
             // 1 创建一个提供信息摘要算法的对象，初始化为md5算法对象
@@ -18,7 +21,12 @@ public final class MD5Util {
             byte[] buff = md.digest(input);
 
             // 4 把数组每一字节（一个字节占八位）换成16进制连成md5字符串
-            md5str = bytesToHex(buff).toLowerCase();
+            md5str = bytesToHex(buff);
+            if(upper){
+                md5str = md5str.toUpperCase();
+            }else{
+                md5str = md5str.toLowerCase();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
