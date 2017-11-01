@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class HeadAgentService implements ApplicationContextAware {
+public class AgentService implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
