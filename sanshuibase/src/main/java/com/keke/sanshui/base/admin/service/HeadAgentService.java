@@ -1,8 +1,8 @@
 package com.keke.sanshui.base.admin.service;
 
-import com.keke.sanshui.base.admin.dao.HeadAgentDAO;
+import com.keke.sanshui.base.admin.dao.AgentDAO;
 import com.keke.sanshui.base.admin.event.OperLogEvent;
-import com.keke.sanshui.base.admin.po.HeadAgentPo;
+import com.keke.sanshui.base.admin.po.AgentPo;
 import com.keke.sanshui.base.admin.po.OperLogPo;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,23 +15,22 @@ import java.util.List;
 @Repository
 public class HeadAgentService implements ApplicationContextAware {
 
-
     private ApplicationContext applicationContext;
 
     @Autowired
-    HeadAgentDAO headAgentDAO;
+    AgentDAO agentDAO;
 
-   public List<HeadAgentPo> selectList(){
+   public List<AgentPo> selectList(AgentPo agentPo){
 
-        return headAgentDAO.selectList();
+        return agentDAO.selectList(agentPo);
     }
 
-    public int insertHeadAgent(HeadAgentPo headAgentPo,Long adminId){
-        int insertHeadAgent = headAgentDAO.insert(headAgentPo);
+    public int insertAgent(AgentPo agentPo,Long adminId){
+        agentDAO.insert(agentPo);
         OperLogPo operLogPo = new OperLogPo();
 
-        applicationContext.publishEvent(new OperLogEvent(headAgentPo,operLogPo));
-        return insertHeadAgent;
+        applicationContext.publishEvent(new OperLogEvent(agentPo,operLogPo));
+        return agentPo.getId();
     }
 
     @Override

@@ -46,16 +46,44 @@ mark varchar(200) comment '操作信息',
 operUserId int comment '操作人',
 insertTime bigint comment '写入时间'
 ) comment '操作日志表';
-
-
-
-create table t_head_agent(
+drop TABLE IF EXISTS t_agent;
+create table t_agent(
 id int primary key auto_increment comment '主键id',
 playerId int comment '游戏账号id',
 agentName varchar(100) comment '代理名称',
-agengWeChartNo varchar(100) comment '代理微信号',
+agentWeChartNo varchar(100) comment '代理微信号',
 agentNickName varchar(100) comment '昵称',
+level int comment '代理级别 1 - 地区 2-群主',
+parentId int comment '上级代理',
+status int comment '账号状态1-激活2-封禁',
 insertTime bigint comment '写入时间',
-lastUpdateTime bigint comment '最后修改时间',
-status int comment '账号状态'
- ) comment '一级代理';
+lastUpdateTime bigint comment '最后修改时间'
+ ) comment '代理表';
+
+drop TABLE IF EXISTS t_player_coupon;
+create table t_player_coupon(
+id int primary key auto_increment comment '主键id',
+playerId int comment '游戏id',
+goldCount int comment '金豆数量',
+ silverCount int comment '银豆数量',
+ lastUpdateTime bigint comment '最后同步时间'
+) comment '豆值剩余表,该表数据通过cannal进行同步';
+
+drop TABLE IF EXISTS t_player_pick_total;
+create table t_player_pick_total(
+ id  int primary key auto_increment comment '主键id',
+ playerId int  comment '玩家id',
+ week int comment '所在周',
+ totalMoney bigint comment '充值总额',
+lastUpdateTime bigint comment'最后更新时间'
+) ;
+alter table t_player_pick_total add unique index player_week_idx(playerId,week);
+
+
+drop TABLE IF EXISTS t_agent_total;
+create table t_agent_total(
+id  int primary key auto_increment comment '主键id',
+agentId int comment '代理id',
+totalPickUp comment '自己的总充值',
+
+);

@@ -9,6 +9,7 @@
         <module>sanshuiadmin</module>
         <module>sanshuibase</module>
         <module>sanshuiportal</module>
+        <module>sanshuijob</module>
     </modules>
     <name>chdis Maven Webapp</name>
     <url>http://maven.apache.org</url>
