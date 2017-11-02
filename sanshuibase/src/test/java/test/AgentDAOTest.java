@@ -19,15 +19,15 @@ public class AgentDAOTest {
     @Test
     public void testInsert(){
         AgentPo agentPo = new AgentPo();
-        agentPo.setAgentName("代理名称");
+        agentPo.setAgentName("代理名称2");
         agentPo.setAgentWeChartNo("13968185435");
         agentPo.setInsertTime(System.currentTimeMillis());
         agentPo.setLastUpdateTime(System.currentTimeMillis());
-        agentPo.setAgentNickName("郝仕兢");
-        agentPo.setLevel(1);
-        agentPo.setPlayerId(1011);
+        agentPo.setAgentNickName("郝仕兢22");
+        agentPo.setLevel(3);
+        agentPo.setPlayerId(1015);
         agentPo.setStatus(1);
-        agentPo.setParentId(0);
+        agentPo.setParentId(3);
 
         agentDAO.insert(agentPo);
 
