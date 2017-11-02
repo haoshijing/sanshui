@@ -76,7 +76,6 @@ public class GatewayController {
                         if(updateStatus == 0){
                             log.warn("update data effect 0,{}",JSON.toJSONString(payPullCallbackVo));
                         }
-
                         //发送给gameServer
                         boolean sendOk = sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                                 order.getMoney(), "0");
@@ -93,10 +92,7 @@ public class GatewayController {
             } catch (Exception e) {
                 log.error("解析失败{} ", e);
             }
-
         }
-
-
     }
 
     private void handlerResponseOk(HttpServletResponse response){

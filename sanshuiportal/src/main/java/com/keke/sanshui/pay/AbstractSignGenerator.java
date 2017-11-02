@@ -3,7 +3,6 @@ package com.keke.sanshui.pay;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.base.vo.PayVo;
-import com.keke.sanshui.pay.SignGenerator;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
