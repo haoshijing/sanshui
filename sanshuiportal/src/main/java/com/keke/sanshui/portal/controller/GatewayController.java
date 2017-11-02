@@ -1,13 +1,15 @@
 package com.keke.sanshui.portal.controller;
 
+
 import com.alibaba.fastjson.JSON;
 import com.keke.sanshui.base.admin.po.Order;
-import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.base.admin.service.OrderService;
+import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.base.util.SignUtil;
 import com.keke.sanshui.base.vo.PayVo;
+import com.keke.sanshui.pay.paypull.PayPullCallbackVo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
 
 @Controller
 @Slf4j
@@ -38,18 +42,78 @@ public class GatewayController {
 
     private static final String PAY_OK = "2";
 
+    private static final String PAY_PULL_OK = "0000";
+
     @Autowired
     private HttpClient httpClient;
+
+
+    @RequestMapping("/paypuall/callback")
+    public void handleNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String retMsg = request.getParameter("msg");
+        if(StringUtils.isNotEmpty(retMsg)) {
+            try {
+                byte[] retCodeData = getRequestPostBytes(request);
+                PayPullCallbackVo payPullCallbackVo = JSON.parseObject(retCodeData, PayPullCallbackVo.class);
+                if(payPullCallbackVo != null){
+                    if(StringUtils.equals(payPullCallbackVo.getRet_code(),PAY_PULL_OK)) {
+                        String orderId = payPullCallbackVo.getOrder_no();
+                        Order order = orderService.queryOrderByNo(orderId);
+                        if (order == null) {
+                            log.error("错误的订单,orderId = {}", orderId);
+                            //修改订单
+                        }
+                        Order updateOrder = new Order();
+                        //已支付
+                        updateOrder.setSelfOrderNo(orderId);
+                        updateOrder.setOrderStatus(2);
+                        updateOrder.setPayState(0);
+                        updateOrder.setPayType("wechart");
+                        updateOrder.setPayTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(payPullCallbackVo.getReceive_time())));
+                        updateOrder.setLastUpdateTime(System.currentTimeMillis());
+                        updateOrder.setOrderNo(payPullCallbackVo.getCharge_id());
+                        int updateStatus = orderService.updateOrder(updateOrder);
+                        if(updateStatus == 0){
+                            log.warn("update data effect 0,{}",JSON.toJSONString(payPullCallbackVo));
+                        }
+
+                        //发送给gameServer
+                        boolean sendOk = sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                                order.getMoney(), "0");
+                        if (sendOk) {
+                            Order updateSendOrder = new Order();
+                            updateSendOrder.setSelfOrderNo(orderId);
+                            updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                            updateSendOrder.setSendTime(System.currentTimeMillis());
+                            orderService.updateOrder(updateSendOrder);
+                        }
+                        handlerResponseOk(response);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("解析失败{} ", e);
+            }
+
+        }
+
+
+    }
+
+    private void handlerResponseOk(HttpServletResponse response){
+        response.setContentType("text/html");
+        try {
+            response.getWriter().write("success");
+        }catch (Exception e){
+
+        }
+    }
 
     @RequestMapping(value = "/pay/callback", method = RequestMethod.POST)
     void doCallback(HttpServletRequest request) {
         PayVo payVo = parseRequest(request);
         log.info("payVo = {}", payVo);
-        if (!SignUtil.match(payVo, pkey)) {
-            log.warn(" 密钥匹配不上 data  = {}", JSON.toJSONString(payVo));
-        }
-
-        if (StringUtils.equals(payVo.getP_state(), PAY_OK)) {
+        boolean matchSign = SignUtil.match(payVo,pkey);
+        if (matchSign && StringUtils.equals(payVo.getP_state(), PAY_OK)) {
             //支付成功,发送给游戏服务
             try {
                 String orderId = payVo.getP_attach();
@@ -84,6 +148,8 @@ public class GatewayController {
             } catch (Exception e) {
                 log.error(" update error ", e);
             }
+        }else{
+            log.error("秘钥匹配不上{}",payVo);
         }
     }
 
@@ -98,7 +164,7 @@ public class GatewayController {
         return payVo;
     }
 
-    public static byte[] getRequestPostBytes(HttpServletRequest request)
+    public  byte[] getRequestPostBytes(HttpServletRequest request)
             throws IOException {
         int contentLength = request.getContentLength();
         if (contentLength < 0) {
@@ -130,4 +196,5 @@ public class GatewayController {
         }
         return false;
     }
+
 }

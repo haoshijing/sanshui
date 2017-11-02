@@ -1,9 +1,11 @@
 package com.keke.sanshui.portal.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PayService;
+import com.keke.sanshui.pay.paypull.PaypullRequestVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +27,11 @@ public class PayController {
     @Value("${callbackHost}")
     private String callbackHost;
 
+    @Value("${payPullAppId}")
+    private String payPullAppId;
+
     @Autowired
     private OrderService orderService;
-
 
     @RequestMapping("/goPay")
     String goPay(HttpServletRequest request ,String guid, Model modelAttribute){
@@ -53,8 +57,6 @@ public class PayController {
 
     @RequestMapping("/goPayPage")
     String doGoPayPage(Integer pickId, Integer guid, String token, HttpServletRequest request,  Model modelAttribute){
-        log.info("pickId={},guid = {}",pickId,guid);
-        String sessionToken = (String)request.getSession().getAttribute("payToken");
         StringBuilder buildUrl = new StringBuilder();
         PayLink payLink  = payService.getCid(pickId);
         Map<String,String> attach = Maps.newHashMap();
@@ -72,6 +74,29 @@ public class PayController {
         modelAttribute.addAttribute("url",buildUrl.toString());
 
         return "payPage";
+    }
+
+    @RequestMapping("/goPayPullPage")
+    String doGoPayPullPage(Integer pickId, Integer guid, String token, HttpServletRequest request,  Model modelAttribute){
+        log.info("doGoPayPullPage pickId={},guid = {}",pickId,guid);
+        PaypullRequestVo paypullRequestVo = new PaypullRequestVo();
+        String selfOrderId = guid+""+System.currentTimeMillis();
+        PayLink payLink  = payService.getCid(pickId);
+        Map<String,String> attach = Maps.newHashMap();
+        attach.put("guid",guid.toString());
+        paypullRequestVo.setAmount(payLink.getPickRmb().toString());
+        paypullRequestVo.setSubject(new StringBuilder("充值").append(payLink.getPickCouponVal()).append("豆").toString());
+        paypullRequestVo.setOrderNo(selfOrderId);
+        paypullRequestVo.setExtra(JSON.toJSONString(attach));
+        paypullRequestVo.setAppId(payPullAppId);
+        try {
+            paypullRequestVo.setNotifyUrl(URLEncoder.encode(callbackHost + "/paypuall/callback", "utf-8"));
+        }catch (Exception e){
+
+        }
+        orderService.insertOrder(payLink, attach,selfOrderId);
+        modelAttribute.addAttribute("paypullRequestVo",paypullRequestVo);
+        return "paypullPage";
     }
 
 }
