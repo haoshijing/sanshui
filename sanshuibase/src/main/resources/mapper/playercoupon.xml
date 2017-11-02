@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.keke.sanshui.base.admin.dao.PlayerCouponDAO">
+    <sql id="all_columns">
+        *
+    </sql>
+    <sql id = "tableName">
+        t_player_coupon
+    </sql>
+    <select id="selectByPlayerId" resultType="PlayerCouponPo" parameterType="java.lang.Integer">
+        <!-- 具体的sql -->
+        SELECT <include refid="all_columns"/> FROM
+        <include refid="tableName"/>
+        WHERE playerId = #{playerId}
+    </select>
+
+    <insert id="insertPlayerCouponPo" parameterType="PlayerCouponPo">
+        INSERT INTO
+        <include refid="tableName"/>
+        (
+        id,
+        playerId,
+        goldCount,
+        silverCount,
+        lastUpdateTime
+        )
+
+        select
+        #{param.id},
+        #{param.playerId},
+        #{param.goldCount},
+        #{param.silverCount},
+        #{param.lastUpdateTime}
+
+    </insert>
+
+    <update id="updatePlayerCouponPo" parameterType="PlayerCouponPo">
+        update <include refid="tableName"/>
+        <set>
+            <if test = "param.goldCount != null">
+                goldCount = #{param.goldCount},
+            </if>
+            <if test = "param.silverCount != null">
+                silverCount = #{param.silverCount},
+            </if>
+            <if test = "param.lastUpdateTime != null">
+                lastUpdateTime = #{param.lastUpdateTime},
+            </if>
+        </set>
+        where playerId = #{param.playerId}
+
+
+    </update>
+
+</mapper>

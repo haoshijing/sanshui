@@ -40,19 +40,19 @@ public class AgentService implements ApplicationContextAware {
      * @param agentId
      * @return
      */
-    public Set<Integer> getAllBranchAgent(Integer agentId){
+    public Set<Integer> getAllBranchAgent(Integer agentId,boolean first){
         AgentPo queryAgentPo = new AgentPo();
         queryAgentPo.setParentId(agentId);
         Set<Integer> agentList = Sets.newHashSet();
-
         List<AgentPo> branchAgentList = agentDAO.selectList(queryAgentPo);
-        while (branchAgentList.size() != 0){
-            for(AgentPo branchPo:branchAgentList){
-                agentList.addAll(getAllBranchAgent(branchPo.getId()));
-            }
-        }
-        agentList.add(agentId);
 
+        for(AgentPo agentPo:branchAgentList){
+          Set<Integer> ids =   getAllBranchAgent(agentPo.getId(),false);
+          agentList.addAll(ids);
+        }
+        if(!first) {
+            agentList.add(agentId);
+        }
         return agentList;
     }
 
