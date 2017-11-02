@@ -84,6 +84,18 @@ drop TABLE IF EXISTS t_agent_total;
 create table t_agent_total(
 id  int primary key auto_increment comment '主键id',
 agentId int comment '代理id',
-totalPickUp comment '自己的总充值',
-
+totalPickUp bigint comment '自己的总充值',
+ week int comment '所在周',
+playerTotal bigint comment '下属总充值'
 );
+
+/**
+会员关系表,由游戏服务器同步
+ */
+drop TABLE IF EXISTS  t_player_relation;
+CREATE  TABLE  t_player_relation(
+id  int primary key auto_increment comment '主键id',
+playerId int comment '玩家游戏id',
+ underlingPalyerId int comment '下属游戏id',
+ lastUpdateTime bigint comment '最后的更新时间'
+)

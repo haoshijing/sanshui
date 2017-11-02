@@ -11,4 +11,7 @@ public interface AgentDAO {
     List<AgentPo> selectList(@Param("agent") AgentPo agentPo);
 
     int insert(@Param("agent") AgentPo agentPo);
+
+    AgentPo selectById(Integer id);
+
 }

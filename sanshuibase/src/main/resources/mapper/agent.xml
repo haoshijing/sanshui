@@ -8,6 +8,12 @@
     <sql id = "tableName">
         t_agent
     </sql>
+
+    <select id = "selectById" resultType="AgentPo">
+        SELECT <include refid="all_columns"/> FROM
+        <include refid="tableName"/>
+        where id = #{id}
+    </select>
     <select id="selectList" parameterType="AgentPo" resultType="AgentPo">
         <!-- 具体的sql -->
         SELECT <include refid="all_columns"/> FROM
@@ -19,6 +25,9 @@
             </if>
             <if test ="agent.level != null">
                 AND level = #{agent.level}
+            </if>
+            <if test = "agent.parentId != null">
+                AND parentId = #{agent.parentId}
             </if>
         </where>
     </select>
