@@ -77,7 +77,7 @@
         where selfOrderNo = #{order.selfOrderNo}
     </update>
 
-    <select id="sumPick" resultType="java.util.Long">
+    <select id="sumPick" resultType="java.lang.Long">
         select sum(price) from t_order
         where guid = #{playerId} and status = 2
         and lastUpdateTime BETWEEN #{beginTimestamp} AND #{endTimeStamp}

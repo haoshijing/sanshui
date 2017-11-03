@@ -5,6 +5,7 @@ import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.service.GateWayService;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Repository
+@Slf4j
 public class CheckNotSendOrderService {
 
     @Autowired
@@ -31,6 +33,7 @@ public class CheckNotSendOrderService {
             @Override
             public void run() {
                 orderService.queryNotSendList().forEach(order -> {
+                    log.info("开始补偿order,orderId = {}",order.getSelfOrderNo());
                     boolean sendOk = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                             order.getMoney(), "0");
                     if (sendOk) {

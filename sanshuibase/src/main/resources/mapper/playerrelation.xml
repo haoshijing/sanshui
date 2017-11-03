@@ -32,19 +32,6 @@
 
     </insert>
 
-    <select id="selectByPlayerId" resultType="PlayerRelationPo">
-        select <include refid="all_columns"/>
-        from
-        <include refid="tableName"/>
-        where playerId = #{playerId}
-    </select>
-    
-    <select id="selectUnderByPlayerId" parameterType="PlayerRelationPo">
-        select <include refid="all_columns"/>
-        from
-        <include refid="tableName"/>
-        where agentPlayerId = #{playerId}
-    </select>
 
     <select id="selectAll">
         select <include refid="all_columns"/>
