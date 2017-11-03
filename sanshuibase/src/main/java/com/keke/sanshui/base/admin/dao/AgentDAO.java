@@ -14,4 +14,6 @@ public interface AgentDAO {
 
     AgentPo selectById(Integer id);
 
+    List<AgentPo> selectAll();
+
 }

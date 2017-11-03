@@ -3,13 +3,14 @@ package com.keke.sanshui.base.admin.po;
 import lombok.Data;
 
 /**
- * 会员充值汇总表
- */
+ * @author haoshijing
+ * @version 2017年11月03日 12:33
+ **/
 @Data
-public class PlayerPickTotalPo {
+public class AgentPickTotalPo {
     private Integer id;
     private Integer week;
-    private Integer playerId;
+    private Integer agentId;
     private Long totalMoney; /*单位分*/
     private Long lastUpdateTime;
 }

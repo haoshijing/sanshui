@@ -79,16 +79,14 @@ lastUpdateTime bigint comment'最后更新时间'
 ) ;
 alter table t_player_pick_total add unique index player_week_idx(playerId,week);
 
-
 drop TABLE IF EXISTS t_agent_total;
 create table t_agent_total(
 id  int primary key auto_increment comment '主键id',
 agentId int comment '代理id',
-totalPickUp bigint comment '自己的总充值',
  week int comment '所在周',
-playerTotal bigint comment '下属总充值'
+ playerTotal bigint comment '下属总充值'
 );
-
+alter table t_agent_total add unique index agentId_week_idx(agentId,week);
 /**
 会员关系表,由游戏服务器同步
  */
@@ -98,7 +96,8 @@ id  int primary key auto_increment comment '主键id',
 playerId int comment '玩家游戏id',
  underlingPalyerId int comment '下属游戏id',
  lastUpdateTime bigint comment '最后的更新时间'
-)
+);
+alter table t_player_relation add  index pid_idx(playerId);
 
 drop TABLE IF EXISTS  t_player_relation;
 create table t_player(
@@ -108,4 +107,6 @@ openId varchar(255) comment '玩家游戏id',
 insertTime bigint comment '写入到数据库的时间',
 lastUpdateTime bigint comment '最后修改时间',
 status int comment '玩家状态'
-)
+);
+alter table t_player add  index pid_idx(playerId);
+alter table t_player add unique index player_player_openid(playerId,openId);

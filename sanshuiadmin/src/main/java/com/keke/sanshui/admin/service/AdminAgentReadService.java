@@ -3,7 +3,9 @@ package com.keke.sanshui.admin.service;
 
 import com.keke.sanshui.admin.vo.AgentVo;
 import com.keke.sanshui.base.admin.po.AgentPo;
+import com.keke.sanshui.base.admin.po.PlayerCouponPo;
 import com.keke.sanshui.base.admin.service.AgentService;
+import com.keke.sanshui.base.admin.service.PlayerCouponService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +19,11 @@ public class AdminAgentReadService {
     @Autowired
     AgentService agentService;
 
-    public List<AgentVo> selectAgentVoList(AgentPo agentPo){
+    @Autowired
+    PlayerCouponService playerCouponService;
+
+
+    public List<AgentVo> selectAgentVoList(AgentPo agentPo) {
         List<AgentPo> agentPos = agentService.selectList(agentPo);
         List<AgentVo> agentVos = agentPos.stream().map(new Function<AgentPo, AgentVo>() {
             @Override
@@ -31,10 +37,19 @@ public class AdminAgentReadService {
                 return agentVo;
             }
         }).map(agentVo -> {
-            agentVo.setGoldCount(0);
-            agentVo.setSliverCount(0);
+            PlayerCouponPo playerCouponPo = playerCouponService.selectByPlayerId(agentVo.getGameId());
+            if (playerCouponPo != null) {
+                agentVo.setGoldCount(playerCouponPo.getGoldCount());
+                agentVo.setSliverCount(playerCouponPo.getSilverCount());
+            } else {
+                agentVo.setGoldCount(0);
+                agentVo.setSliverCount(0);
+            }
             return agentVo;
-        }).collect(Collectors.toList());
+        }).map(agentVo -> {
+                    return agentVo;
+                }
+        ).collect(Collectors.toList());
         return agentVos;
     }
 }

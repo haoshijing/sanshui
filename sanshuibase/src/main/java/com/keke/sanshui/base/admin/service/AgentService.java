@@ -22,6 +22,10 @@ public class AgentService implements ApplicationContextAware {
     @Autowired
     AgentDAO agentDAO;
 
+    public AgentPo selectById(Integer id){
+        return agentDAO.selectById(id);
+    }
+
    public List<AgentPo> selectList(AgentPo agentPo){
 
         return agentDAO.selectList(agentPo);
@@ -59,5 +63,9 @@ public class AgentService implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    public List<AgentPo> selectAll() {
+        return  agentDAO.selectAll();
     }
 }
