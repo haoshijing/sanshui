@@ -51,11 +51,13 @@ create table t_agent(
 id int primary key auto_increment comment '主键id',
 playerId int comment '游戏账号id',
 agentName varchar(100) comment '代理名称',
+password varchar(64) comment '登陆密码',
 agentWeChartNo varchar(100) comment '代理微信号',
 agentNickName varchar(100) comment '昵称',
 level int comment '代理级别 1 - 地区 2-群主',
 parentId int comment '上级代理',
 status int comment '账号状态1-激活2-封禁',
+memo varchar(512) comment '说明',
 insertTime bigint comment '写入时间',
 lastUpdateTime bigint comment '最后修改时间'
  ) comment '代理表';
@@ -94,7 +96,7 @@ drop TABLE IF EXISTS  t_player_relation;
 CREATE  TABLE  t_player_relation(
 id  int primary key auto_increment comment '主键id',
 playerId int comment '玩家游戏id',
- underlingPalyerId int comment '下属游戏id',
+ agentPlayerId int comment '代理id',
  lastUpdateTime bigint comment '最后的更新时间'
 );
 alter table t_player_relation add  index pid_idx(playerId);

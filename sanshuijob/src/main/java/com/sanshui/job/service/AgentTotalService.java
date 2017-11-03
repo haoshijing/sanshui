@@ -67,7 +67,6 @@ public class AgentTotalService {
         });
 
     }
-
     public void init() {
 
     }

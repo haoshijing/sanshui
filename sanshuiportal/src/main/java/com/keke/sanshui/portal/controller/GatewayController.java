@@ -8,6 +8,7 @@ import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.base.util.SignUtil;
 import com.keke.sanshui.base.vo.PayVo;
 import com.keke.sanshui.pay.paypull.PayPullCallbackVo;
+import com.keke.sanshui.service.GateWayService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
@@ -32,11 +33,6 @@ public class GatewayController {
     @Value("${pkey}")
     private String pkey;
 
-    @Value("${gameServerKey}")
-    private String gameServerKey;
-
-    @Value("${gameServerHost}")
-    private String gameServerHost;
     @Autowired
     private OrderService orderService;
 
@@ -45,7 +41,7 @@ public class GatewayController {
     private static final String PAY_PULL_OK = "0000";
 
     @Autowired
-    private HttpClient httpClient;
+    GateWayService gateWayService;
 
 
     @RequestMapping("/paypuall/callback")
@@ -77,7 +73,7 @@ public class GatewayController {
                             log.warn("update data effect 0,{}",JSON.toJSONString(payPullCallbackVo));
                         }
                         //发送给gameServer
-                        boolean sendOk = sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                        boolean sendOk = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                                 order.getMoney(), "0");
                         if (sendOk) {
                             Order updateSendOrder = new Order();
@@ -132,7 +128,7 @@ public class GatewayController {
                 }
 
                 //发送给gameServer
-                boolean sendOk = sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                boolean sendOk = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                         order.getMoney(), "0");
                 if (sendOk) {
                     Order updateSendOrder = new Order();
@@ -177,20 +173,6 @@ public class GatewayController {
             i += readlen;
         }
         return buffer;
-    }
-
-    private boolean sendToGameServer(String orderId, Integer gUid, String payMoney, String payCoupon) {
-        String sign = SignUtil.createSign(orderId, gUid, payMoney, gameServerKey);
-        String sendUrl = String.format("%s/?method=PlayerRecharge&OrderId=%s" +
-                "&Guid=%s&RechargeMoney=%s&RechargeGold=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney, payCoupon, sign);
-        try {
-            ContentResponse contentResponse = httpClient.newRequest(sendUrl).timeout(3000, TimeUnit.MILLISECONDS).send();
-            log.info("contentResponse = {}", contentResponse.getContentAsString());
-            return contentResponse.getStatus() == 200;
-        } catch (Exception e) {
-           log.error("send error",e);
-        }
-        return false;
     }
 
 }

@@ -40,8 +40,11 @@
          #{order.orderStatus},
          #{order.sendStatus},
          #{order.lastUpdateTime}
-
     </insert>
+
+    <select id="queryNotSendList" resultType="Order">
+        select * from t_order where orderStatus = 2 and sendStatus = 1 order by id asc
+    </select>
 
     <update id="updateByOrderId" parameterType="Order">
         update t_order

@@ -10,6 +10,7 @@ import com.keke.sanshui.base.vo.PayVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -66,5 +67,10 @@ public class OrderService {
         order.setLastUpdateTime(System.currentTimeMillis());
         int insertRet = saveOrder(order);
         return insertRet;
+    }
+
+    public List<Order> queryNotSendList(){
+      List<Order> orderList =   orderDAO.queryNotSendList();
+        return  orderList;
     }
 }

@@ -5,6 +5,7 @@ import com.keke.sanshui.base.admin.dao.AgentDAO;
 import com.keke.sanshui.base.admin.event.OperLogEvent;
 import com.keke.sanshui.base.admin.po.AgentPo;
 import com.keke.sanshui.base.admin.po.OperLogPo;
+import com.keke.sanshui.base.enums.AgentLevelEnums;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -31,10 +32,18 @@ public class AgentService implements ApplicationContextAware {
         return agentDAO.selectList(agentPo);
     }
 
-    public int insertAgent(AgentPo agentPo,Long adminId){
+    public int insertAgent(AgentPo agentPo,Integer adminId){
         agentDAO.insert(agentPo);
         OperLogPo operLogPo = new OperLogPo();
-
+        operLogPo.setInsertTime(System.currentTimeMillis());
+        operLogPo.setOperTarget(agentPo.getId());
+        StringBuilder mark = new StringBuilder("管理员").append("把")
+                .append("[玩家").
+                        append(agentPo.getPlayerId()).
+                        append("] 设置成[").append(AgentLevelEnums.getByType(agentPo.getLevel()).getMark())
+                .append("]");
+        operLogPo.setMark(mark.toString());
+        operLogPo.setOperType(1);
         applicationContext.publishEvent(new OperLogEvent(agentPo,operLogPo));
         return agentPo.getId();
     }

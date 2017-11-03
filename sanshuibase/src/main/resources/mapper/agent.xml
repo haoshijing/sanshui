@@ -38,11 +38,13 @@
         id,
         playerId,
         agentName,
+        password,
         agentWeChartNo,
         agentNickName,
         level,
         parentId,
         status,
+        memo,
         insertTime,
         lastUpdateTime
         )
@@ -50,11 +52,13 @@
          #{agent.id},
         #{agent.playerId},
         #{agent.agentName},
+        #{agent.password},
         #{agent.agentWeChartNo},
         #{agent.agentNickName},
         #{agent.level},
         #{agent.parentId},
         #{agent.status},
+        #{agent.memo},
         #{agent.insertTime},
         #{agent.lastUpdateTime}
 

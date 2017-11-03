@@ -11,7 +11,7 @@
         <module>sanshuiportal</module>
         <module>sanshuijob</module>
     </modules>
-    <name>chdis Maven Webapp</name>
+    <name>sanshui Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
         <spring.bom.version>4.3.11.RELEASE</spring.bom.version>
@@ -191,12 +191,6 @@
                     <groupId>org.springframework</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>

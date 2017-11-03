@@ -11,4 +11,12 @@ public class AgentVo {
     private String nickName;
     private Integer goldCount;
     private Integer sliverCount;
+    /**
+     * 代理下级总充值
+     */
+    private Long agentUnderTotalPickUp;
+    /**
+     * 代理自身总充值
+     */
+    private Long agentTotalPickUp;
 }

@@ -17,5 +17,7 @@ public class AgentPo {
     private Long insertTime;
     private Long lastUpdateTime;
     private Integer status;
+    private String memo;
+    private String password;
 
 }
