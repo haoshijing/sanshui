@@ -7,12 +7,18 @@ import com.keke.sanshui.base.admin.po.AgentPickTotalPo;
 import com.keke.sanshui.base.admin.po.AgentPo;
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
 import com.keke.sanshui.base.admin.service.AgentService;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -35,7 +41,7 @@ public class AgentTotalService {
     @Autowired
     private AgentPickTotalDAO agentPickTotalDAO;
 
-    @Scheduled
+
     void work() {
         List<AgentPo> agentPoList = agentService.selectAll();
         agentPoList.stream().forEach(agentPo -> {
@@ -67,8 +73,7 @@ public class AgentTotalService {
         });
 
     }
-    public void init() {
 
-    }
+
 
 }

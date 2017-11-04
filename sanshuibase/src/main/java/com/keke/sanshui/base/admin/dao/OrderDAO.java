@@ -15,4 +15,6 @@ public interface OrderDAO {
      Order getByOrderId(String orderNo);
 
      List<Order> queryNotSendList();
+
+    Long queryPickupSum(Integer guid, Long startTimeStamp, Long endTimestamp);
 }

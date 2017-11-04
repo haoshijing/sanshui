@@ -45,6 +45,6 @@ public class CheckNotSendOrderService {
                 });
 
             }
-        },1,60, TimeUnit.SECONDS);
+        },10,60, TimeUnit.SECONDS);
     }
 }

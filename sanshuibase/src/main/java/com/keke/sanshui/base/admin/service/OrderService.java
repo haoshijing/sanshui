@@ -73,4 +73,8 @@ public class OrderService {
       List<Order> orderList =   orderDAO.queryNotSendList();
         return  orderList;
     }
+
+    public Long queryPickupSum(Integer guid,Long startTimeStamp,Long endTimestamp){
+        return orderDAO.queryPickupSum(guid,startTimeStamp,endTimestamp);
+    }
 }

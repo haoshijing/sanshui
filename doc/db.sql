@@ -101,7 +101,7 @@ playerId int comment '玩家游戏id',
 );
 alter table t_player_relation add  index pid_idx(playerId);
 
-drop TABLE IF EXISTS  t_player_relation;
+drop TABLE IF EXISTS  t_player;
 create table t_player(
 id  int primary key auto_increment comment '主键id',
 playerId int comment '玩家游戏id',

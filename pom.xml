@@ -10,6 +10,7 @@
         <module>sanshuibase</module>
         <module>sanshuiportal</module>
         <module>sanshuijob</module>
+        <module>sanshuisyncdata</module>
     </modules>
     <name>sanshui Maven Webapp</name>
     <url>http://maven.apache.org</url>
@@ -181,18 +182,6 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.39</version>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba.otter</groupId>
-            <artifactId>canal.client</artifactId>
-            <version>1.0.24</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>spring</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
     </dependencies>
     <build>
         <finalName>sanshui</finalName>

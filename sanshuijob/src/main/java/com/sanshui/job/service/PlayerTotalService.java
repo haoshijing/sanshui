@@ -1,0 +1,63 @@
+package com.sanshui.job.service;
+
+import com.keke.sanshui.base.admin.dao.PlayerPickTotalDAO;
+import com.keke.sanshui.base.admin.po.PlayerPickTotalPo;
+import com.keke.sanshui.base.admin.po.PlayerPo;
+import com.keke.sanshui.base.admin.service.OrderService;
+import com.keke.sanshui.base.admin.service.PlayerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+/**
+ * @author haoshijing
+ * @version 2017年11月03日 13:23
+ **/
+@Repository
+public class PlayerTotalService {
+
+    @Autowired
+    private PlayerService playerService;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private PlayerPickTotalDAO playerPickTotalDAO;
+
+    private final int BATCH_SIZE = 1000;
+
+    public void work(){
+        List<PlayerPo> playerPoList = playerService.selectList(0,BATCH_SIZE);
+        Integer nextMaxId = 0;
+        do{
+            playerPoList.forEach(playerPo -> {
+                Integer playerId = playerPo.getPlayerId();
+                Long sumPickUp = orderService.queryPickupSum(playerId,0L,0L);
+                if(sumPickUp != 0){
+                    PlayerPickTotalPo playerPickTotalPo =  playerPickTotalDAO.selectByPlayerId(playerId,0);
+                    if(playerPickTotalPo != null){
+                        playerPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
+                        playerPickTotalPo.setTotalMoney(sumPickUp);
+                        int ret = playerPickTotalDAO.updateTotalPo(playerPickTotalPo);
+
+                    }else{
+                        PlayerPickTotalPo newPlayerPickTotalPo = new PlayerPickTotalPo();
+                        newPlayerPickTotalPo.setTotalMoney(sumPickUp);
+                        newPlayerPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
+                        newPlayerPickTotalPo.setPlayerId(playerId);
+                        newPlayerPickTotalPo.setWeek(0);
+                        playerPickTotalDAO.insertTotalPo(playerPickTotalPo);
+                    }
+                }
+
+            });
+            playerPoList = playerService.selectList(nextMaxId,BATCH_SIZE);
+            if(playerPoList.size() > 0){
+                nextMaxId = playerPoList.get(playerPoList.size()-1).getId();
+            }
+        }while (playerPoList.size() != 0);
+
+    }
+}

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.keke.sanshui.base.admin.dao.PlayerDAO">
+    <sql id="all_columns">
+        *
+    </sql>
+    <sql id="tableName">
+        t_player
+    </sql>
+    <select id="getById" resultType="OperLogPo" parameterType="java.lang.Integer">
+        <!-- 具体的sql -->
+        SELECT
+        <include refid="all_columns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insertPlayer" parameterType="PlayerPo">
+        INSERT INTO t_player
+        (
+          id,
+          playerId,
+          openId ,
+          insertTime,
+          lastUpdateTime,
+          status
+          )
+         select
+          #{player.id},
+          #{player.playerId},
+          #{player.openId} ,
+          #{player.insertTime} ,
+          #{player.lastUpdateTime },
+          #{player.status}
+
+    </insert>
+
+    <update id="updatePlayer" parameterType="PlayerPo">
+        update t_player
+
+        <set>
+            <if test = "param.openId != null">
+                openId = #{param.openId},
+            </if>
+            <if test = "param.status != null">
+                status = #{param.status},
+            </if>
+        </set>
+
+        where playerId = #{param.playerId}
+    </update>
+
+    <select id="queryPlayerList" resultType="PlayerPo">
+        select * from t_player
+        WHERE 1= 1
+        <if test ="playerId != 0">
+            AND id  &lt;         #{playerId}
+        </if>
+      order by id desc
+        limit #{limit}
+
+    </select>
+
+    <select id = "selectCount"  resultType="java.lang.Long">
+        SELECT
+        count(1)
+        FROM
+        <include refid="tableName"/>
+        <where>
+            <if test = "status != null">
+                AND status = #{param.status}
+            </if>
+        </where>
+    </select>
+</mapper>
