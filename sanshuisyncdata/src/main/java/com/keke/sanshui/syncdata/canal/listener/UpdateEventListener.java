@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Repository;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,11 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
 //                                return;
 //                            }
                             String baseData = column.getValue();
+                            ByteBuffer byteBuffer = ByteBuffer.allocate(baseData.length());
+                            for(int i = 0 ; i < baseData.length();i++){
+
+                            }
+
                             data.put("base_data", baseData.getBytes());
                         }
                         if (StringUtils.equals(name, "guid")) {
