@@ -23,7 +23,7 @@ public final class WeekUtil {
         calendar.set(Calendar.SECOND,0);
         long startTimestamp = calendar.getTimeInMillis();
         long endTimestamp = Calendar.getInstance().getTimeInMillis();
-        if(StringUtils.isEmpty(dateStr)){
+        if(StringUtils.isNotEmpty(dateStr)){
             try {
                 Date date = format.parse(dateStr);
                 Long diffWeek = (date.getTime() - startTimestamp) / WEEK_MILL;

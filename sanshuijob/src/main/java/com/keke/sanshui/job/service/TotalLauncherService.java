@@ -1,7 +1,9 @@
-package com.sanshui.job.service;
+package com.keke.sanshui.job.service;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.Executors;
@@ -14,15 +16,17 @@ public class TotalLauncherService {
     private AgentTotalService agentTotalService;
     @Autowired
     private PlayerTotalService playerTotalService;
-    public void init() {
 
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory(""));
+    @EventListener
+    public void start(ContextStartedEvent event) {
+
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory("TotalThread"));
         executorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 playerTotalService.work();
                 agentTotalService.work();
             }
-        }, 1, 60, TimeUnit.MINUTES);
+        }, 1, 60, TimeUnit.SECONDS);
     }
 }

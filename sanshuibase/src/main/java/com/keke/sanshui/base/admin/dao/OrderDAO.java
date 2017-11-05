@@ -16,5 +16,5 @@ public interface OrderDAO {
 
      List<Order> queryNotSendList();
 
-    Long queryPickupSum(Integer guid, Long startTimeStamp, Long endTimestamp);
+    Long queryPickupSum(@Param("guid") Integer guid, @Param("startTimeStamp") Long startTimeStamp,@Param("endTimestamp") Long endTimestamp);
 }

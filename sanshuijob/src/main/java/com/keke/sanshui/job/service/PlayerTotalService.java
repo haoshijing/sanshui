@@ -1,4 +1,4 @@
-package com.sanshui.job.service;
+package com.keke.sanshui.job.service;
 
 import com.keke.sanshui.base.admin.dao.PlayerPickTotalDAO;
 import com.keke.sanshui.base.admin.po.PlayerPickTotalPo;
@@ -39,14 +39,14 @@ public class PlayerTotalService {
                 long weekEndTimestamp = WeekUtil.getWeekEndTimestamp();
                 int week = WeekUtil.getCurrentWeek();
                 Long sumPickUp = orderService.queryPickupSum(playerId,weekStartTimestamp,weekEndTimestamp);
-                if(sumPickUp != 0){
+                if(sumPickUp != null && sumPickUp > 0){
                     PlayerPickTotalPo playerPickTotalPo =  playerPickTotalDAO.selectByPlayerId(playerId,week);
                     if(playerPickTotalPo != null){
                         PlayerPickTotalPo updatePickTotalPo = new PlayerPickTotalPo();
                         updatePickTotalPo.setLastUpdateTime(System.currentTimeMillis());
                         updatePickTotalPo.setTotalMoney(sumPickUp);
                         updatePickTotalPo.setId(playerPickTotalPo.getId());
-                        int ret = playerPickTotalDAO.updateTotalPo(playerPickTotalPo);
+                        int ret = playerPickTotalDAO.updateTotalPo(updatePickTotalPo);
 
                     }else{
                         PlayerPickTotalPo newPlayerPickTotalPo = new PlayerPickTotalPo();
@@ -54,7 +54,7 @@ public class PlayerTotalService {
                         newPlayerPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
                         newPlayerPickTotalPo.setPlayerId(playerId);
                         newPlayerPickTotalPo.setWeek(week);
-                        playerPickTotalDAO.insertTotalPo(playerPickTotalPo);
+                        playerPickTotalDAO.insertTotalPo(newPlayerPickTotalPo);
                     }
                 }
 

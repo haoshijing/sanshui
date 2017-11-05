@@ -106,6 +106,7 @@ create table t_player(
 id  int primary key auto_increment comment '主键id',
 playerId int comment '玩家游戏id',
 openId varchar(255) comment '玩家游戏id',
+name varchar(255) comment 'baseData中的name',
 insertTime bigint comment '写入到数据库的时间',
 lastUpdateTime bigint comment '最后修改时间',
 status int comment '玩家状态'

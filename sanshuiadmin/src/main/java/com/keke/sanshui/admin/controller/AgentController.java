@@ -8,6 +8,7 @@ import com.keke.sanshui.admin.service.AdminAgentReadService;
 import com.keke.sanshui.admin.service.AdminAgentWriteService;
 import com.keke.sanshui.admin.vo.AgentVo;
 import com.keke.sanshui.base.admin.po.AgentPo;
+import com.keke.sanshui.base.util.WeekUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,7 @@ public class AgentController{
     @RequestMapping("/list")
     @ResponseBody
     public ApiResponse<List<AgentVo>> queryList(QueryAgentPo queryAgentPo){
+        Integer week = WeekUtil.getCurrentWeek();
         return new ApiResponse<>(adminAgentReadService.selectAgentVoList(queryAgentPo));
     }
 
@@ -39,7 +41,7 @@ public class AgentController{
         Boolean createOrUpdateOk = false;
         Integer adminId = 0;
         try{
-            createOrUpdateOk =  adminAgentReadService.createOrUpdateAgent(agentRequestVo,adminId);
+            createOrUpdateOk =  adminAgentWriteService.createOrUpdateAgent(agentRequestVo,adminId);
         }catch (Exception e){
             log.error("createOrUpdate agent {} error", JSON.toJSONString(agentRequestVo),e);
         }

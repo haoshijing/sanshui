@@ -41,7 +41,7 @@ public class CanalAutoConfigurating {
         canalConnector = CanalConnectors.newClusterConnector(Lists.newArrayList(new InetSocketAddress(canalHost, Integer.valueOf(canalPort))), canalDestination, canalUsername, canalPassword);
         canalConnector.connect();
         // 指定filter，格式 {database}.{table}，这里不做过滤，过滤操作留给用户
-        canalConnector.subscribe("sanshui.*");
+        canalConnector.subscribe("*.*");
         // 回滚寻找上次中断的位置
         canalConnector.rollback();
         logger.info("canal客户端启动成功");

@@ -10,4 +10,6 @@ public class PlayerPo {
     private Long insertTime;
     private Long  lastUpdateTime;
     private Integer status;
+    private String name;
+    private Long money;
 }

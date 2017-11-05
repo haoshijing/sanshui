@@ -12,7 +12,7 @@ import java.util.List;
  **/
 public interface AgentPickTotalDAO {
 
-    AgentPickTotalPo selectByAgentId(Integer playerId, Integer week);
+    AgentPickTotalPo selectByAgentId(@Param("playerId") Integer playerId,@Param("week") Integer week);
 
     int insertTotalPo(@Param("param") AgentPickTotalPo playerPickTotalPo);
 

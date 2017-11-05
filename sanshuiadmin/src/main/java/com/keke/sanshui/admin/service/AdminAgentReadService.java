@@ -12,6 +12,7 @@ import com.keke.sanshui.base.admin.po.PlayerCouponPo;
 import com.keke.sanshui.base.admin.po.PlayerPickTotalPo;
 import com.keke.sanshui.base.admin.service.AgentService;
 import com.keke.sanshui.base.admin.service.PlayerCouponService;
+import com.keke.sanshui.base.util.WeekUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -36,17 +37,16 @@ public class AdminAgentReadService {
 
     public List<AgentVo> selectAgentVoList(AgentPo agentPo) {
         List<AgentPo> agentPos = agentService.selectList(agentPo);
-        List<AgentVo> agentVos = agentPos.stream().map(new Function<AgentPo, AgentVo>() {
-            @Override
-            public AgentVo apply(AgentPo agentPo) {
-                AgentVo agentVo = new AgentVo();
-                agentVo.setGameId(agentPo.getPlayerId());
-                agentVo.setName(agentPo.getAgentName());
-                agentVo.setNickName(agentPo.getAgentNickName());
-                agentVo.setWeChartNo(agentPo.getAgentWeChartNo());
-                agentVo.setAgentId(agentPo.getId());
-                return agentVo;
-            }
+        Integer week = WeekUtil.getCurrentWeek();
+        List<AgentVo> agentVos = agentPos.stream().map(eachAgentPo -> {
+            AgentVo agentVo = new AgentVo();
+            agentVo.setGameId(eachAgentPo.getPlayerId());
+            agentVo.setName(eachAgentPo.getAgentName());
+            agentVo.setNickName(eachAgentPo.getAgentNickName());
+            agentVo.setWeChartNo(eachAgentPo.getAgentWeChartNo());
+            agentVo.setAgentId(eachAgentPo.getId());
+            return agentVo;
+
         }).map(agentVo -> {
             PlayerCouponPo playerCouponPo = playerCouponService.selectByPlayerId(agentVo.getGameId());
             if (playerCouponPo != null) {
@@ -58,29 +58,22 @@ public class AdminAgentReadService {
             }
             return agentVo;
         }).map(agentVo -> {
-                    PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(agentVo.getGameId(), 0);
-                    agentVo.setAgentTotalPickUp(playerPickTotalPo.getTotalMoney());
-                    AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentVo.getGameId(), 0);
-                    agentVo.setAgentTotalPickUp(agentPickTotalPo.getTotalMoney());
+                    PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(agentVo.getGameId(), week);
+                    if(playerPickTotalPo != null) {
+                        agentVo.setAgentTotalPickUp(playerPickTotalPo.getTotalMoney() / 100);
+                    }else{
+                        agentVo.setAgentTotalPickUp(0l);
+                    }
+                    AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentVo.getGameId(), week);
+                    if(agentPickTotalPo != null) {
+                        agentVo.setAgentTotalPickUp(agentPickTotalPo.getTotalMoney()/100);
+                    }else{
+                        agentVo.setAgentTotalPickUp(0L);
+                    }
                     return agentVo;
                 }
         ).collect(Collectors.toList());
         return agentVos;
     }
 
-    public Boolean createOrUpdateAgent(AgentRequestVo agentRequestVo, Integer adminId) {
-        Boolean ret = false;
-        if (agentRequestVo.getId() == null) {
-            AgentPo agentPo = new AgentPo();
-            agentPo.setParentId(agentRequestVo.getParentAgentId());
-            agentPo.setStatus(agentRequestVo.getStatus());
-            agentPo.setPlayerId(agentRequestVo.getPlayerId());
-            agentPo.setLevel(agentRequestVo.getLevel());
-            agentPo.setInsertTime(System.currentTimeMillis());
-            agentPo.setAgentWeChartNo(agentRequestVo.getAgentWechartNo());
-            agentPo.setLastUpdateTime(System.currentTimeMillis());
-            agentService.insertAgent(agentPo, adminId);
-        }
-        return ret;
-    }
 }

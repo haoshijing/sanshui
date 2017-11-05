@@ -1,4 +1,4 @@
-package com.sanshui.job.service;
+package com.keke.sanshui.job.service;
 
 import com.keke.sanshui.base.admin.dao.AgentPickTotalDAO;
 import com.keke.sanshui.base.admin.dao.PlayerPickTotalDAO;
@@ -51,7 +51,7 @@ public class AgentTotalService {
             agentPickTotalPo.setAgentId(agentPo.getId());
             final AtomicLong sum = new AtomicLong(0);
             agentPickTotalPo.setTotalMoney(sum.get());
-            agentPickTotalPo.setWeek(0);
+            agentPickTotalPo.setWeek(week);
             agentPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
             Set<Integer> underAgentIds = agentService.getAllBranchAgent(agentPo.getId(), true);
             underAgentIds.stream().forEach(agentId -> {

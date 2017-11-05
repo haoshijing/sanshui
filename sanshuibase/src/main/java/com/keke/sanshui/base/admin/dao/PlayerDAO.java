@@ -17,5 +17,7 @@ public interface PlayerDAO {
 
     Long queryCount();
 
+    PlayerPo selectByPlayId(Integer playerId);
+
     List<PlayerPo> queryPlayerList(@Param("playerId") Integer lastPlayerId, @Param("limit") Integer limit);
 }

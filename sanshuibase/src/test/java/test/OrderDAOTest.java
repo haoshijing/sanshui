@@ -4,6 +4,7 @@ import com.keke.sanshui.base.admin.dao.OrderDAO;
 import com.keke.sanshui.base.admin.po.Order;
 import com.keke.sanshui.base.admin.po.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
+import com.keke.sanshui.base.util.WeekUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +21,9 @@ public class OrderDAOTest {
 
     @Autowired
     private OrderService orderService;
+
     @Test
-    public void testInsert(){
+    public void testInsert() {
         Order order = new Order();
         order.setClientGuid(33);
         order.setMoney("8");
@@ -38,12 +40,18 @@ public class OrderDAOTest {
     }
 
     @Test
-    public void testQuery(){
+    public void testQuerySum() {
+        Long sum = orderDAO.queryPickupSum(1000013, WeekUtil.getWeekStartTimestamp(), WeekUtil.getWeekEndTimestamp());
+        Assert.assertTrue(sum > 0l);
+    }
+
+    @Test
+    public void testQuery() {
         Assert.assertTrue(orderService.queryOrderByNo("YJ8154545785154") != null);
     }
 
     @Test
-    public void testUpdateSend(){
+    public void testUpdateSend() {
 
     }
 }

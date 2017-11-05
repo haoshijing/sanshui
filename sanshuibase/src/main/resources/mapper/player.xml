@@ -8,13 +8,13 @@
     <sql id="tableName">
         t_player
     </sql>
-    <select id="getById" resultType="OperLogPo" parameterType="java.lang.Integer">
+    <select id="getByPlayerId" resultType="PlayerPo" parameterType="java.lang.Integer">
         <!-- 具体的sql -->
         SELECT
         <include refid="all_columns"/>
         FROM
         <include refid="tableName"/>
-        WHERE id = #{id}
+        WHERE playerId = #{playerId}
     </select>
 
     <insert id="insertPlayer" parameterType="PlayerPo">
@@ -23,6 +23,7 @@
           id,
           playerId,
           openId ,
+          name,
           insertTime,
           lastUpdateTime,
           status
@@ -31,11 +32,16 @@
           #{player.id},
           #{player.playerId},
           #{player.openId} ,
+          #{player.name} ,
           #{player.insertTime} ,
           #{player.lastUpdateTime },
           #{player.status}
 
     </insert>
+
+    <select id="selectByPlayId" resultType="PlayerPo">
+        select * from t_player where  playerId = #{playerId}
+    </select>
 
     <update id="updatePlayer" parameterType="PlayerPo">
         update t_player
@@ -48,7 +54,6 @@
                 status = #{param.status},
             </if>
         </set>
-
         where playerId = #{param.playerId}
     </update>
 

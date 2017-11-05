@@ -11,7 +11,7 @@ import java.util.List;
  **/
 public interface PlayerPickTotalDAO {
 
-    PlayerPickTotalPo selectByPlayerId(Integer playerId,Integer week);
+    PlayerPickTotalPo selectByPlayerId(@Param("playerId") Integer playerId,@Param("week") Integer week);
 
     void insertTotalPo(@Param("param") PlayerPickTotalPo playerPickTotalPo);
 
