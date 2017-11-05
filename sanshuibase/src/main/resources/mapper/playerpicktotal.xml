@@ -45,7 +45,7 @@
                 lastUpdateTime = #{param.lastUpdateTime},
             </if>
         </set>
-        where playerId = #{param.playerId}
+        where id = #{param.id}
     </update>
     
     <select id="sumPickUp" parameterType="java.util.List">

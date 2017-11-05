@@ -5,6 +5,7 @@ import com.keke.sanshui.base.admin.po.PlayerPickTotalPo;
 import com.keke.sanshui.base.admin.po.PlayerPo;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PlayerService;
+import com.keke.sanshui.base.util.WeekUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -34,12 +35,17 @@ public class PlayerTotalService {
         do{
             playerPoList.forEach(playerPo -> {
                 Integer playerId = playerPo.getPlayerId();
-                Long sumPickUp = orderService.queryPickupSum(playerId,0L,0L);
+                long weekStartTimestamp = WeekUtil.getWeekStartTimestamp();
+                long weekEndTimestamp = WeekUtil.getWeekEndTimestamp();
+                int week = WeekUtil.getCurrentWeek();
+                Long sumPickUp = orderService.queryPickupSum(playerId,weekStartTimestamp,weekEndTimestamp);
                 if(sumPickUp != 0){
-                    PlayerPickTotalPo playerPickTotalPo =  playerPickTotalDAO.selectByPlayerId(playerId,0);
+                    PlayerPickTotalPo playerPickTotalPo =  playerPickTotalDAO.selectByPlayerId(playerId,week);
                     if(playerPickTotalPo != null){
-                        playerPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
-                        playerPickTotalPo.setTotalMoney(sumPickUp);
+                        PlayerPickTotalPo updatePickTotalPo = new PlayerPickTotalPo();
+                        updatePickTotalPo.setLastUpdateTime(System.currentTimeMillis());
+                        updatePickTotalPo.setTotalMoney(sumPickUp);
+                        updatePickTotalPo.setId(playerPickTotalPo.getId());
                         int ret = playerPickTotalDAO.updateTotalPo(playerPickTotalPo);
 
                     }else{
@@ -47,7 +53,7 @@ public class PlayerTotalService {
                         newPlayerPickTotalPo.setTotalMoney(sumPickUp);
                         newPlayerPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
                         newPlayerPickTotalPo.setPlayerId(playerId);
-                        newPlayerPickTotalPo.setWeek(0);
+                        newPlayerPickTotalPo.setWeek(week);
                         playerPickTotalDAO.insertTotalPo(playerPickTotalPo);
                     }
                 }

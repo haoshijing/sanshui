@@ -45,7 +45,7 @@
                 lastUpdateTime = #{param.lastUpdateTime},
             </if>
         </set>
-        where agentId = #{param.agengId}
+        where id = #{param.id}
     </update>
     
     <select id="sumPickUp" resultType="java.lang.Long">
