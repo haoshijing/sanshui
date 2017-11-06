@@ -11,8 +11,7 @@ import com.keke.sanshui.pay.paypull.PayPullCallbackVo;
 import com.keke.sanshui.service.GateWayService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -62,7 +61,7 @@ public class GatewayController {
                         Order updateOrder = new Order();
                         //已支付
                         updateOrder.setSelfOrderNo(orderId);
-                        updateOrder.setOrderStatus(2);
+                        updateOrder.setOrderStatus(3);
                         updateOrder.setPayState(0);
                         updateOrder.setPayType("wechart");
                         updateOrder.setPayTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(payPullCallbackVo.getReceive_time())));
@@ -73,15 +72,20 @@ public class GatewayController {
                             log.warn("update data effect 0,{}",JSON.toJSONString(payPullCallbackVo));
                         }
                         //发送给gameServer
-                        boolean sendOk = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                        Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                                 order.getMoney(), "0");
-                        if (sendOk) {
+                        if(pair.getLeft()){
                             Order updateSendOrder = new Order();
                             updateSendOrder.setSelfOrderNo(orderId);
+                            if(!pair.getRight()) {
+                                updateOrder.setOrderStatus(2);
+                            }
                             updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
                             updateSendOrder.setSendTime(System.currentTimeMillis());
                             orderService.updateOrder(updateSendOrder);
                         }
+
+
                         handlerResponseOk(response);
                     }
                 }
@@ -116,7 +120,7 @@ public class GatewayController {
                 Order updateOrder = new Order();
                 //已支付
                 updateOrder.setSelfOrderNo(orderId);
-                updateOrder.setOrderStatus(2);
+                updateOrder.setOrderStatus(3);
                 updateOrder.setPayState(Integer.valueOf(payVo.getP_state()));
                 updateOrder.setPayType(payVo.getP_type());
                 updateOrder.setPayTime(payVo.getP_time());
@@ -128,11 +132,14 @@ public class GatewayController {
                 }
 
                 //发送给gameServer
-                boolean sendOk = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                         order.getMoney(), "0");
-                if (sendOk) {
+                if(pair.getLeft()){
                     Order updateSendOrder = new Order();
                     updateSendOrder.setSelfOrderNo(orderId);
+                    if(!pair.getRight()) {
+                        updateOrder.setOrderStatus(2);
+                    }
                     updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
                     updateSendOrder.setSendTime(System.currentTimeMillis());
                     orderService.updateOrder(updateSendOrder);

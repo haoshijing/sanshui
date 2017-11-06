@@ -6,6 +6,7 @@ import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.service.GateWayService;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -34,14 +35,17 @@ public class CheckNotSendOrderService {
             public void run() {
                 orderService.queryNotSendList().forEach(order -> {
                     log.info("开始补偿order,orderId = {}",order.getSelfOrderNo());
-                    boolean sendOk = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                    Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                             order.getMoney(), "0");
-                    if (sendOk) {
-                        Order updateSendOrder = new Order();
-                        updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
-                        updateSendOrder.setSendTime(System.currentTimeMillis());
-                        updateSendOrder.setSelfOrderNo(order.getSelfOrderNo());
-                        orderService.updateOrder(updateSendOrder);
+                    if(pair.getLeft()){
+                        Order updateOrder = new Order();
+                        updateOrder.setSelfOrderNo(order.getSelfOrderNo());
+                        if(pair.getRight()) {
+                            updateOrder.setOrderStatus(2);
+                        }
+                        updateOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                        updateOrder.setSendTime(System.currentTimeMillis());
+                        orderService.updateOrder(updateOrder);
                     }
                 });
 
