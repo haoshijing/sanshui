@@ -30,7 +30,10 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
     @Override
     public void onApplicationEvent(UpdateCanalEvent event) {
         CanalEntry.Entry entry = event.getEntry();
-        //String tableName = entry.getHeader().getTableName();
+        String tableName = entry.getHeader().getTableName();
+        if(!StringUtils.equals(tableName,"characters")){
+            return;
+        }
         try {
             CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
             if (rowChange != null) {
@@ -46,10 +49,10 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
                             String baseData = column.getValue();
                             ByteBuffer byteBuffer = ByteBuffer.allocate(baseData.length());
                             for(int i = 0 ; i < baseData.length();i++){
-
+                                char ch = baseData.charAt(i);
+                                byteBuffer.put((byte)ch);
                             }
-
-                            data.put("base_data", baseData.getBytes());
+                            data.put("base_data", byteBuffer.array());
                         }
                         if (StringUtils.equals(name, "guid")) {
                             data.put("guid", Integer.valueOf(column.getValue()));
@@ -67,7 +70,7 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
 
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 }

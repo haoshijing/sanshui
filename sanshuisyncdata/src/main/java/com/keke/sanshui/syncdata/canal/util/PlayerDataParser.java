@@ -46,11 +46,14 @@ public final class PlayerDataParser {
         return playerInfo;
     }
     private PlayerInfo getPlayerInfo(Integer playerId,byte[]data){
-        ByteBuffer byteBuffer = ByteBuffer.wrap(data);
-        byte curVersion = byteBuffer.get();
-        String name = readString(byteBuffer);
-        Long goldCount = byteBuffer.getLong();
-        Long money = byteBuffer.getLong();
+
+        ByteBuf byteBuf = Unpooled.buffer(data.length);
+        byteBuf.writeBytes(data);
+        byte curVersion = byteBuf.readByte();
+        String name = readString(byteBuf);
+
+        Long goldCount = byteBuf.readLongLE();
+        Long money = byteBuf.readLongLE();
 
         PlayerCouponPo playerCouponPo = new PlayerCouponPo();
         playerCouponPo.setSilverCount(money.intValue());
@@ -73,12 +76,12 @@ public final class PlayerDataParser {
         return playerInfo;
     }
 
-    private String readString(ByteBuffer byteBuffer){
-        int startIdx =  byteBuffer.position(),endIdx = startIdx;
-        while (byteBuffer.get() != 0){
+    private String readString(ByteBuf byteBuf){
+        int startIdx =  byteBuf.readerIndex(),endIdx = startIdx;
+        while (byteBuf.readByte() != 0){
             endIdx++;
         }
-        String str = new String(byteBuffer.array(),startIdx,endIdx-1);
+        String str = new String(byteBuf.array(),startIdx,endIdx-1);
         return str;
     }
 }

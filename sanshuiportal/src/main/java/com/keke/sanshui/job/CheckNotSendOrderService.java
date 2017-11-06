@@ -40,6 +40,7 @@ public class CheckNotSendOrderService {
                         Order updateSendOrder = new Order();
                         updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
                         updateSendOrder.setSendTime(System.currentTimeMillis());
+                        updateSendOrder.setSelfOrderNo(order.getSelfOrderNo());
                         orderService.updateOrder(updateSendOrder);
                     }
                 });

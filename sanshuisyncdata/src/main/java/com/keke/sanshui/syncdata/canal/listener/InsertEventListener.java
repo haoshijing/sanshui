@@ -31,6 +31,10 @@ public class InsertEventListener implements ApplicationListener<InsertCanalEvent
     public void onApplicationEvent(InsertCanalEvent event) {
         CanalEntry.Entry entry = event.getEntry();
         try {
+            String tableName = entry.getHeader().getTableName();
+            if(!StringUtils.equals(tableName,"characters")){
+                return;
+            }
             CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
             if (rowChange != null) {
                 List<CanalEntry.RowData> rowDataList = rowChange.getRowDatasList();
@@ -43,7 +47,7 @@ public class InsertEventListener implements ApplicationListener<InsertCanalEvent
                             data.put("base_data", baseData.getBytes());
                         }
                         if (StringUtils.equals(name, "guid")) {
-                            data.put("guid", column.getValue());
+                            data.put("guid", Integer.valueOf(column.getValue()));
                         }
                     });
                     return data;

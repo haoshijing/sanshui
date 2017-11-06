@@ -41,9 +41,9 @@ public class PlayerService {
     }
 
     public void insertPlayerCoupon(PlayerCouponPo playerCouponPo){
-        PlayerCouponPo queryPlaeryCoupon = playerCouponDAO.selectByPlayerId(playerCouponPo.getPlayerId());
-        if(null == queryPlaeryCoupon){
-            playerCouponDAO.insertPlayerCouponPo(queryPlaeryCoupon);
+        PlayerCouponPo queryPlayerCoupon = playerCouponDAO.selectByPlayerId(playerCouponPo.getPlayerId());
+        if(null == queryPlayerCoupon){
+            playerCouponDAO.insertPlayerCouponPo(playerCouponPo);
         }
     }
 }
