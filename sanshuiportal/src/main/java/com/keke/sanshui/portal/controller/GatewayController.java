@@ -137,8 +137,8 @@ public class GatewayController {
                 if(pair.getLeft()){
                     Order updateSendOrder = new Order();
                     updateSendOrder.setSelfOrderNo(orderId);
-                    if(!pair.getRight()) {
-                        updateOrder.setOrderStatus(2);
+                    if(pair.getRight()) {
+                        updateSendOrder.setOrderStatus(2);
                     }
                     updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
                     updateSendOrder.setSendTime(System.currentTimeMillis());
