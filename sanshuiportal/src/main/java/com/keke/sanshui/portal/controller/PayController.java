@@ -39,7 +39,7 @@ public class PayController {
     @Autowired
     private ZPayService zPayService;
 
-    private final static String ZPAY_BASE_URL = "http://pay.csl2016.cn:8000/";
+    private final static String ZPAY_BASE_URL = "http://pay.csl2016.cn:8000";
 
     @RequestMapping("/goPay")
     String goPay(HttpServletRequest request, String guid, Model modelAttribute) {
