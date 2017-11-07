@@ -20,7 +20,7 @@
         </header>
         <div class="wrapBox">
         	<div class="price_list">
-            	<form action="${rc.contextPath}/go51PayPage" method="post">
+            	<form action="${rc.contextPath}/doGo51PayPage" method="post">
                 	<ul>
                         <#list payLinks as link>
                             <li   data = "${link.id?c}" class="<#if link_index == 0>current</#if>">

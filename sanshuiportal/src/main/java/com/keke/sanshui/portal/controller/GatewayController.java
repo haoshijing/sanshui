@@ -100,6 +100,7 @@ public class GatewayController {
         }
     }
 
+
     private void handlerResponseOk(HttpServletResponse response){
         response.setContentType("text/html");
         try {
@@ -110,7 +111,7 @@ public class GatewayController {
     }
 
     @RequestMapping(value = "/zPay/callback")
-    void zPayCallback(HttpServletRequest request, HttpResponse response) {
+    void zPayCallback(HttpServletRequest request, HttpServletResponse response) {
         ZPayResponseVo responseVo = parseZPayReponse(request);
         log.info("responseVo = {}", responseVo);
         boolean matchSign = zPayService.checkSign(responseVo);
@@ -140,15 +141,19 @@ public class GatewayController {
                 Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                         order.getMoney(), "0");
                 if(pair.getLeft()){
-                    Order updateSendOrder = new Order();
-                    updateSendOrder.setSelfOrderNo(orderId);
+                    Order newUpdateOrder = new Order();
+                    newUpdateOrder.setSelfOrderNo(orderId);
                     if(pair.getRight()) {
-                        updateSendOrder.setOrderStatus(2);
+                        newUpdateOrder.setOrderStatus(2);
                     }
-                    updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
-                    updateSendOrder.setSendTime(System.currentTimeMillis());
-                    orderService.updateOrder(updateSendOrder);
+                    newUpdateOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                    newUpdateOrder.setSendTime(System.currentTimeMillis());
+                    orderService.updateOrder(newUpdateOrder);
                 }
+                /**
+                 * 发送给服务器支付成功
+                 */
+                response.getWriter().print("0");
             } catch (Exception e) {
                 log.error(" update error ", e);
             }

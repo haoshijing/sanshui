@@ -1,6 +1,5 @@
 package test;
 
-import com.keke.sanshui.base.util.SignUtil;
 import com.keke.sanshui.base.vo.PayVo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +37,7 @@ public class TestSign {
         payVo.setP_time("2017/10/31 11:00:48");
         payVo.setP_url("http://game.youthgamer.com:8080/sanshui/goPayPage");
 
-        System.out.println(SignUtil.createPaySign(payVo,"1dfXbJl2wyz1IAiAEdmjTR5q"));
+        //System.out.println(SignUtil.createPaySign(payVo,"1dfXbJl2wyz1IAiAEdmjTR5q"));
 
     }
 }

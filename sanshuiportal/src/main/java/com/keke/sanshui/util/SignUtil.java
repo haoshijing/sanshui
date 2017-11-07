@@ -24,12 +24,13 @@ public class SignUtil {
         return match;
     }
     public final static Pair<String,String> createZPayRequestSign(ZPayRequestVo zPayRequestVo, String signKey){
-        Field[] fields = PayVo.class.getDeclaredFields();
+        Field[] fields = ZPayRequestVo.class.getDeclaredFields();
         SortedMap<String, String> sortedMap = Maps.newTreeMap();
         for (Field field : fields) {
             if (!field.getName().equals("sign")) {
                 field.setAccessible(true);
-                String data = (String) ReflectionUtils.getField(field, zPayRequestVo);
+                Class<?> c = field.getType();
+                String data = String.valueOf(ReflectionUtils.getField(field, zPayRequestVo));
                 if(StringUtils.isEmpty(data)) {
                     continue;
                 }
@@ -50,12 +51,12 @@ public class SignUtil {
         return Pair.of(md5Sign,paramUrl);
     }
     public final static String createZPayResponseSign(ZPayResponseVo zPayResponseVo, String signKey){
-        Field[] fields = PayVo.class.getDeclaredFields();
+        Field[] fields = ZPayResponseVo.class.getDeclaredFields();
         SortedMap<String, String> sortedMap = Maps.newTreeMap();
         for (Field field : fields) {
             if (!field.getName().equals("sign")) {
                 field.setAccessible(true);
-                String data = (String) ReflectionUtils.getField(field, zPayResponseVo);
+                String data = String.valueOf(ReflectionUtils.getField(field,zPayResponseVo));
                 if(StringUtils.isEmpty(data)) {
                     continue;
                 }

@@ -11,13 +11,13 @@ import java.net.URLEncoder;
 
 @Repository
 public class ZPayService {
-    @Value("appId")
+    @Value("${appId}")
     private String appId;
-    @Value("partnerId")
+    @Value("${partnerId}")
     private String partnerId;
-    @Value("callbackHost")
+    @Value("${callbackHost}")
     private String callbackHost;
-    @Value("zpayKey")
+    @Value("${zpayKey}")
     private String signKey;
 
     public ZPayRequestVo createRequestVo(PayLink payLink, String orderId){
