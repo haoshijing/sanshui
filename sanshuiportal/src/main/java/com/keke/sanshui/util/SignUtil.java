@@ -1,8 +1,12 @@
-package com.keke.sanshui.base.util;
+package com.keke.sanshui.util;
 
 import com.google.common.collect.Maps;
+import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.base.vo.PayVo;
+import com.keke.sanshui.pay.zpay.ZPayRequestVo;
+import com.keke.sanshui.pay.zpay.ZPayResponseVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -19,6 +23,58 @@ public class SignUtil {
         match = md5Sign.equals(payVo.getSign());
         return match;
     }
+    public final static Pair<String,String> createZPayRequestSign(ZPayRequestVo zPayRequestVo, String signKey){
+        Field[] fields = PayVo.class.getDeclaredFields();
+        SortedMap<String, String> sortedMap = Maps.newTreeMap();
+        for (Field field : fields) {
+            if (!field.getName().equals("sign")) {
+                field.setAccessible(true);
+                String data = (String) ReflectionUtils.getField(field, zPayRequestVo);
+                if(StringUtils.isEmpty(data)) {
+                    continue;
+                }
+                sortedMap.put(field.getName(),data);
+            }
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, String> entry : sortedMap.entrySet()) {
+            if (stringBuilder.toString().length() != 0) {
+                stringBuilder.append("&");
+            }
+            stringBuilder.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        String first = stringBuilder.toString();
+        stringBuilder.append("&key=").append(signKey);
+        String md5Sign = MD5Util.md5(stringBuilder.toString()).toUpperCase();
+        String paramUrl = new StringBuilder(first).append("&sign=").append(md5Sign).toString();
+        return Pair.of(md5Sign,paramUrl);
+    }
+    public final static String createZPayResponseSign(ZPayResponseVo zPayResponseVo, String signKey){
+        Field[] fields = PayVo.class.getDeclaredFields();
+        SortedMap<String, String> sortedMap = Maps.newTreeMap();
+        for (Field field : fields) {
+            if (!field.getName().equals("sign")) {
+                field.setAccessible(true);
+                String data = (String) ReflectionUtils.getField(field, zPayResponseVo);
+                if(StringUtils.isEmpty(data)) {
+                    continue;
+                }
+                sortedMap.put(field.getName(),data);
+            }
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, String> entry : sortedMap.entrySet()) {
+            if (stringBuilder.toString().length() != 0) {
+                stringBuilder.append("&");
+            }
+            stringBuilder.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        stringBuilder.append("&key=").append(signKey);
+        String md5Sign = MD5Util.md5(stringBuilder.toString()).toUpperCase();
+        return md5Sign;
+    }
+
+
 
     public final static String createPaySign(PayVo payVo,String signKey){
         Field[] fields = PayVo.class.getDeclaredFields();

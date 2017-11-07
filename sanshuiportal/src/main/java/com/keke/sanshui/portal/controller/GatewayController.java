@@ -5,13 +5,16 @@ import com.alibaba.fastjson.JSON;
 import com.keke.sanshui.base.admin.po.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
-import com.keke.sanshui.base.util.SignUtil;
+import com.keke.sanshui.pay.zpay.ZPayResponseVo;
+import com.keke.sanshui.pay.zpay.ZPayService;
+import com.keke.sanshui.util.SignUtil;
 import com.keke.sanshui.base.vo.PayVo;
 import com.keke.sanshui.pay.paypull.PayPullCallbackVo;
 import com.keke.sanshui.service.GateWayService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -23,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 @Controller
 @Slf4j
@@ -42,8 +44,11 @@ public class GatewayController {
     @Autowired
     GateWayService gateWayService;
 
+    @Autowired
+    ZPayService zPayService;
 
-    @RequestMapping("/paypuall/callback")
+
+    @RequestMapping("/paypull/callback")
     public void handleNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String retMsg = request.getParameter("msg");
         if(StringUtils.isNotEmpty(retMsg)) {
@@ -102,6 +107,77 @@ public class GatewayController {
         }catch (Exception e){
 
         }
+    }
+
+    @RequestMapping(value = "/zPay/callback")
+    void zPayCallback(HttpServletRequest request, HttpResponse response) {
+        ZPayResponseVo responseVo = parseZPayReponse(request);
+        log.info("responseVo = {}", responseVo);
+        boolean matchSign = zPayService.checkSign(responseVo);
+        if (matchSign && StringUtils.equals(responseVo.getCode(), "0")) {
+            //支付成功,发送给游戏服务
+            try {
+                String orderId = responseVo.getOut_trade_no();
+                Order order = orderService.queryOrderByNo(orderId);
+                if (order == null) {
+                    log.error("错误的订单,orderId = {}", orderId);
+                }
+                Order updateOrder = new Order();
+                //已支付
+                updateOrder.setSelfOrderNo(orderId);
+                updateOrder.setOrderStatus(3);
+                updateOrder.setPayState(Integer.valueOf(responseVo.getCode()));
+                updateOrder.setPayType(responseVo.getPay_way());
+                updateOrder.setPayTime(String.valueOf(System.currentTimeMillis()));
+                updateOrder.setLastUpdateTime(System.currentTimeMillis());
+                updateOrder.setOrderNo(responseVo.getInvoice_no());
+                int updateStatus = orderService.updateOrder(updateOrder);
+                if(updateStatus == 0){
+                    log.warn("update data effect 0,{}",JSON.toJSONString(responseVo));
+                }
+
+                //发送给gameServer
+                Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                        order.getMoney(), "0");
+                if(pair.getLeft()){
+                    Order updateSendOrder = new Order();
+                    updateSendOrder.setSelfOrderNo(orderId);
+                    if(pair.getRight()) {
+                        updateSendOrder.setOrderStatus(2);
+                    }
+                    updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                    updateSendOrder.setSendTime(System.currentTimeMillis());
+                    orderService.updateOrder(updateSendOrder);
+                }
+            } catch (Exception e) {
+                log.error(" update error ", e);
+            }
+        }else{
+            log.error("秘钥匹配不上{}",responseVo);
+        }
+    }
+
+    private ZPayResponseVo parseZPayReponse(HttpServletRequest request) {
+        ZPayResponseVo responseVo = new ZPayResponseVo();
+        String app_id = request.getParameter("app_id");
+        String code = request.getParameter("code");
+        String invoice_no = request.getParameter("invoice_no");
+        String money = request.getParameter("money");
+        String out_trade_no = request.getParameter("out_trade_no");
+        String pay_way = request.getParameter("pay_way");
+        String qn = request.getParameter("qn");
+        String up_invoice_no = request.getParameter("up_invoice_no");
+        String sign = request.getParameter("sign");
+        responseVo.setApp_id(app_id);
+        responseVo.setCode(code);
+        responseVo.setInvoice_no(invoice_no);
+        responseVo.setMoney(money);
+        responseVo.setOut_trade_no(out_trade_no);
+        responseVo.setPay_way(pay_way);
+        responseVo.setQn(qn);
+        responseVo.setUp_invoice_no(up_invoice_no);
+        responseVo.setSign(sign);
+        return responseVo;
     }
 
     @RequestMapping(value = "/pay/callback", method = RequestMethod.POST)

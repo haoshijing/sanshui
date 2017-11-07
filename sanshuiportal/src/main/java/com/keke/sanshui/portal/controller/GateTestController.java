@@ -1,7 +1,7 @@
 package com.keke.sanshui.portal.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.keke.sanshui.base.util.SignUtil;
+import com.keke.sanshui.util.SignUtil;
 import com.keke.sanshui.base.vo.PayVo;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;

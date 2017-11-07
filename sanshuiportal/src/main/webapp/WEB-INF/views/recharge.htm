@@ -20,14 +20,19 @@
         </header>
         <div class="wrapBox">
         	<div class="price_list">
-            	<form action="${rc.contextPath}/goPayPage" method="post">
+            	<form action="${rc.contextPath}/go51PayPage" method="post">
                 	<ul>
                         <#list payLinks as link>
                             <li   data = "${link.id?c}" class="<#if link_index == 0>current</#if>">
-                            <a href="javascript:changeTo(${link.id?c});">${link.pickCouponVal?c}豆  ${link.pickRmb/100}元</a>
+                            <a href="javascript:changeTo(${link.id?c});"> ${link.pickRmb/100}元  ${link.pickCouponVal?c}豆 </a>
 
                         </li>
                         </#list>
+                    </ul>
+
+                    <ul>
+
+
                     </ul>
                     <input type="hidden" name = "guid"  value = "${guid}">
                     <input type="hidden" name = "pickId" id = "pickId" value = "${defaultPick}">

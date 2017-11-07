@@ -1,7 +1,7 @@
 package com.keke.sanshui.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.keke.sanshui.base.util.SignUtil;
+import com.keke.sanshui.util.SignUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
