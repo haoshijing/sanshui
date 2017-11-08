@@ -32,7 +32,10 @@
 
     </insert>
 
-
+    <select id="queryByAgentAndPlayerGuid" resultType="java.lang.Integer">
+        select count(1) from   <include refid="tableName"/>
+        WHERE playerId = #{playerId} and agentPlayerId = #{agentPlayerId}
+    </select>
     <select id="selectAll">
         select <include refid="all_columns"/>
         from

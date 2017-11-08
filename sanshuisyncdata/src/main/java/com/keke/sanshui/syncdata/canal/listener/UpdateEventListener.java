@@ -31,9 +31,29 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
     public void onApplicationEvent(UpdateCanalEvent event) {
         CanalEntry.Entry entry = event.getEntry();
         String tableName = entry.getHeader().getTableName();
-        if(!StringUtils.equals(tableName,"characters")){
+
+        if(!StringUtils.equals(tableName,"characters") || !StringUtils.equals(tableName,"world_records")){
             return;
         }
+        if(StringUtils.equals(tableName,"characters") ){
+            handlerCharactersData(entry);
+        }else{
+            handlerWorldData(entry);
+        }
+    }
+
+    private void handlerWorldData(CanalEntry.Entry entry) {
+        try {
+            CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
+            if (rowChange != null) {
+
+            }
+        }catch (Exception e){
+
+        }
+    }
+
+    private void handlerCharactersData(CanalEntry.Entry entry) {
         try {
             CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
             if (rowChange != null) {
@@ -43,9 +63,9 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
                     rowData.getAfterColumnsList().stream().forEach(column -> {
                         String name = column.getName();
                         if (StringUtils.equals(name, "base_data")) {
-//                            if (!column.getUpdated()) {
-//                                return;
-//                            }
+                            if (!column.getUpdated()) {
+                               return;
+                            }
                             String baseData = column.getValue();
                             ByteBuffer byteBuffer = ByteBuffer.allocate(baseData.length());
                             for(int i = 0 ; i < baseData.length();i++){

@@ -1,7 +1,9 @@
 package com.keke.sanshui.syncdata.canal.full;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
 import com.keke.sanshui.base.admin.po.PlayerPo;
+import com.keke.sanshui.base.admin.po.PlayerRelationPo;
 import com.keke.sanshui.base.admin.service.PlayerService;
 import com.keke.sanshui.syncdata.canal.util.PlayerDataParser;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,10 @@ public class FullSyncDataService {
     private PlayerService playerService;
 
     @Autowired
-    private PlayerDataParser playerDataParser;
+    private PlayerRelationDAO playerRelationDAO;
+
+    @Autowired
+    private PlayerDataParser parser;
 
     public FullSyncDataService(){
         DruidDataSource druidDataSource = new DruidDataSource();
@@ -36,10 +41,19 @@ public class FullSyncDataService {
 
     @PostConstruct
     public void syncRelation(){
-        String sql = " select data from characters";
+        String sql = " select data from world_records where type =1 ";
         List<Map<String,Object>> datas =  jdbcTemplate.queryForList(sql);
         datas.forEach(data->{
             byte[] bytes = (byte[])data.get("data");
+            List<PlayerRelationPo> list =   parser.parseFromWorldData(bytes);
+
+            list.stream().forEach(playerRelationPo -> {
+                boolean isInDb = playerRelationDAO.queryByAgentAndPlayerGuid(playerRelationPo.getAgentPlayerId().intValue(),
+                        playerRelationPo.getPlayerId().intValue()) > 0;
+                if(!isInDb){
+                    playerRelationDAO.insertRelation(playerRelationPo);
+                }
+            });
 
         });
     }
@@ -52,7 +66,7 @@ public class FullSyncDataService {
             BigInteger playerId = (BigInteger)data.get("guid");
             data.put("guid",playerId.intValue());
             if(!playerService.checkPlayerExsist(playerId.intValue())) {
-                PlayerDataParser.PlayerInfo playerInfo = playerDataParser.parseFromBaseData(data);
+                PlayerDataParser.PlayerInfo playerInfo = parser.parseFromBaseData(data);
                 if (playerInfo != null) {
                     playerService.insertPlayer(playerInfo.getPlayerPo());
                     playerService.insertPlayerCoupon(playerInfo.getPlayerCouponPo());

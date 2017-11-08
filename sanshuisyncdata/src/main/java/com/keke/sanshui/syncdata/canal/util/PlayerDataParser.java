@@ -1,12 +1,15 @@
 package com.keke.sanshui.syncdata.canal.util;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.keke.sanshui.base.admin.po.PlayerCouponPo;
 import com.keke.sanshui.base.admin.po.PlayerPo;
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -16,9 +19,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Repository
+@Slf4j
 public final class PlayerDataParser {
 
     @Autowired
@@ -38,7 +43,7 @@ public final class PlayerDataParser {
         return playerInfo;
     }
 
-    private List<PlayerRelationPo> parseFromWorldData(byte[] sourceData) {
+    public List<PlayerRelationPo> parseFromWorldData(byte[] sourceData) {
         byte[] deEncryptByteData = deEncrypt(sourceData);
         List<PlayerRelationPo> playerRelationPos = getPlayRelations(deEncryptByteData);
         return playerRelationPos;
@@ -46,14 +51,15 @@ public final class PlayerDataParser {
 
     private List<PlayerRelationPo> getPlayRelations(byte[] deEncryptByteData) {
         List<PlayerRelationPo> relationPos = Lists.newArrayList();
+        Map<Integer,Set<PlayerRelationPo>> relationMaps = Maps.newHashMap();
+        ByteBuf byteBuf = Unpooled.buffer(deEncryptByteData.length);
+        byteBuf.writeBytes(deEncryptByteData);
+        byte curVersion = byteBuf.readByte();
+        int count = byteBuf.readIntLE();
+        byteBuf.writeBytes(deEncryptByteData);
         try {
-            ByteBuf byteBuf = Unpooled.buffer(deEncryptByteData.length);
-            byte curVersion = byteBuf.readByte();
-
-            int count = byteBuf.readIntLE();
             while (count-- > 0) {
                 PlayerRelationPo playerRelationPo = new PlayerRelationPo();
-                relationPos.add(playerRelationPo);
                 byte curPlayerVersion = byteBuf.readByte();
                 Long guid = byteBuf.readLongLE();
                 String name = readString(byteBuf);
@@ -65,20 +71,34 @@ public final class PlayerDataParser {
                 int orderCount = byteBuf.readIntLE();
                 while (orderCount-- > 0) {
                     String orderId = readString(byteBuf);
+                    log.info("orderId = {}",orderId);
                 }
                 int childrenCount = byteBuf.readIntLE();
                 while (childrenCount-- > 0) {
                     Long childrenId = byteBuf.readLongLE();
+                    log.info("childrenId = {}",childrenId);
                 }
                 boolean isAgent = byteBuf.readBoolean();
                 if(curPlayerVersion >= 2){
                     byte chooseType = byteBuf.readByte();
                 }
+                playerRelationPo.setAgentPlayerId(invitedGuid.intValue());
+                playerRelationPo.setLastUpdateTime(System.currentTimeMillis());
+                playerRelationPo.setPlayerId(guid.intValue());
+                Set<PlayerRelationPo> playerRelationPos =relationMaps.get(invitedGuid.intValue());
+                if(playerRelationPos == null){
+                    playerRelationPos = Sets.newHashSet();
+                    relationMaps.put(invitedGuid.intValue(),playerRelationPos);
+                }
+                playerRelationPos.add(playerRelationPo);
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
+        relationMaps.forEach((inviteId,relationPoSet)->{
+            relationPos.addAll(relationPoSet);
+        });
         return relationPos;
     }
 
@@ -116,9 +136,10 @@ public final class PlayerDataParser {
     private String readString(ByteBuf byteBuf) {
         int startIdx = byteBuf.readerIndex(), endIdx = startIdx;
         while (byteBuf.readByte() != 0) {
-            endIdx++;
         }
-        String str = new String(byteBuf.array(), startIdx, endIdx - 1);
+        endIdx = byteBuf.readerIndex();
+
+        String str = new String(byteBuf.array(), startIdx, endIdx - 1-startIdx);
         return str;
     }
 
