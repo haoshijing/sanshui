@@ -122,6 +122,14 @@ public class GatewayController {
                 Order order = orderService.queryOrderByNo(orderId);
                 if (order == null) {
                     log.error("错误的订单,orderId = {}", orderId);
+                    String envName = System.getProperty("env");
+                    if(StringUtils.isEmpty(envName)){
+                        envName = System.getenv("env");
+                    }
+                    if(StringUtils.equals(envName,"test")){
+                        response.getWriter().print("0");
+                        return;
+                    }
                 }
                 Order updateOrder = new Order();
                 //已支付
@@ -136,7 +144,6 @@ public class GatewayController {
                 if(updateStatus == 0){
                     log.warn("update data effect 0,{}",JSON.toJSONString(responseVo));
                 }
-
                 //发送给gameServer
                 Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                         order.getMoney(), "0");

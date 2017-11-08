@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,9 +60,16 @@ public class PayController {
         return "recharge";
     }
 
-    @RequestMapping("/pay/user/sucess")
-    String success(String orderId) {
-
+    @RequestMapping("/pay/user/{orderId}")
+    String success(@PathVariable  String orderId, Model model) {
+        String response = zPayService.queryOrder(orderId);
+        log.info("response = {}",response);
+        try {
+            Map<String, String> data = JSON.parseObject(response, Map.class);
+            model.addAttribute("message",data.get("message"));
+        }catch (Exception e){
+            model.addAttribute("message","支付未完成");
+        }
         return "success";
     }
 
