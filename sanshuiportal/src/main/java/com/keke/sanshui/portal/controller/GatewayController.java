@@ -223,6 +223,7 @@ public class GatewayController {
                     }
                     updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
                     updateSendOrder.setSendTime(System.currentTimeMillis());
+                    log.info("orderStatus = {}",updateOrder.getOrderStatus());
                     orderService.updateOrder(updateSendOrder);
                 }
             } catch (Exception e) {

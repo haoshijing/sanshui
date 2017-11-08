@@ -24,7 +24,7 @@ public class ZPayService {
         ZPayRequestVo requestVo = new ZPayRequestVo();
         requestVo.setApp_id(Integer.valueOf(appId));
         requestVo.setPartner_id(partnerId);
-        requestVo.setMoney(payLink.getPickCouponVal());
+        requestVo.setMoney(payLink.getPickRmb());
         requestVo.setImei("");
         requestVo.setQn("zyap4107_57089_100");
         requestVo.setOut_trade_no(orderId);

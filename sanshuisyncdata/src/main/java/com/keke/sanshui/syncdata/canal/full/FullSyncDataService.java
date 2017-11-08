@@ -35,10 +35,19 @@ public class FullSyncDataService {
     }
 
     @PostConstruct
+    public void syncRelation(){
+        String sql = " select data from characters";
+        List<Map<String,Object>> datas =  jdbcTemplate.queryForList(sql);
+        datas.forEach(data->{
+            byte[] bytes = (byte[])data.get("data");
+
+        });
+    }
+    @PostConstruct
     public void syncCharacterData(){
         String sql = " select * from characters";
         List<Map<String,Object>> datas =  jdbcTemplate.queryForList(sql);
-        log.info("开始进行数据同步");
+        log.info("会员信息进行数据同步");
         datas.forEach(data->{
             BigInteger playerId = (BigInteger)data.get("guid");
             data.put("guid",playerId.intValue());
