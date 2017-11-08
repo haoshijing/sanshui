@@ -190,7 +190,8 @@ textarea,  /* 1 */
 /*icon-class*/
 .icon-back:before { content: "\e631"; }
 .icon-success:before { content: "\e637"; }
-
+.icon-aliPay:before { content: "\e676"; color:#1296db;}
+.icon-wxPay:before { content: "\e600"; color:#62b900;}
 
 /**
  * 闭合浮动

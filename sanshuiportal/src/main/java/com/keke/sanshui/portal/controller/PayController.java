@@ -55,11 +55,13 @@ public class PayController {
         modelAttribute.addAttribute("payLinks", payLinks);
         modelAttribute.addAttribute("guid", guid);
         modelAttribute.addAttribute("defaultPick", defaultPick);
+        modelAttribute.addAttribute("defaultPayType", 1);
         return "recharge";
     }
 
     @RequestMapping("/pay/user/sucess")
-    String success() {
+    String success(String orderId) {
+
         return "success";
     }
 
@@ -85,18 +87,22 @@ public class PayController {
     }
 
     @RequestMapping("/doGo51PayPage")
-    void doGo51PayPage(Integer pickId, Integer guid, HttpServletResponse response) {
+    void doGo51PayPage(Integer pickId, Integer guid, String payType,HttpServletResponse response) {
         log.info("doGo51PayPage pickId={},guid = {}", pickId, guid);
         String selfOrderId = guid + "" + System.currentTimeMillis();
         PayLink payLink = payService.getCid(pickId);
-        ZPayRequestVo zPayRequestVo = zPayService.createRequestVo(payLink, selfOrderId);
+        ZPayRequestVo zPayRequestVo = zPayService.createRequestVo(payLink,payType, selfOrderId);
         String url = new StringBuilder(ZPAY_BASE_URL).append("/createOrder.e").append("?")
                 .append(zPayRequestVo.getParamUrl()).toString();
+        Map<String, String> attach = Maps.newHashMap();
+        attach.put("guid", guid.toString());
+        orderService.insertOrder(payLink, attach, selfOrderId);
         try {
             response.sendRedirect(url);
         }catch (Exception e){
             log.error("send to url {} error " , url,e);
         }
+
     }
 
 

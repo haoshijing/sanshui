@@ -20,7 +20,7 @@ public class ZPayService {
     @Value("${zpayKey}")
     private String signKey;
 
-    public ZPayRequestVo createRequestVo(PayLink payLink, String orderId){
+    public ZPayRequestVo createRequestVo(PayLink payLink, String payType,String orderId){
         ZPayRequestVo requestVo = new ZPayRequestVo();
         requestVo.setApp_id(Integer.valueOf(appId));
         requestVo.setPartner_id(partnerId);
@@ -28,9 +28,9 @@ public class ZPayService {
         requestVo.setImei("");
         requestVo.setQn("zyap4107_57089_100");
         requestVo.setOut_trade_no(orderId);
-        requestVo.setWap_type(1);
+        requestVo.setWap_type(Integer.valueOf(payType));
         try {
-            requestVo.setReturn_url(URLEncoder.encode(callbackHost+"/pay/user/sucess","UTF-8"));
+            requestVo.setReturn_url(URLEncoder.encode(callbackHost+"/pay/user/sucess?oderId="+orderId,"UTF-8"));
             requestVo.setSubject(URLEncoder.encode(payLink.getPickCouponVal()+"豆","UTF-8"));
         }catch (Exception e){
 
