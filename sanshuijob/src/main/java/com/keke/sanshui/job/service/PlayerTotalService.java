@@ -6,6 +6,7 @@ import com.keke.sanshui.base.admin.po.PlayerPo;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PlayerService;
 import com.keke.sanshui.base.util.WeekUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @version 2017年11月03日 13:23
  **/
 @Repository
+@Slf4j
 public class PlayerTotalService {
 
     @Autowired
@@ -30,6 +32,7 @@ public class PlayerTotalService {
     private final int BATCH_SIZE = 1000;
 
     public void work(){
+        log.info("开始统计充值额");
         List<PlayerPo> playerPoList = playerService.selectList(0,BATCH_SIZE);
         Integer nextMaxId = 0;
         do{

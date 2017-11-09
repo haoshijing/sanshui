@@ -19,5 +19,5 @@ public interface PlayerRelationDAO {
 
      List<PlayerRelationPo> selectAll();
 
-     Integer queryByAgentAndPlayerGuid(@Param("agentPlayerId") Integer agentIdGuid,@Param("playerId") Integer playerGuid);
+     Integer queryByAgentAndPlayerGuid(@Param("parentPlayerId") Integer agentIdGuid,@Param("playerId") Integer playerGuid);
 }

@@ -95,11 +95,11 @@ alter table t_agent_total add unique index agentId_week_idx(agentId,week);
 drop TABLE IF EXISTS  t_player_relation;
 CREATE  TABLE  t_player_relation(
 id  int primary key auto_increment comment '主键id',
+parentPlayerId int comment '代理id',
 playerId int comment '玩家游戏id',
- agentPlayerId int comment '代理id',
- lastUpdateTime bigint comment '最后的更新时间'
+lastUpdateTime bigint comment '最后的更新时间'
 );
-alter table t_player_relation add  index pid_idx(playerId);
+alter table t_player_relation add  index idx_playerId_parentPlayerId(playerId);
 
 drop TABLE IF EXISTS  t_player;
 create table t_player(

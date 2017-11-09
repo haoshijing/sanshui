@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class PlayerRelationPo {
     private Integer id;
+    private Integer parentPlayerId;
     private Integer playerId;
-    private Integer agentPlayerId;
     private Long lastUpdateTime;
 }

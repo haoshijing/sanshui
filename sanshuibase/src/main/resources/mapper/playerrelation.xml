@@ -20,21 +20,25 @@
         <include refid="tableName"/>
         (
         id,
+        parentPlayerId,
         playerId,
-        agentPlayerId,
         lastUpdateTime
         )
         select
         #{param.id},
+        #{param.parentPlayerId},
         #{param.playerId},
-        #{param.agentPlayerId},
         #{param.lastUpdateTime}
 
     </insert>
 
+    <select id = "selectUnderByPlayerId">
+        select * from t_player_relation where parentPlayerId = #{parentPlayerId}
+    </select>
+
     <select id="queryByAgentAndPlayerGuid" resultType="java.lang.Integer">
         select count(1) from   <include refid="tableName"/>
-        WHERE playerId = #{playerId} and agentPlayerId = #{agentPlayerId}
+        WHERE playerId = #{playerId} and parentPlayerId = #{parentPlayerId}
     </select>
     <select id="selectAll">
         select <include refid="all_columns"/>

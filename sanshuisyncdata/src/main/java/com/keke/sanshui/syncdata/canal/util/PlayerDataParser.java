@@ -3,6 +3,7 @@ package com.keke.sanshui.syncdata.canal.util;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.keke.sanshui.base.admin.po.AgentPo;
 import com.keke.sanshui.base.admin.po.PlayerCouponPo;
 import com.keke.sanshui.base.admin.po.PlayerPo;
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
@@ -35,6 +36,12 @@ public final class PlayerDataParser {
         private PlayerCouponPo playerCouponPo;
     }
 
+    @Data
+    public static class PlayerAndAgentData{
+        private List<PlayerRelationPo> playerRelationPos;
+        private List<AgentPo> agentPos;
+    }
+
     public PlayerInfo parseFromBaseData(Map<String, Object> data) {
         Integer playerId = (Integer) data.get("guid");
         byte[] sourceData = (byte[]) data.get("base_data");
@@ -43,23 +50,24 @@ public final class PlayerDataParser {
         return playerInfo;
     }
 
-    public List<PlayerRelationPo> parseFromWorldData(byte[] sourceData) {
+    public PlayerAndAgentData parseFromWorldData(byte[] sourceData) {
         byte[] deEncryptByteData = deEncrypt(sourceData);
-        List<PlayerRelationPo> playerRelationPos = getPlayRelations(deEncryptByteData);
-        return playerRelationPos;
+        PlayerAndAgentData data = getPlayRelations(deEncryptByteData);
+        return data;
     }
 
-    private List<PlayerRelationPo> getPlayRelations(byte[] deEncryptByteData) {
+    private PlayerAndAgentData getPlayRelations(byte[] deEncryptByteData) {
         List<PlayerRelationPo> relationPos = Lists.newArrayList();
+        List<AgentPo> agentPos = Lists.newArrayList();
         Map<Integer,Set<PlayerRelationPo>> relationMaps = Maps.newHashMap();
         ByteBuf byteBuf = Unpooled.buffer(deEncryptByteData.length);
         byteBuf.writeBytes(deEncryptByteData);
         byte curVersion = byteBuf.readByte();
         int count = byteBuf.readIntLE();
+        PlayerAndAgentData playerAndAgentData = new PlayerAndAgentData();
         byteBuf.writeBytes(deEncryptByteData);
         try {
             while (count-- > 0) {
-                PlayerRelationPo playerRelationPo = new PlayerRelationPo();
                 byte curPlayerVersion = byteBuf.readByte();
                 Long guid = byteBuf.readLongLE();
                 String name = readString(byteBuf);
@@ -71,37 +79,50 @@ public final class PlayerDataParser {
                 int orderCount = byteBuf.readIntLE();
                 while (orderCount-- > 0) {
                     String orderId = readString(byteBuf);
-                    log.info("orderId = {}",orderId);
+                    //log.info("orderId = {}",orderId);
                 }
                 int childrenCount = byteBuf.readIntLE();
                 while (childrenCount-- > 0) {
                     Long childrenId = byteBuf.readLongLE();
-                    log.info("childrenId = {}",childrenId);
+                    //log.info("childrenId = {}",childrenId);
                 }
                 boolean isAgent = byteBuf.readBoolean();
                 if(curPlayerVersion >= 2){
                     byte chooseType = byteBuf.readByte();
                 }
-                if(isAgent) {
-                    playerRelationPo.setAgentPlayerId(guid.intValue());
+                if(!isAgent) {
+                    PlayerRelationPo playerRelationPo = new PlayerRelationPo();
+                    playerRelationPo.setParentPlayerId(invitedGuid.intValue());
                     playerRelationPo.setLastUpdateTime(System.currentTimeMillis());
-                    playerRelationPo.setPlayerId(invitedGuid.intValue());
+                    playerRelationPo.setPlayerId(guid.intValue());
                     Set<PlayerRelationPo> playerRelationPos = relationMaps.get(guid.intValue());
                     if (playerRelationPos == null) {
                         playerRelationPos = Sets.newHashSet();
                         relationMaps.put(guid.intValue(), playerRelationPos);
                     }
                     playerRelationPos.add(playerRelationPo);
+                }else{
+                    AgentPo agentPo = new AgentPo();
+                    agentPo.setInsertTime(System.currentTimeMillis());
+                    agentPo.setLastUpdateTime(System.currentTimeMillis());
+                    agentPo.setStatus(2);
+                    agentPo.setLevel(3);
+                    agentPo.setMemo("");
+                    agentPo.setParentId(0);
+                    agentPo.setPlayerId(guid.intValue());
+                    agentPos.add(agentPo);
                 }
-            }
 
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         relationMaps.forEach((inviteId,relationPoSet)->{
             relationPos.addAll(relationPoSet);
         });
-        return relationPos;
+        playerAndAgentData.setAgentPos(agentPos);
+        playerAndAgentData.setPlayerRelationPos(relationPos);
+        return playerAndAgentData;
     }
 
     private PlayerInfo getPlayerInfo(Integer playerId, byte[] data) {
