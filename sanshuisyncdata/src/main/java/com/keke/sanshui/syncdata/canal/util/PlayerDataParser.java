@@ -82,15 +82,17 @@ public final class PlayerDataParser {
                 if(curPlayerVersion >= 2){
                     byte chooseType = byteBuf.readByte();
                 }
-                playerRelationPo.setAgentPlayerId(invitedGuid.intValue());
-                playerRelationPo.setLastUpdateTime(System.currentTimeMillis());
-                playerRelationPo.setPlayerId(guid.intValue());
-                Set<PlayerRelationPo> playerRelationPos =relationMaps.get(invitedGuid.intValue());
-                if(playerRelationPos == null){
-                    playerRelationPos = Sets.newHashSet();
-                    relationMaps.put(invitedGuid.intValue(),playerRelationPos);
+                if(isAgent) {
+                    playerRelationPo.setAgentPlayerId(guid.intValue());
+                    playerRelationPo.setLastUpdateTime(System.currentTimeMillis());
+                    playerRelationPo.setPlayerId(invitedGuid.intValue());
+                    Set<PlayerRelationPo> playerRelationPos = relationMaps.get(guid.intValue());
+                    if (playerRelationPos == null) {
+                        playerRelationPos = Sets.newHashSet();
+                        relationMaps.put(guid.intValue(), playerRelationPos);
+                    }
+                    playerRelationPos.add(playerRelationPo);
                 }
-                playerRelationPos.add(playerRelationPo);
             }
 
         } catch (Exception e) {
