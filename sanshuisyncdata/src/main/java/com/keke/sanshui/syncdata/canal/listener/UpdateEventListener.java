@@ -68,7 +68,7 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
                 });
             }
         }catch (Exception e){
-
+            log.error("",e);
         }
     }
 
@@ -109,7 +109,7 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("",e);
         }
     }
 }
