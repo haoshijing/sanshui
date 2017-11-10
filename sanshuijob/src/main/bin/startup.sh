@@ -15,8 +15,8 @@ logback_configurationFile=$base/conf/logback.xml
 export LANG=en_US.UTF-8
 export BASE=$base
 
-if [ -f $base/bin/canal.pid ] ; then
-	echo "found canal.pid , Please run stop.sh first ,then startup.sh" 2>&2
+if [ -f $base/bin/job.pid ] ; then
+	echo "found sanshuijob.pid , Please run stop.sh first ,then startup.sh" 2>&2
     exit 1
 fi
 
@@ -78,7 +78,7 @@ else
 fi
 
 JAVA_OPTS=" $JAVA_OPTS -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8"
-CANAL_OPTS="-DappName=otter-canal -Dlogback.configurationFile=$logback_configurationFile -Dcanal.conf=$canal_conf"
+CANAL_OPTS="-Dlogback.configurationFile=$logback_configurationFile -Dcanal.conf=$canal_conf"
 
 if [ -e $canal_conf -a -e $logback_configurationFile ]
 then 
@@ -94,8 +94,8 @@ then
 	echo LOG CONFIGURATION : $logback_configurationFile
 	echo canal conf : $canal_conf 
 	echo CLASSPATH :$CLASSPATH
-	$JAVA $JAVA_OPTS $JAVA_DEBUG_OPT $CANAL_OPTS -classpath .:$CLASSPATH com.alibaba.otter.canal.deployer.CanalLauncher 1>>$base/logs/canal/canal.log 2>&1 &
-	echo $! > $base/bin/canal.pid 
+	$JAVA $JAVA_OPTS $JAVA_DEBUG_OPT $CANAL_OPTS -classpath .:$CLASSPATH com.keke.sanshui.job.JobMain 1>>$base/logs/canal/canal.log 2>&1 &
+	echo $! > $base/bin/job.pid
 	
 	echo "cd to $current_path for continue"
   	cd $current_path
