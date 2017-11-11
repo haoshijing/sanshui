@@ -2,7 +2,9 @@ package com.keke.sanshui.syncdata.canal.listener;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.google.common.collect.Maps;
-import com.keke.sanshui.base.admin.po.PlayerPo;
+import com.keke.sanshui.base.admin.dao.AgentDAO;
+import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
+import com.keke.sanshui.base.admin.po.AgentPo;
 import com.keke.sanshui.base.admin.service.PlayerService;
 import com.keke.sanshui.syncdata.canal.event.UpdateCanalEvent;
 import com.keke.sanshui.syncdata.canal.util.PlayerDataParser;
@@ -10,12 +12,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Repository;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +28,12 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
 
     @Autowired
     PlayerService playerService;
+
+    @Autowired
+    private AgentDAO agentDAO;
+
+    @Autowired
+    private PlayerRelationDAO playerRelationDAO;
 
     @Override
     public void onApplicationEvent(UpdateCanalEvent event) {
@@ -64,7 +70,20 @@ public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent
                         char ch = relationDatas.charAt(i);
                         byteBuf.writeBytes(new byte[]{(byte)ch});
                     }
-                    parser.parseFromWorldData(byteBuf.array());
+                   PlayerDataParser.PlayerAndAgentData playerAndAgentData = parser.parseFromWorldData(byteBuf.array());
+                    playerAndAgentData.getPlayerRelationPos().forEach(playerRelationPo -> {
+                        boolean isInDb = playerRelationDAO.queryByAgentAndPlayerGuid(playerRelationPo.getPlayerId().intValue(),
+                                playerRelationPo.getPlayerId().intValue()) > 0;
+                        if (!isInDb) {
+                            playerRelationDAO.insertRelation(playerRelationPo);
+                        }
+                    });
+                    playerAndAgentData.getAgentPos().forEach(agentPo -> {
+                        AgentPo queryPo = agentDAO.selectById(agentPo.getPlayerId());
+                        if(queryPo == null){
+                            agentDAO.insert(agentPo);
+                        }
+                    });
                 });
             }
         }catch (Exception e){
