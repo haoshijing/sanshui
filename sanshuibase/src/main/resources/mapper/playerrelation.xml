@@ -32,7 +32,7 @@
 
     </insert>
 
-    <select id = "selectUnderByPlayerId">
+    <select id = "selectUnderByPlayerId" resultType="PlayerRelationPo">
         select * from t_player_relation where parentPlayerId = #{parentPlayerId}
     </select>
 

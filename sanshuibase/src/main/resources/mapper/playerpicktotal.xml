@@ -48,7 +48,7 @@
         where id = #{param.id}
     </update>
     
-    <select id="sumPickUp" parameterType="java.util.List">
+    <select id="sumPickUp" parameterType="java.util.List" resultType="java.lang.Long">
         select sum(totalMoney) from <include refid="tableName"/>
         where week = #{week}
         <if test = "playerIds.size() > 0">
