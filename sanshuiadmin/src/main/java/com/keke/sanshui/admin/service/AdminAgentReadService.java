@@ -62,7 +62,7 @@ public class AdminAgentReadService {
                     if(playerPickTotalPo != null) {
                         agentVo.setAgentTotalPickUp(playerPickTotalPo.getTotalMoney() / 100);
                     }else{
-                        agentVo.setAgentTotalPickUp(0l);
+                        agentVo.setAgentTotalPickUp(0L);
                     }
                     AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentVo.getGameId(), week);
                     if(agentPickTotalPo != null) {

@@ -2,6 +2,7 @@ package com.keke.sanshui.admin.controller;
 
 import com.keke.sanshui.admin.response.ApiResponse;
 import com.keke.sanshui.admin.response.user.UserDataResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/user")
+@Slf4j
 public class UserController {
 
     @RequestMapping("/info")
@@ -23,7 +25,7 @@ public class UserController {
         response.setRole("admin");
         response.setIntroduction("");
         response.setName(name);
-
+        log.info("token = {}",token);
         return new ApiResponse<>(response);
     }
 

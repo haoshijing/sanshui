@@ -90,12 +90,16 @@ public class FullSyncDataService {
         datas.forEach(data -> {
             BigInteger playerId = (BigInteger) data.get(PLAYER_ID);
             data.put(PLAYER_ID, playerId.intValue());
-            if (!playerService.checkPlayerExsist(playerId.intValue())) {
-                PlayerDataParser.PlayerInfo playerInfo = parser.parseFromBaseData(data);
-                if (playerInfo != null) {
-                    playerService.insertPlayer(playerInfo.getPlayerPo());
-                    playerService.insertPlayerCoupon(playerInfo.getPlayerCouponPo());
+            try {
+                if (!playerService.checkPlayerExsist(playerId.intValue())) {
+                    PlayerDataParser.PlayerInfo playerInfo = parser.parseFromBaseData(data);
+                    if (playerInfo != null) {
+                        playerService.insertPlayer(playerInfo.getPlayerPo());
+                        playerService.insertPlayerCoupon(playerInfo.getPlayerCouponPo());
+                    }
                 }
+            }catch (Exception e){
+                e.printStackTrace();
             }
         });
     }

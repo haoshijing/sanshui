@@ -6,7 +6,7 @@
         *
     </sql>
     <sql id = "tableName">
-        t_player_pick_total
+        t_agent_total
     </sql>
     <select id="selectByAgentId" resultType="AgentPickTotalPo" >
         <!-- 具体的sql -->

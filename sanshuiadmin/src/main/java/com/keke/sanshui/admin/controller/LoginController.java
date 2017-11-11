@@ -20,11 +20,6 @@ public class LoginController {
 
     @Autowired
     private AdminService adminService;
-    @RequestMapping("/test")
-    @ResponseBody
-    public String test(){
-        return "test";
-    }
 
     @RequestMapping("/login")
     @ResponseBody

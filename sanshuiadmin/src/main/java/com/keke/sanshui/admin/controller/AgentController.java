@@ -1,14 +1,17 @@
 package com.keke.sanshui.admin.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.keke.sanshui.admin.request.AgentRequestVo;
 import com.keke.sanshui.admin.request.QueryAgentPo;
 import com.keke.sanshui.admin.response.ApiResponse;
+import com.keke.sanshui.admin.response.RetCode;
 import com.keke.sanshui.admin.service.AdminAgentReadService;
 import com.keke.sanshui.admin.service.AdminAgentWriteService;
 import com.keke.sanshui.admin.vo.AgentVo;
 import com.keke.sanshui.base.admin.po.AgentPo;
 import com.keke.sanshui.base.util.WeekUtil;
+import com.sun.org.apache.bcel.internal.generic.RET;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,7 +35,12 @@ public class AgentController{
     @ResponseBody
     public ApiResponse<List<AgentVo>> queryList(QueryAgentPo queryAgentPo){
         Integer week = WeekUtil.getCurrentWeek();
-        return new ApiResponse<>(adminAgentReadService.selectAgentVoList(queryAgentPo));
+        try {
+            return new ApiResponse<>(adminAgentReadService.selectAgentVoList(queryAgentPo));
+        }catch (Exception e){
+            log.error("{}",e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(), Lists.newArrayList());
+        }
     }
 
     @RequestMapping("/agent/insert")
