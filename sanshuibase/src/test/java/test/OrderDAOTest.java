@@ -3,7 +3,6 @@ package test;
 import com.google.common.collect.Lists;
 import com.keke.sanshui.base.admin.dao.OrderDAO;
 import com.keke.sanshui.base.admin.po.order.Order;
-import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.po.order.QueryOrderPo;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.util.WeekUtil;
@@ -56,17 +55,22 @@ public class OrderDAOTest {
     }
 
     @Test
-    public void testSelectList(){
-        QueryOrderPo orderPo = new QueryOrderPo();
-        orderPo.setClientGuids(null);
-        orderPo.setOrderStatus(null);
-        orderPo.setStartTimestamp(null);
-        orderPo.setSelfOrderNo(null);
-        List<Order> orderList = orderDAO.selectList(orderPo);
-        Assert.assertTrue(orderList.size() == 3);
-    }
-    @Test
     public void testUpdateSend() {
 
+    }
+
+
+    @Test
+    public void testSelectList(){
+        QueryOrderPo queryOrderPo = new QueryOrderPo();
+        queryOrderPo.setOffset(1);
+        queryOrderPo.setLimit(20);
+        queryOrderPo.setClientGuids(Lists.newArrayList(1002156));
+        queryOrderPo.setOrderStatus(2);
+        List<Order> orderList = orderDAO.selectList(queryOrderPo);
+
+        orderList.forEach(order -> {
+            System.out.println(order.getSelfOrderNo());
+        });
     }
 }

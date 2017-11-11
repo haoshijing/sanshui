@@ -24,7 +24,7 @@ public class TotalLauncherService {
         executorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                playerTotalService.work();
+               //playerTotalService.work();
                 agentTotalService.work();
             }
         }, 1, 60, TimeUnit.SECONDS);

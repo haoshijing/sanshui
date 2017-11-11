@@ -4,10 +4,11 @@ import com.keke.sanshui.base.admin.dao.AgentPickTotalDAO;
 import com.keke.sanshui.base.admin.dao.PlayerPickTotalDAO;
 import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
 import com.keke.sanshui.base.admin.po.AgentPickTotalPo;
-import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
+import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.service.AgentService;
 import com.keke.sanshui.base.util.WeekUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * @version 2017年11月03日 12:54
  **/
 @Service
+@Slf4j
 public class AgentTotalService {
 
     @Autowired
@@ -35,6 +37,7 @@ public class AgentTotalService {
     private AgentPickTotalDAO agentPickTotalDAO;
 
     void work() {
+        log.info("开始进行代理玩家的总充值统计{}",System.currentTimeMillis());
         int week = WeekUtil.getCurrentWeek();
         List<AgentPo> agentPoList = agentService.selectAll();
         agentPoList.stream().forEach(agentPo -> {
@@ -74,6 +77,4 @@ public class AgentTotalService {
         });
 
     }
-
-
 }

@@ -86,7 +86,8 @@ create table t_agent_total(
 id  int primary key auto_increment comment '主键id',
 agentId int comment '代理id',
  week int comment '所在周',
- playerTotal bigint comment '下属总充值'
+ totalMoney bigint comment '下属总充值',
+ lastUpdateTime biginit comment '最后更新时间'
 );
 alter table t_agent_total add unique index agentId_week_idx(agentId,week);
 /**

@@ -50,7 +50,11 @@
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <!-- 配置数据库表对应的java实体类 -->
+<<<<<<< b840df4c9e00a12e38e502c26442d4e7ead23540
         <property name="typeAliasesPackage" value="com.keke.sanshui.base.admin.po,com.keke.sanshui.base.admin.po.agent,com.keke.sanshui.base.admin.po.order" />
+=======
+        <property name="typeAliasesPackage" value="com.keke.sanshui.base.admin.po,com.keke.sanshui.base.admin.po.order" />
+>>>>>>> 后台统计代码功能
         <!-- 自动扫描entity目录, 省掉Configuration.xml里的手工配置 -->
         <property name="mapperLocations" value="classpath:mapper/*.xml" />
     </bean>

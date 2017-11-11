@@ -52,7 +52,7 @@
         select sum(totalMoney) from <include refid="tableName"/>
         where week = #{week}
         <if test = "playerIds.size() > 0">
-            And playerId in
+            AND playerId in
         <foreach collection="playerIds" item="playerId" separator="," open="(" close=")">
             #{playerId}
         </foreach>

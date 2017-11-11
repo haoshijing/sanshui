@@ -61,7 +61,7 @@ public class OrderService {
         order.setSelfOrderNo(selfOrderId);
         order.setMoney(payLink.getPickCouponVal().toString());
         order.setTitle(payLink.getPickCouponVal()+"豆");
-        order.setPrice(String.valueOf(payLink.getPickRmb()*100));
+        order.setPrice(String.valueOf(payLink.getPickRmb()));
         order.setOrderStatus(1);
         order.setSendStatus(SendStatus.Not_Send.getCode());
         order.setInsertTime(System.currentTimeMillis());

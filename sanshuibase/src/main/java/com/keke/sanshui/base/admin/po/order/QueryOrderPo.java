@@ -1,14 +1,19 @@
 package com.keke.sanshui.base.admin.po.order;
 
+import com.google.common.collect.Lists;
 import lombok.Data;
 
 import java.util.List;
 
+/**
+ * @author haoshijing
+ * @version 2017年11月11日 14:53
+ **/
 @Data
-public class QueryOrderPo  extends  Order{
-    private List<Integer> clientGuids;
-    private Integer offset = 0;
+public class QueryOrderPo extends Order {
     private Integer limit = 20;
-    private Long startTimestamp;
-    private Long endTimestamp;
+    private List<Integer> clientGuids = Lists.newArrayList();
+    private Long startTimeStamp;
+    private Long endTimeStamp;
+    private Integer offset;
 }

@@ -51,10 +51,15 @@ public final class WeekUtil {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.WEEK_OF_MONTH, cal.get(Calendar.WEEK_OF_MONTH)+1);
         cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        cal.set(Calendar.WEEK_OF_MONTH,cal.get(Calendar.WEEK_OF_MONTH)+1);
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
         return cal.getTimeInMillis();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getWeekStartTimestamp());
     }
 
 }

@@ -8,27 +8,6 @@
     <sql id="tableName">
         t_order
     </sql>
-
-    <sql id="query_order_condtion">
-        <where>
-            <if test="param.orderStatus != null">
-                AND orderStatus = #{param.orderStatus}
-            </if>
-            <if test="param.clientGuids != null and param.clientGuids.size() > 0">
-                AND clientGuid in
-                <foreach collection="param.clientGuids" close=")" open="(" item="guid" separator=",">
-                    #{guid}
-                </foreach>
-            </if>
-            <if test="param.selfOrderNo != null and param.selfOrderNo != ''">
-                AND selfOrderNo = #{param.selfOrderNo}
-            </if>
-
-            <if test="param.startTimestamp != null and param.endTimestamp != null">
-                AND lastUpdateTime BETWEEN #{param.startTime} AND #{param.endTimestamp}
-            </if>
-        </where>
-    </sql>
     <select id="getByOrderId" resultType="Order" parameterType="java.lang.String">
         <!-- 具体的sql -->
         SELECT
@@ -37,6 +16,27 @@
         <include refid="tableName"/>
         WHERE selfOrderNo = #{selfOrderNo}
     </select>
+
+    <sql id = "selectListCondition">
+        <if test="param.selfOrderNo != null">
+            AND selfOrderNo  = #{param.selfOrderNo}
+        </if>
+
+        <if test = "param.clientGuids != null and param.clientGuids.size() > 0">
+            AND clientGuid in
+            <foreach collection="param.clientGuids" item="guid" close=")" open="(" separator=",">
+                #{guid}
+            </foreach>
+        </if>
+
+        <if test = "param.orderStatus != null">
+            AND orderStatus = #{param.orderStatus}
+        </if>
+
+        <if test = "param.startTimeStamp != null and param.endTimeStamp != null">
+            AND lastUpdateTime BETWEEN #{param.startTimeStamp } AND #{param.endTimeStamp }
+        </if>
+    </sql>
 
     <insert id="insert" parameterType="Order">
         INSERT INTO t_order(
@@ -106,13 +106,16 @@
 
     <select id="selectList" parameterType="QueryOrderPo" resultType="Order">
         select * from t_order
-        <include refid="query_order_condtion"></include>
-        order by id desc
+        <where>
+          <include refid="selectListCondition"></include>
+        </where>
         limit #{param.offset} , #{param.limit}
     </select>
 
-    <select id="queryCount" parameterType="QueryOrderPo" resultType="java.lang.Long">
+    <select id = "selectCount" parameterType="QueryOrderPo" resultType="java.lang.Long">
         select count(1) from t_order
-        <include refid="query_order_condtion"></include>
+        <where>
+            <include refid="selectListCondition"></include>
+        </where>
     </select>
 </mapper>

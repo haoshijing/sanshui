@@ -89,7 +89,6 @@ public class GatewayController {
                             orderService.updateOrder(updateSendOrder);
                         }
 
-
                         handlerResponseOk(response);
                     }
                 }

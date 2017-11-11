@@ -37,9 +37,15 @@ public class PlayerTotalService {
         long weekEndTimestamp = WeekUtil.getWeekEndTimestamp();
         List<PlayerPo> playerPoList = playerService.selectList(0,BATCH_SIZE);
         Integer nextMaxId = 0;
+        long weekStartTimestamp = WeekUtil.getWeekStartTimestamp();
+        long weekEndTimestamp = WeekUtil.getWeekEndTimestamp();
         do{
-            playerPoList.forEach(playerPo -> {
+            playerPoList.stream().forEach(playerPo -> {
                 Integer playerId = playerPo.getPlayerId();
+<<<<<<< b840df4c9e00a12e38e502c26442d4e7ead23540
+=======
+
+>>>>>>> 后台统计代码功能
                 int week = WeekUtil.getCurrentWeek();
                 Long sumPickUp = orderService.queryPickupSum(playerId,weekStartTimestamp,weekEndTimestamp);
                 if(sumPickUp != null && sumPickUp > 0){
@@ -66,6 +72,10 @@ public class PlayerTotalService {
                 nextMaxId = playerPoList.get(playerPoList.size()-1).getId();
             }
         }while (playerPoList.size() != 0);
+<<<<<<< b840df4c9e00a12e38e502c26442d4e7ead23540
         log.info("结束统计充值额");
+=======
+        log.info("统计结束");
+>>>>>>> 后台统计代码功能
     }
 }
