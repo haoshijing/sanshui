@@ -23,7 +23,7 @@ public class AdminService implements ApplicationContextAware {
 
     private ApplicationContext ctx;
 
-    public boolean checkUser(String userName,String password){
+    public boolean checkUser(String userName,String password,String clientIp){
         OperLogPo operLogPo = new OperLogPo();
         operLogPo.setInsertTime(System.currentTimeMillis());
         operLogPo.setOperType(4);
@@ -36,7 +36,7 @@ public class AdminService implements ApplicationContextAware {
             checkRet =  StringUtils.equals(dbPassword,userPassword);
         }
         String loginRet =  checkRet?"成功":"失败";
-        operLogPo.setMark("管理员进行登录,登陆结果:"+loginRet);
+        operLogPo.setMark("管理员进行登录,登录ip:"+clientIp+"登陆结果:"+loginRet);
         ctx.publishEvent(new OperLogEvent(ctx,operLogPo));
         return checkRet;
     }

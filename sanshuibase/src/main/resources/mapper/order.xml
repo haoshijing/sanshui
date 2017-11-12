@@ -8,6 +8,27 @@
     <sql id="tableName">
         t_order
     </sql>
+
+    <sql id="query_order_condtion">
+        <where>
+            <if test="param.orderStatus != null">
+                AND orderStatus = #{param.orderStatus}
+            </if>
+            <if test="param.clientGuids != null and param.clientGuids.size() > 0">
+                AND clientGuid in
+                <foreach collection="param.clientGuids" close=")" open="(" item="guid" separator=",">
+                    #{guid}
+                </foreach>
+            </if>
+            <if test="param.selfOrderNo != null and param.selfOrderNo != ''">
+                AND selfOrderNo = #{param.selfOrderNo}
+            </if>
+
+            <if test="param.startTimestamp != null and param.endTimestamp != null">
+                AND lastUpdateTime BETWEEN #{param.startTime} AND #{param.endTimestamp}
+            </if>
+        </where>
+    </sql>
     <select id="getByOrderId" resultType="Order" parameterType="java.lang.String">
         <!-- 具体的sql -->
         SELECT
@@ -54,7 +75,7 @@
             </if>
             <if test="order.orderStatus != null ">
                 orderStatus = #{order.orderStatus},
-             </if>
+            </if>
             <if test="order.payType != null">
                 payType = #{order.payType},
             </if>
@@ -81,5 +102,17 @@
         select sum(price) from t_order
         where clientGuid = #{guid} and orderStatus = 2
         and lastUpdateTime BETWEEN #{startTimeStamp} AND #{endTimestamp}
+    </select>
+
+    <select id="selectList" parameterType="QueryOrderPo" resultType="Order">
+        select * from t_order
+        <include refid="query_order_condtion"></include>
+        order by id desc
+        limit #{param.offset} , #{param.limit}
+    </select>
+
+    <select id="queryCount" parameterType="QueryOrderPo" resultType="java.lang.Long">
+        select count(1) from t_order
+        <include refid="query_order_condtion"></include>
     </select>
 </mapper>

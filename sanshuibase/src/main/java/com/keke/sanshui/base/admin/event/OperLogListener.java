@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Repository;
 
 @Slf4j
+@Repository
 public class OperLogListener implements ApplicationListener<OperLogEvent> {
 
     @Autowired

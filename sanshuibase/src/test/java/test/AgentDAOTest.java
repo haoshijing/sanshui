@@ -1,7 +1,8 @@
 package test;
 
 import com.keke.sanshui.base.admin.dao.AgentDAO;
-import com.keke.sanshui.base.admin.po.AgentPo;
+import com.keke.sanshui.base.admin.po.agent.AgentPo;
+import com.keke.sanshui.base.admin.po.agent.AgentQueryPo;
 import com.keke.sanshui.base.admin.service.AgentService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,6 +47,15 @@ public class AgentDAOTest {
         agentDAO.insert(agentPo);
 
         Assert.assertTrue(agentPo.getId() > 0);
+    }
+
+    @Test
+    public void testList(){
+        AgentQueryPo queryPo = new AgentQueryPo();
+        queryPo.setLevel(3);
+        queryPo.setStatus(2);
+
+        Assert.assertTrue(agentDAO.selectList(queryPo).size() > 0);
     }
 }
 

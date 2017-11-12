@@ -17,14 +17,13 @@
         WHERE id = #{id}
     </select>
 
-    <insert id="insert" parameterType="OperLogPo">
+    <insert id="insertLog" parameterType="OperLogPo">
         INSERT INTO t_oper_log
         (
           id,
           operType,
           operTarget ,
           mark,
-          openUserId,
           insertTime
           )
          select
@@ -32,21 +31,26 @@
           #{log.operType},
           #{log.operTarget} ,
           #{log.mark} ,
-          #{log.openUserId },
           #{log.insertTime}
 
     </insert>
-
+    <sql id = "queryWhere">
+        <where>
+            <if test = "param.operType != null">
+                AND operType = #{param.operType}
+            </if>
+        </where>
+    </sql>
 
     <select id = "selectList" parameterType="OperLogPo" resultType="OperLogPo">
         SELECT
         <include refid="all_columns"/>
         FROM
         <include refid="tableName"/>
-        <where>
-            <if test = "operTarget != null">
-                AND operTarget = #{log.operTarget}
-            </if>
-        </where>
+
+        <include refid="queryWhere"/>
+
+        limit #{param.offset},#{param.limit}
+
     </select>
 </mapper>

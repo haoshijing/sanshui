@@ -20,25 +20,89 @@
         <include refid="tableName"/>
         where playerId = #{playerId}
     </select>
-
-    <select id="selectList" parameterType="AgentPo" resultType="AgentPo">
+    <sql id="queryWhere">
+        <if test = "param.agentName != null and param.agentName != ''">
+            AND  agentName  like concat('%',concat(#{param.agentName},'%'))
+        </if>
+        <if test = "param.agentWeChartNo != null and param.agentWeChartNo != ''">
+            AND  agentWeChartNo  like concat('%',concat(#{param.agentWeChartNo},'%'))
+        </if>
+        <if test = "param.agentNickName != null and param.agentNickName != ''">
+            AND  agentNickName  like concat('%',concat(#{param.agentNickName},'%'))
+        </if>
+        <if test ="param.level != null">
+            AND level = #{param.level}
+        </if>
+        <if test = "param.playerId != null and param.playerId > 0">
+            AND  playerId  = #{param.playerId}
+        </if>
+        <if test = "param.parentId != null">
+            AND parentId = #{param.parentId}
+        </if>
+        <if test ="param.status != null">
+            AND status = #{param.status}
+        </if>
+    </sql>
+    <select id="selectList" parameterType="AgentQueryPo" resultType="AgentPo">
         <!-- 具体的sql -->
         SELECT <include refid="all_columns"/> FROM
         <include refid="tableName"/>
         <where>
-            1 = 1
-            <if test = "agent.agentName != null and agent.agentName != ''">
-               AND  agentName = #{agent.agentName}
-            </if>
-            <if test ="agent.level != null">
-                AND level = #{agent.level}
-            </if>
-            <if test = "agent.parentId != null">
-                AND parentId = #{agent.parentId}
-            </if>
+          <include refid="queryWhere"></include>
+        </where>
+        order by id desc
+        limit #{param.offset},#{param.limit}
+    </select>
+
+    <select id="selectCount" parameterType="AgentQueryPo" resultType="java.lang.Long">
+        <!-- 具体的sql -->
+        SELECT count(1) FROM
+        <include refid="tableName"/>
+        <where>
+            <include refid="queryWhere"></include>
         </where>
     </select>
 
+    <update id = "updateAgent" parameterType="AgentPo">
+      UPDATE  t_agent
+      <set>
+          <if test = "param.agentName != null and param.agentName != ''">
+              agentName = #{param.agentName},
+          </if>
+          <if test = "param.agentNickName != null and param.agentNickName != ''">
+              agentNickName = #{param.agentNickName},
+          </if>
+          <if test = "param.agentWeChartNo != null and param.agentWeChartNo != ''">
+              agentWeChartNo = #{param.agentWeChartNo},
+          </if>
+          <if test = "param.level != null and param.level != ''">
+              level = #{param.level},
+          </if>
+          <if test = "param.password != null and param.password != ''">
+              password = #{param.password},
+          </if>
+          <if test = "param.status != null">
+              status = #{param.status},
+          </if>
+          <if test = "param.parentId != null">
+              parentId = #{param.parentId},
+          </if>
+          <if test = "param.lastUpdateTime != null">
+              lastUpdateTime = #{param.lastUpdateTime},
+          </if>
+          <if test = "param.memo != null">
+              memo = #{param.memo},
+          </if>
+      </set>
+        <where>
+        <if test ="param.playerId != null">
+          playerId = #{param.playerId}
+        </if>
+        <if test = "param.id != null">
+            id  = #{param.id}
+        </if>
+        </where>
+    </update>
     <insert id="insert" parameterType="AgentPo" useGeneratedKeys="true" keyProperty="agent.id">
         Insert into t_agent
         (

@@ -1,7 +1,8 @@
 package com.keke.sanshui.base.admin.dao;
 
 
-import com.keke.sanshui.base.admin.po.Order;
+import com.keke.sanshui.base.admin.po.order.Order;
+import com.keke.sanshui.base.admin.po.order.QueryOrderPo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -17,4 +18,8 @@ public interface OrderDAO {
      List<Order> queryNotSendList();
 
     Long queryPickupSum(@Param("guid") Integer guid, @Param("startTimeStamp") Long startTimeStamp,@Param("endTimestamp") Long endTimestamp);
+
+    List<Order> selectList(@Param("param")QueryOrderPo queryOrderPo);
+
+    Long queryCount(@Param("param")QueryOrderPo queryOrderPo);
 }

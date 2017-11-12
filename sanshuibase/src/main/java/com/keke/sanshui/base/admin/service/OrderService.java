@@ -2,8 +2,9 @@ package com.keke.sanshui.base.admin.service;
 
 
 import com.keke.sanshui.base.admin.dao.OrderDAO;
-import com.keke.sanshui.base.admin.po.Order;
+import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.po.PayLink;
+import com.keke.sanshui.base.admin.po.order.QueryOrderPo;
 import com.keke.sanshui.base.enums.SendStatus;
 
 import com.keke.sanshui.base.vo.PayVo;
@@ -76,5 +77,12 @@ public class OrderService {
 
     public Long queryPickupSum(Integer guid,Long startTimeStamp,Long endTimestamp){
         return orderDAO.queryPickupSum(guid,startTimeStamp,endTimestamp);
+    }
+
+    public List<Order> selectList(QueryOrderPo queryOrderPo) {
+        return orderDAO.selectList(queryOrderPo);
+    }
+    public Long selectCount(QueryOrderPo queryOrderPo){
+        return orderDAO.queryCount(queryOrderPo);
     }
 }

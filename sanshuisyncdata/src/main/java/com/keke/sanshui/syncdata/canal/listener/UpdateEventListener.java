@@ -4,7 +4,7 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.dao.AgentDAO;
 import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
-import com.keke.sanshui.base.admin.po.AgentPo;
+import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.service.PlayerService;
 import com.keke.sanshui.syncdata.canal.event.UpdateCanalEvent;
 import com.keke.sanshui.syncdata.canal.util.PlayerDataParser;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Map;
 
-@Repository
+//@Repository
 @Slf4j
 public class UpdateEventListener implements ApplicationListener<UpdateCanalEvent> {
 

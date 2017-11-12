@@ -1,4 +1,4 @@
-package com.keke.sanshui.base.admin.po;
+package com.keke.sanshui.base.admin.po.order;
 
 import lombok.Data;
 

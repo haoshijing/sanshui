@@ -17,7 +17,7 @@ import java.util.Map;
 
 
 @Slf4j
-@Repository
+//@Repository
 public class InsertEventListener implements ApplicationListener<InsertCanalEvent> {
 
     @Autowired

@@ -3,15 +3,13 @@ package com.keke.sanshui.syncdata.canal.full;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.keke.sanshui.base.admin.dao.AgentDAO;
 import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
-import com.keke.sanshui.base.admin.po.AgentPo;
-import com.keke.sanshui.base.admin.po.PlayerPo;
-import com.keke.sanshui.base.admin.po.PlayerRelationPo;
+import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.service.PlayerService;
 import com.keke.sanshui.syncdata.canal.util.PlayerDataParser;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,6 +19,9 @@ import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 @Slf4j
@@ -39,6 +40,9 @@ public class FullSyncDataService {
 
     @Autowired
     private AgentDAO agentDAO;
+
+
+    private ScheduledExecutorService scheduledExecutorService;
 
     @Value("${sync.db.ip}")
     private String syncDbIp;
@@ -59,7 +63,18 @@ public class FullSyncDataService {
     }
 
     @EventListener
-    public void syncRelation(ContextStartedEvent event) {
+    public void startWork(ContextStartedEvent event){
+        scheduledExecutorService = Executors.newScheduledThreadPool(1,new DefaultThreadFactory("SyncDataThread"));
+        scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                syncCharacterData();
+                syncRelation();
+            }
+        },1000,60000, TimeUnit.MILLISECONDS);
+    }
+
+    public void syncRelation() {
         String sql = " select data from world_records where type =1 ";
         List<Map<String, Object>> datas = jdbcTemplate.queryForList(sql);
         datas.forEach(data -> {
@@ -82,7 +97,6 @@ public class FullSyncDataService {
         });
     }
 
-    @PostConstruct
     public void syncCharacterData() {
         String sql = " select * from characters";
         List<Map<String, Object>> datas = jdbcTemplate.queryForList(sql);

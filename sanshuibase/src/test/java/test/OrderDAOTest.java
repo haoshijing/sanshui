@@ -1,8 +1,10 @@
 package test;
 
+import com.google.common.collect.Lists;
 import com.keke.sanshui.base.admin.dao.OrderDAO;
-import com.keke.sanshui.base.admin.po.Order;
-import com.keke.sanshui.base.admin.po.Order;
+import com.keke.sanshui.base.admin.po.order.Order;
+import com.keke.sanshui.base.admin.po.order.Order;
+import com.keke.sanshui.base.admin.po.order.QueryOrderPo;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.util.WeekUtil;
 import org.junit.Assert;
@@ -11,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)  //使用junit4进行测试
 @ContextConfiguration({"classpath:application-context.xml"})
@@ -36,6 +40,7 @@ public class OrderDAOTest {
         order.setSendStatus(1);
         order.setInsertTime(System.currentTimeMillis());
         int insertRet = orderDAO.insert(order);
+
         Assert.assertTrue(insertRet == 1);
     }
 
@@ -50,6 +55,16 @@ public class OrderDAOTest {
         Assert.assertTrue(orderService.queryOrderByNo("YJ8154545785154") != null);
     }
 
+    @Test
+    public void testSelectList(){
+        QueryOrderPo orderPo = new QueryOrderPo();
+        orderPo.setClientGuids(null);
+        orderPo.setOrderStatus(null);
+        orderPo.setStartTimestamp(null);
+        orderPo.setSelfOrderNo(null);
+        List<Order> orderList = orderDAO.selectList(orderPo);
+        Assert.assertTrue(orderList.size() == 3);
+    }
     @Test
     public void testUpdateSend() {
 

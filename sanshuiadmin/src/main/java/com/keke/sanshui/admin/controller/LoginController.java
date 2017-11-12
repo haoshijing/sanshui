@@ -30,7 +30,8 @@ public class LoginController {
                 StringUtils.isEmpty(loginDataRequest.getPassword())){
             return new ApiResponse<>(RetCode.PARAM_ERROR,"参数错误",loginResponse);
         }
-        Boolean check =   adminService.checkUser(loginDataRequest.getName(),loginDataRequest.getPassword());
+        String clientIp = request.getRemoteAddr();
+        Boolean check =   adminService.checkUser(loginDataRequest.getName(),loginDataRequest.getPassword(),clientIp);
         loginResponse.setSucc(check);
         if(check) {
             String token = UUID.randomUUID().toString().replace("-","");

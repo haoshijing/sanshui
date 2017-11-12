@@ -3,7 +3,7 @@ package com.keke.sanshui.syncdata.canal.util;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.keke.sanshui.base.admin.po.AgentPo;
+import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.po.PlayerCouponPo;
 import com.keke.sanshui.base.admin.po.PlayerPo;
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
@@ -107,6 +107,8 @@ public final class PlayerDataParser {
                     agentPo.setLastUpdateTime(System.currentTimeMillis());
                     agentPo.setStatus(2);
                     agentPo.setLevel(3);
+                    agentPo.setAgentWeChartNo(name);
+                    agentPo.setAgentNickName(otherName);
                     agentPo.setMemo("");
                     agentPo.setParentId(0);
                     agentPo.setPlayerId(guid.intValue());

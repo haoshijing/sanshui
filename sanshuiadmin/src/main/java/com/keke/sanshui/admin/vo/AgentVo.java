@@ -11,6 +11,9 @@ public class AgentVo {
     private String nickName;
     private Integer goldCount;
     private Integer sliverCount;
+    private Integer type;
+    private String memo;
+    private Integer parentAgentId;
     /**
      * 代理下级总充值
      */

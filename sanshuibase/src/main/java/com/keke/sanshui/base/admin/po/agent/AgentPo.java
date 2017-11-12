@@ -1,4 +1,4 @@
-package com.keke.sanshui.base.admin.po;
+package com.keke.sanshui.base.admin.po.agent;
 
 import lombok.Data;
 
@@ -19,5 +19,6 @@ public class AgentPo {
     private Integer status;
     private String memo;
     private String password;
+    private String avatar;
 
 }

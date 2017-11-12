@@ -1,6 +1,6 @@
 package com.keke.sanshui.job;
 
-import com.keke.sanshui.base.admin.po.Order;
+import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.service.GateWayService;
@@ -8,13 +8,10 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;

@@ -8,8 +8,8 @@ import lombok.Setter;
  */
 public enum  AgentLevelEnums {
 
-    Area(1,"地区代理"),
-    Group(2,"群代理");
+    Area(2,"地区代理"),
+    Group(3,"群代理");
 
     private AgentLevelEnums(Integer type,String mark){
         this.mark = mark;

@@ -18,7 +18,7 @@ public class AdminServiceTest {
 
     @Test
     public void testCheck(){
-        Assert.assertTrue(adminService.checkUser("superadmin","kong198818"));
+        Assert.assertTrue(adminService.checkUser("superadmin","kong198818",""));
     }
 
 }

@@ -2,7 +2,7 @@ package com.keke.sanshui.portal.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import com.keke.sanshui.base.admin.po.Order;
+import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.pay.zpay.ZPayResponseVo;
@@ -14,7 +14,6 @@ import com.keke.sanshui.service.GateWayService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;

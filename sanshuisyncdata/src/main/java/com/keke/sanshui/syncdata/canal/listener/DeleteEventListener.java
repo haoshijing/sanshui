@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Repository;
 
-@Repository
+//@Repository
 @Slf4j
 public class DeleteEventListener implements ApplicationListener<DeleteCanalEvent>{
     @Override

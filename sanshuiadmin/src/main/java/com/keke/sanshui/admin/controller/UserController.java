@@ -20,8 +20,7 @@ public class UserController {
     public ApiResponse<UserDataResponse> getUserInfo(String token, HttpServletRequest request){
         UserDataResponse response = new UserDataResponse();
         String name = (String)request.getSession().getAttribute(token);
-
-        response.setAvatar("xxxxx");
+        response.setAvatar("https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
         response.setRole("admin");
         response.setIntroduction("");
         response.setName(name);
