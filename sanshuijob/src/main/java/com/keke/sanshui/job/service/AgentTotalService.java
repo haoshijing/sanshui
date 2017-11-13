@@ -75,6 +75,6 @@ public class AgentTotalService {
             });
 
         });
-
+        log.info("开始进行代理玩家的总充值统计结束{}",System.currentTimeMillis());
     }
 }

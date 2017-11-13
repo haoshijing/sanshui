@@ -10,6 +10,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -63,7 +64,7 @@ public class FullSyncDataService {
     }
 
     @EventListener
-    public void startWork(ContextStartedEvent event){
+    public void startWork(EmbeddedServletContainerInitializedEvent event){
         scheduledExecutorService = Executors.newScheduledThreadPool(1,new DefaultThreadFactory("SyncDataThread"));
         scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -71,10 +72,11 @@ public class FullSyncDataService {
                 syncCharacterData();
                 syncRelation();
             }
-        },1000,60000, TimeUnit.MILLISECONDS);
+        },1,6, TimeUnit.MINUTES);
     }
 
     public void syncRelation() {
+        log.info("关系开始进行同步");
         String sql = " select data from world_records where type =1 ";
         List<Map<String, Object>> datas = jdbcTemplate.queryForList(sql);
         datas.forEach(data -> {
@@ -113,6 +115,7 @@ public class FullSyncDataService {
                     }
                 }
             }catch (Exception e){
+                log.error("",e);
                 e.printStackTrace();
             }
         });

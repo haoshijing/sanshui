@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 @Repository
 @Slf4j
-public final class PlayerDataParser {
+public  class PlayerDataParser {
 
     @Autowired
     private HttpClient httpClient;

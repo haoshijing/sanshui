@@ -4,13 +4,12 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.service.PlayerService;
 import com.keke.sanshui.syncdata.canal.event.InsertCanalEvent;
-import com.keke.sanshui.syncdata.canal.service.PlayerDataSyncService;
+import com.keke.sanshui.syncdata.canal.util.PlayerDataParser;
 import com.keke.sanshui.syncdata.canal.util.PlayerDataParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
