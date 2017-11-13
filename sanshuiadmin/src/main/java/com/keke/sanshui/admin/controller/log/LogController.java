@@ -23,6 +23,12 @@ public class LogController {
     @Autowired
     private AdminOrderReadService adminOrderReadService;
 
+    @RequestMapping("/test")
+    @ResponseBody
+    public String test(){
+        return "rfedsfe大萨达撒多撒sterwte";
+    }
+
     @RequestMapping("/list")
     @ResponseBody
     public ApiResponse<List<OrderItemVo>> queryList(@RequestBody OrderQueryVo orderQueryVo){
