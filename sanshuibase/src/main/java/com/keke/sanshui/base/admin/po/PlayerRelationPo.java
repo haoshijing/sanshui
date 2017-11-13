@@ -12,4 +12,18 @@ public class PlayerRelationPo {
     private Integer parentPlayerId;
     private Integer playerId;
     private Long lastUpdateTime;
+
+    public boolean equals(PlayerRelationPo other){
+        boolean match = false;
+        if(this == other){
+            return  true;
+        }
+        if(this.getPlayerId() != null){
+            match =   this.getPlayerId().equals(other.playerId);
+        }
+        if(this.getParentPlayerId() != null){
+            match = this.getParentPlayerId().equals(other.getParentPlayerId());
+        }
+        return match;
+    }
 }

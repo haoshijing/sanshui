@@ -15,6 +15,10 @@ public class AgentVo {
     private String memo;
     private Integer parentAgentId;
     /**
+     * 会员个数
+     */
+    private Integer memberCount;
+    /**
      * 代理下级总充值
      */
     private Long agentUnderTotalPickUp;

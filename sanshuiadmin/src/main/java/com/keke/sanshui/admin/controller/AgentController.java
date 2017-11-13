@@ -7,6 +7,7 @@ import com.keke.sanshui.admin.request.agent.AgentQueryVo;
 import com.keke.sanshui.admin.response.ApiResponse;
 import com.keke.sanshui.admin.response.RetCode;
 import com.keke.sanshui.admin.response.agent.AreaAgentVo;
+import com.keke.sanshui.admin.response.agent.UnderPlayerVo;
 import com.keke.sanshui.admin.service.AdminAgentReadService;
 import com.keke.sanshui.admin.service.AdminAgentWriteService;
 import com.keke.sanshui.admin.vo.AgentVo;
@@ -87,7 +88,11 @@ public class AgentController{
         try{
             Integer currentAgentId = null;
             if(request.getParameter("currentAgentId") != null){
-                currentAgentId = Integer.valueOf(request.getParameter("currentAgentId"));
+                try {
+                    currentAgentId = Integer.valueOf(request.getParameter("currentAgentId"));
+                }catch (Exception e){
+
+                }
             }
             List<AreaAgentVo> agentIds =  adminAgentWriteService.getCanChooseAreaAgent(currentAgentId);
             return new ApiResponse<>(agentIds);
@@ -107,5 +112,17 @@ public class AgentController{
             log.error("createOrUpdate agent {} error", JSON.toJSONString(agentRequestVo),e);
         }
         return new ApiResponse<>(RetCode.SERVER_ERROR,"设置失败",false);
+    }
+
+    @RequestMapping("/obtainUnderPlayer")
+    @ResponseBody
+    public ApiResponse<List<UnderPlayerVo>> queryUnderPlayer(Integer agentGuid){
+        try{
+            List<UnderPlayerVo> underPlayerVos = adminAgentReadService.obtainUnderPlayer(agentGuid);
+            return new ApiResponse<>(underPlayerVos);
+        }catch (Exception e){
+            log.error("queryUnderPlayer {} error", agentGuid, e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR,"",Lists.newArrayList());
+        }
     }
 }

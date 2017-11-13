@@ -33,9 +33,6 @@ public class AdminAgentWriteService {
             AgentPo updateAgentPo = new AgentPo();
             String encryptPwd = MD5Util.md5(MD5Util.md5(PROXY_PWD) + saltEncrypt);
             updateAgentPo.setPassword(encryptPwd);
-            if(updateAgentPo.getLevel() == 2) {
-                updateAgentPo.setParentId(null);
-            }
             updateAgentPo.setLevel(agentRequestVo.getLevel());
             updateAgentPo.setLastUpdateTime(System.currentTimeMillis());
             updateAgentPo.setAgentWeChartNo(agentRequestVo.getWechartNo());
@@ -44,6 +41,9 @@ public class AdminAgentWriteService {
             updateAgentPo.setPlayerId(agentRequestVo.getGuid());
             updateAgentPo.setMemo(agentRequestVo.getMemo());
             updateAgentPo.setStatus(1);
+            if(updateAgentPo.getLevel() == 2) {
+                updateAgentPo.setParentId(null);
+            }
             boolean checkIsValidName = checkIsValidUserName(agentRequestVo.getUserName());
             if(!checkIsValidName){
                 return Pair.of(false,"该用户名已存在");

@@ -2,10 +2,13 @@ package com.keke.sanshui.admin.service;
 
 
 import com.keke.sanshui.admin.request.agent.AgentQueryVo;
+import com.keke.sanshui.admin.response.agent.UnderPlayerVo;
 import com.keke.sanshui.admin.vo.AgentVo;
 import com.keke.sanshui.base.admin.dao.AgentPickTotalDAO;
 import com.keke.sanshui.base.admin.dao.PlayerPickTotalDAO;
+import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
 import com.keke.sanshui.base.admin.po.AgentPickTotalPo;
+import com.keke.sanshui.base.admin.po.PlayerRelationPo;
 import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.po.PlayerCouponPo;
 import com.keke.sanshui.base.admin.po.PlayerPickTotalPo;
@@ -33,6 +36,9 @@ public class AdminAgentReadService {
 
     @Autowired
     PlayerPickTotalDAO playerPickTotalDAO;
+
+    @Autowired
+    PlayerRelationDAO playerRelationDAO;
 
     public List<AgentVo> selectAgentVoList(AgentQueryVo agentQueryVo) {
         AgentQueryPo queryAgentPo = new AgentQueryPo();
@@ -87,7 +93,11 @@ public class AdminAgentReadService {
                     }
                     return agentVo;
                 }
-        ).collect(Collectors.toList());
+        ).map(agentVo -> {
+            Integer count = playerRelationDAO.selectUnderByPlayerId(agentVo.getGameId()).size();
+            agentVo.setMemberCount(count);
+            return agentVo;
+        }).collect(Collectors.toList());
         return agentVos;
     }
 
@@ -100,5 +110,22 @@ public class AdminAgentReadService {
         queryAgentPo.setAgentWeChartNo(agentQueryVo.getWechartNo());
         queryAgentPo.setStatus(1);
         return agentService.selectCount(queryAgentPo);
+    }
+
+    public List<UnderPlayerVo> obtainUnderPlayer(Integer agentGuid) {
+        List<PlayerRelationPo> playerRelationPos = playerRelationDAO.selectUnderByPlayerId(agentGuid);
+        Integer week = WeekUtil.getCurrentWeek();
+        return playerRelationPos.stream().map(playerRelationPo -> {
+            UnderPlayerVo underPlayerVo = new UnderPlayerVo();
+            Integer playerId = playerRelationPo.getPlayerId();
+            underPlayerVo.setPlayerGuid(playerRelationPo.getPlayerId());
+            PlayerPickTotalPo playerPickTotalPo =  playerPickTotalDAO.selectByPlayerId(playerId,week);
+            Long pickTotal = 0L;
+            if(playerPickTotalPo != null){
+                pickTotal = playerPickTotalPo.getTotalMoney();
+            }
+            underPlayerVo.setPlayerPickUp(pickTotal);
+            return underPlayerVo;
+        }).collect(Collectors.toList());
     }
 }

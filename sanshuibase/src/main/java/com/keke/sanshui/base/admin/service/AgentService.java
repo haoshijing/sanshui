@@ -29,7 +29,6 @@ public class AgentService implements ApplicationContextAware {
     }
 
    public List<AgentPo> selectList(AgentQueryPo agentPo){
-
         return agentDAO.selectList(agentPo);
     }
     public boolean onlyUpdateAgent(AgentPo updateAgentPo){

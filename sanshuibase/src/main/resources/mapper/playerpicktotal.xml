@@ -5,14 +5,30 @@
     <sql id="all_columns">
         *
     </sql>
-    <sql id = "tableName">
+    <sql id="tableName">
         t_player_pick_total
     </sql>
-    <select id="selectByPlayerId" resultType="PlayerPickTotalPo" >
+    <select id="selectByPlayerId" resultType="PlayerPickTotalPo">
         <!-- 具体的sql -->
-        SELECT <include refid="all_columns"/> FROM
+        SELECT
+        <include refid="all_columns"/>
+        FROM
         <include refid="tableName"/>
         WHERE playerId = #{playerId} and week = #{week}
+    </select>
+
+    <select id="batchSelect" resultType="PlayerPickTotalPo">
+        <!-- 具体的sql -->
+        SELECT
+        <include refid="all_columns"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+        playerId in
+        <foreach collection="playerIds" separator="," open="(" close=")" item="playerId">
+            #{playerId}
+        </foreach>
+        AND week = #{week}
     </select>
 
     <insert id="insertTotalPo" parameterType="PlayerPickTotalPo">
@@ -35,27 +51,29 @@
     </insert>
 
     <update id="updateTotalPo" parameterType="PlayerPickTotalPo">
-        update <include refid="tableName"/>
+        update
+        <include refid="tableName"/>
         <set>
-            <if test = "param.totalMoney != null">
+            <if test="param.totalMoney != null">
                 totalMoney = #{param.totalMoney},
             </if>
 
-            <if test = "param.lastUpdateTime != null">
+            <if test="param.lastUpdateTime != null">
                 lastUpdateTime = #{param.lastUpdateTime},
             </if>
         </set>
         where id = #{param.id}
     </update>
-    
+
     <select id="sumPickUp" parameterType="java.util.List" resultType="java.lang.Long">
-        select sum(totalMoney) from <include refid="tableName"/>
+        select sum(totalMoney) from
+        <include refid="tableName"/>
         where week = #{week}
-        <if test = "playerIds.size() > 0">
+        <if test="playerIds.size() > 0">
             AND playerId in
-        <foreach collection="playerIds" item="playerId" separator="," open="(" close=")">
-            #{playerId}
-        </foreach>
+            <foreach collection="playerIds" item="playerId" separator="," open="(" close=")">
+                #{playerId}
+            </foreach>
         </if>
     </select>
 

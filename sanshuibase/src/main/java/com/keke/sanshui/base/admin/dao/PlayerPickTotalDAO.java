@@ -13,6 +13,8 @@ public interface PlayerPickTotalDAO {
 
     PlayerPickTotalPo selectByPlayerId(@Param("playerId") Integer playerId,@Param("week") Integer week);
 
+    PlayerPickTotalPo batchSelect(@Param("playerIds") List<Integer> playerIds,@Param("week") Integer week);
+
     void insertTotalPo(@Param("param") PlayerPickTotalPo playerPickTotalPo);
 
     int updateTotalPo(@Param("param") PlayerPickTotalPo playerPickTotalPo);
