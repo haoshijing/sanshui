@@ -2,6 +2,7 @@ package com.keke.sanshui.admin.service;
 
 
 import com.keke.sanshui.admin.request.agent.AgentQueryVo;
+import com.keke.sanshui.admin.response.agent.UnderAgentVo;
 import com.keke.sanshui.admin.response.agent.UnderPlayerVo;
 import com.keke.sanshui.admin.vo.AgentVo;
 import com.keke.sanshui.base.admin.dao.AgentPickTotalDAO;
@@ -95,7 +96,14 @@ public class AdminAgentReadService {
                 }
         ).map(agentVo -> {
             Integer count = playerRelationDAO.selectUnderByPlayerId(agentVo.getGameId()).size();
+            String underAgentCount = "-";
             agentVo.setMemberCount(count);
+            if(agentVo.getType() == 2){
+                AgentQueryPo tmpQueryVo = new AgentQueryPo();
+                tmpQueryVo.setParentId(agentVo.getAgentId());
+                underAgentCount = String.valueOf(agentService.selectList(tmpQueryVo).size());
+            }
+            agentVo.setUnderAgentCount(underAgentCount);
             return agentVo;
         }).collect(Collectors.toList());
         return agentVos;
@@ -126,6 +134,36 @@ public class AdminAgentReadService {
             }
             underPlayerVo.setPlayerPickUp(pickTotal);
             return underPlayerVo;
+        }).collect(Collectors.toList());
+    }
+
+    public List<UnderAgentVo> obtainUnderAgent(Integer agentId) {
+        AgentQueryPo agentQueryPo = new AgentQueryPo();
+        agentQueryPo.setParentId(agentId);
+        agentQueryPo.setStatus(1);
+        Integer week = WeekUtil.getCurrentWeek();
+        List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
+        return agentPos.stream().map(agentPo -> {
+            UnderAgentVo underAgentVo = new UnderAgentVo();
+            underAgentVo.setAgentGuid(agentPo.getPlayerId());
+            underAgentVo.setWechartNo(agentPo.getAgentWeChartNo());
+            underAgentVo.setNickname(agentPo.getAgentNickName());
+            underAgentVo.setAgentId(agentPo.getId());
+            underAgentVo.setUsername(agentPo.getAgentName());
+
+            PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(agentPo.getPlayerId(),week);
+            if(playerPickTotalPo != null){
+                underAgentVo.setProxyPickTotal(playerPickTotalPo.getTotalMoney());
+            }else{
+                underAgentVo.setProxyPickTotal(0L);
+            }
+            AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(),week);
+            if(agentPickTotalPo != null){
+                underAgentVo.setProxyAgentTotal(agentPickTotalPo.getTotalMoney());
+            }else{
+                underAgentVo.setProxyAgentTotal(0L);
+            }
+            return underAgentVo;
         }).collect(Collectors.toList());
     }
 }

@@ -42,7 +42,7 @@
         </where>
     </sql>
 
-    <select id = "selectList" parameterType="OperLogPo" resultType="OperLogPo">
+    <select id = "selectList" parameterType="QueryOperLogPo" resultType="OperLogPo">
         SELECT
         <include refid="all_columns"/>
         FROM
@@ -51,6 +51,10 @@
         <include refid="queryWhere"/>
 
         limit #{param.offset},#{param.limit}
+    </select>
 
+    <select id="selectCount" parameterType="QueryOperLogPo"  resultType="java.lang.Long">
+        select count(1) from    <include refid="tableName"/>
+        <include refid="queryWhere"/>
     </select>
 </mapper>

@@ -7,6 +7,7 @@ import com.keke.sanshui.admin.request.agent.AgentQueryVo;
 import com.keke.sanshui.admin.response.ApiResponse;
 import com.keke.sanshui.admin.response.RetCode;
 import com.keke.sanshui.admin.response.agent.AreaAgentVo;
+import com.keke.sanshui.admin.response.agent.UnderAgentVo;
 import com.keke.sanshui.admin.response.agent.UnderPlayerVo;
 import com.keke.sanshui.admin.service.AdminAgentReadService;
 import com.keke.sanshui.admin.service.AdminAgentWriteService;
@@ -14,7 +15,6 @@ import com.keke.sanshui.admin.vo.AgentVo;
 import com.keke.sanshui.base.util.WeekUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -122,6 +122,18 @@ public class AgentController{
             return new ApiResponse<>(underPlayerVos);
         }catch (Exception e){
             log.error("queryUnderPlayer {} error", agentGuid, e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR,"",Lists.newArrayList());
+        }
+    }
+
+    @RequestMapping("/obtainUnderAgent")
+    @ResponseBody
+    public ApiResponse<List<UnderAgentVo>> obtainUnderAgent(Integer agentId){
+        try{
+            List<UnderAgentVo> underAgentVos = adminAgentReadService.obtainUnderAgent(agentId);
+            return new ApiResponse<>(underAgentVos);
+        }catch (Exception e){
+            log.error("obtainUnderAgent {} error", agentId, e);
             return new ApiResponse<>(RetCode.SERVER_ERROR,"",Lists.newArrayList());
         }
     }

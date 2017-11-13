@@ -112,7 +112,7 @@
         limit #{param.offset} , #{param.limit}
     </select>
 
-    <select id = "selectCount" parameterType="QueryOrderPo" resultType="java.lang.Long">
+    <select id = "queryCount" parameterType="QueryOrderPo" resultType="java.lang.Long">
         select count(1) from t_order
         <where>
             <include refid="selectListCondition"></include>

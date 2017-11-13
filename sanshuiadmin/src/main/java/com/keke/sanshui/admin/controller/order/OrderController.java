@@ -42,7 +42,7 @@ public class OrderController {
             Long count =  adminOrderReadService.queryCount(orderQueryVo);
             return new ApiResponse<>(count);
         }catch (Exception e){
-            log.error("queryList error {}", JSON.toJSONString(orderQueryVo),e);
+            log.error("queryCount error {}", JSON.toJSONString(orderQueryVo),e);
             return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(), 0L);
         }
     }

@@ -26,4 +26,6 @@ public class AgentVo {
      * 代理自身总充值
      */
     private Long agentTotalPickUp;
+
+    private String underAgentCount;
 }

@@ -45,6 +45,7 @@ public class LoginController {
     @ResponseBody
     public ApiResponse<Boolean> login(String token,HttpServletRequest request){
         request.getSession().removeAttribute(token);
+        adminService.logout();
         return new ApiResponse<>(true);
     }
 }

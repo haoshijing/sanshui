@@ -3,7 +3,7 @@ package com.keke.sanshui.base.admin.service;
 import com.keke.sanshui.base.admin.dao.AdminDAO;
 import com.keke.sanshui.base.admin.event.OperLogEvent;
 import com.keke.sanshui.base.admin.po.AdminPo;
-import com.keke.sanshui.base.admin.po.OperLogPo;
+import com.keke.sanshui.base.admin.po.log.OperLogPo;
 import com.keke.sanshui.base.util.MD5Util;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -39,6 +39,13 @@ public class AdminService implements ApplicationContextAware {
         operLogPo.setMark("管理员进行登录,登录ip:"+clientIp+"登陆结果:"+loginRet);
         ctx.publishEvent(new OperLogEvent(ctx,operLogPo));
         return checkRet;
+    }
+    public void logout(){
+        OperLogPo operLogPo = new OperLogPo();
+        operLogPo.setInsertTime(System.currentTimeMillis());
+        operLogPo.setOperType(5);
+        operLogPo.setOperTarget(1);
+        operLogPo.setMark("管理员退出了系统");
     }
 
     @Override

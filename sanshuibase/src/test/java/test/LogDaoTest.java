@@ -1,7 +1,7 @@
 package test;
 
 import com.keke.sanshui.base.admin.dao.OperLogDAO;
-import com.keke.sanshui.base.admin.po.OperLogPo;
+import com.keke.sanshui.base.admin.po.log.OperLogPo;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

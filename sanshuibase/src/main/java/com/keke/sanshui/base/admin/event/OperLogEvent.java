@@ -1,6 +1,6 @@
 package com.keke.sanshui.base.admin.event;
 
-import com.keke.sanshui.base.admin.po.OperLogPo;
+import com.keke.sanshui.base.admin.po.log.OperLogPo;
 import lombok.Data;
 import org.springframework.context.ApplicationEvent;
 

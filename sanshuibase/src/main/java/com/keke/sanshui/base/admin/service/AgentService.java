@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.keke.sanshui.base.admin.dao.AgentDAO;
 import com.keke.sanshui.base.admin.event.OperLogEvent;
 import com.keke.sanshui.base.admin.po.agent.AgentPo;
-import com.keke.sanshui.base.admin.po.OperLogPo;
+import com.keke.sanshui.base.admin.po.log.OperLogPo;
 import com.keke.sanshui.base.admin.po.agent.AgentQueryPo;
 import com.keke.sanshui.base.enums.AgentLevelEnums;
 import org.springframework.beans.BeansException;
