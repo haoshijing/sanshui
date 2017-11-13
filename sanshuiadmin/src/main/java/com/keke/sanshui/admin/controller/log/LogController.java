@@ -26,7 +26,7 @@ public class LogController {
     @RequestMapping("/test")
     @ResponseBody
     public String test(){
-        return "rfedsfe大萨达撒多撒sterwte";
+        return "fdsfdsf";
     }
 
     @RequestMapping("/list")

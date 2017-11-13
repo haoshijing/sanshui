@@ -1,10 +1,14 @@
 package com.keke.sanshui.job;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+@EnableAutoConfiguration
+@ImportResource("classpath:application-context.xml")
 public class JobMain{
     public static void main(String[] args) {
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("application-context.xml");
-        ctx.start();
+        SpringApplication.run(JobMain.class, args);
     }
 }

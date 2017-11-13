@@ -23,6 +23,7 @@
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
         <druid.version>1.1.4</druid.version>
         <mysqljdbc.version>5.1.44</mysqljdbc.version>
+        <spring-boot-version>1.5.8.RELEASE</spring-boot-version>
         <cassandra-driver.version>3.3.0</cassandra-driver.version>
     </properties>
 
@@ -32,6 +33,14 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
                 <version>${spring.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot-version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -138,19 +147,9 @@
             <version>4.1.16.Final</version>
         </dependency>
         <dependency>
-            <groupId>net.sourceforge.jexcelapi</groupId>
-            <artifactId>jxl</artifactId>
-            <version>2.6.12</version>
-        </dependency>
-        <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-core</artifactId>
             <version>1.5.7</version>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-            <version>3.0.3.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>io.reactivex</groupId>

@@ -8,6 +8,5 @@
      http://www.springframework.org/schema/context/spring-context.xsd">
     <context:component-scan base-package="com.keke.sanshui"></context:component-scan>
     <import resource="classpath:application-context.xml"/>
-    <context:property-placeholder location="classpath:sync_${env}.properties" ignore-unresolvable="true" />
 
 </beans>
