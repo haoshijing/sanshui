@@ -87,7 +87,7 @@ id  int primary key auto_increment comment '主键id',
 agentId int comment '代理id',
  week int comment '所在周',
  totalMoney bigint comment '下属总充值',
- lastUpdateTime biginit comment '最后更新时间'
+ lastUpdateTime bigint comment '最后更新时间'
 );
 alter table t_agent_total add unique index agentId_week_idx(agentId,week);
 /**
@@ -114,3 +114,43 @@ status int comment '玩家状态'
 );
 alter table t_player add  index pid_idx(playerId);
 alter table t_player add unique index player_player_openid(playerId,openId);
+
+
+#后台权限管理表
+drop TABLE IF EXISTS  sys_user;
+create table sys_user(
+id int primary key ,
+username varchar(64) comment '用户名',
+password varchar(255) comment '密码',
+relaname varchar(25) comment '真实姓名',
+roleIds varchar(255) comment '角色列表',
+status int comment '账号状态',
+insertTime bigint comment '写入时间',
+lastUpdateTime bigint comment '最后修改时间'
+);
+
+drop TABLE IF EXISTS  sys_role;
+create table sys_role(
+  id int primary key ,
+  rolename varchar(64) comment '角色名称',
+  status int comment '',
+  funclist varchar(512) comment '功能列表',
+  insertTime bigint comment '写入时间',
+  lastUpdateTime bigint comment '最后修改时间'
+);
+
+drop TABLE IF EXISTS  sys_func;
+create table sys_func(
+  id int primary key ,
+  funcName varchar(64) comment '角色名称',
+  status int comment '账号状态',
+  funcUrl varchar(255) comment '功能连接',
+  parentFuncId int comment '上级功能id',
+  insertTime bigint comment '写入时间',
+  lastUpdateTime bigint comment '最后修改时间'
+);
+
+
+
+
+
