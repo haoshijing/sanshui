@@ -13,7 +13,7 @@ import java.util.List;
 public class QueryOrderPo extends Order {
     private Integer limit = 20;
     private List<Integer> clientGuids = Lists.newArrayList();
-    private Long startTimeStamp;
-    private Long endTimeStamp;
+    private Long startTimestamp;
+    private Long endTimestamp;
     private Integer offset;
 }

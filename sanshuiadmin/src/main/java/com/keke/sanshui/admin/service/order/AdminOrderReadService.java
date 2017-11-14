@@ -50,8 +50,8 @@ public class AdminOrderReadService {
         QueryOrderPo queryOrderPo = new QueryOrderPo();
         queryOrderPo.setOrderStatus(orderQueryVo.getOrderStatus());
         queryOrderPo.setSelfOrderNo(orderQueryVo.getOrderId());
-        queryOrderPo.setStartTimeStamp(orderQueryVo.getStartTimestamp());
-        queryOrderPo.setEndTimeStamp(orderQueryVo.getEndTimestamp());
+        queryOrderPo.setStartTimestamp(orderQueryVo.getStartTimestamp());
+        queryOrderPo.setEndTimestamp(orderQueryVo.getEndTimestamp());
         queryOrderPo.setLimit(orderQueryVo.getLimit());
         Integer page = 0;
         if (orderQueryVo.getPage() > 0) {

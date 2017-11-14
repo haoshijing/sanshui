@@ -49,10 +49,10 @@
         <include refid="tableName"/>
 
         <include refid="queryWhere"/>
-
+        order by id desc
         limit #{param.offset},#{param.limit}
 
-        order by id desc
+
     </select>
 
     <select id="selectCount" parameterType="QueryOperLogPo"  resultType="java.lang.Long">

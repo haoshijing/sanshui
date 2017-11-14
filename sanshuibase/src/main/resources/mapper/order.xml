@@ -18,24 +18,24 @@
     </select>
 
     <sql id = "selectListCondition">
-        <if test="param.selfOrderNo != null">
-            AND selfOrderNo  = #{param.selfOrderNo}
-        </if>
+        <where>
+            <if test="param.orderStatus != null">
+                AND orderStatus = #{param.orderStatus}
+            </if>
+            <if test="param.clientGuids != null and param.clientGuids.size() > 0">
+                AND clientGuid in
+                <foreach collection="param.clientGuids" close=")" open="(" item="guid" separator=",">
+                    #{guid}
+                </foreach>
+            </if>
+            <if test="param.selfOrderNo != null and param.selfOrderNo != ''">
+                AND selfOrderNo = #{param.selfOrderNo}
+            </if>
 
-        <if test = "param.clientGuids != null and param.clientGuids.size() > 0">
-            AND clientGuid in
-            <foreach collection="param.clientGuids" item="guid" close=")" open="(" separator=",">
-                #{guid}
-            </foreach>
-        </if>
-
-        <if test = "param.orderStatus != null">
-            AND orderStatus = #{param.orderStatus}
-        </if>
-
-        <if test = "param.startTimeStamp != null and param.endTimeStamp != null">
-            AND lastUpdateTime BETWEEN #{param.startTimeStamp } AND #{param.endTimeStamp }
-        </if>
+            <if test="param.startTimestamp != null and param.endTimestamp != null">
+                AND lastUpdateTime BETWEEN #{param.startTime} AND #{param.endTimestamp}
+            </if>
+        </where>
     </sql>
 
     <insert id="insert" parameterType="Order">
@@ -106,16 +106,14 @@
 
     <select id="selectList" parameterType="QueryOrderPo" resultType="Order">
         select * from t_order
-        <where>
-          <include refid="selectListCondition"></include>
-        </where>
+        <include refid="selectListCondition"></include>
+        order by id desc
         limit #{param.offset} , #{param.limit}
     </select>
 
     <select id = "queryCount" parameterType="QueryOrderPo" resultType="java.lang.Long">
         select count(1) from t_order
-        <where>
-            <include refid="selectListCondition"></include>
-        </where>
+        <include refid="selectListCondition"></include>
+
     </select>
 </mapper>
