@@ -72,7 +72,7 @@ public class FullSyncDataService {
                 syncCharacterData();
                 syncRelation();
             }
-        },1,6, TimeUnit.MINUTES);
+        },1000,60000, TimeUnit.MILLISECONDS);
     }
 
     public void syncRelation() {
@@ -92,7 +92,11 @@ public class FullSyncDataService {
             playerAndAgentData.getAgentPos().forEach(agentPo -> {
                 AgentPo queryPo = agentDAO.selectById(agentPo.getPlayerId());
                 if(queryPo == null){
-                    agentDAO.insert(agentPo);
+                    try {
+                        agentDAO.insert(agentPo);
+                    }catch (Exception e){
+                        log.error("{}",e);
+                    }
                 }
             });
 
