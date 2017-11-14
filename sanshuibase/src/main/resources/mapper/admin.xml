@@ -15,5 +15,8 @@
         WHERE userName = #{userName}
     </select>
 
+    <update id="updatePwd">
+        update t_admin set password = #{newPwd} where userName = #{userName}
+    </update>
 
 </mapper>

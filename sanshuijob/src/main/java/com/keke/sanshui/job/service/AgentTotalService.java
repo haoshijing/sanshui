@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,7 +39,8 @@ public class AgentTotalService {
     private AgentPickTotalDAO agentPickTotalDAO;
 
     void work() {
-        log.info("开始进行代理玩家的总充值统计{}",System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        log.info("开始代理玩家的总充值统计:{}",format.format(new Date()));
         int week = WeekUtil.getCurrentWeek();
         List<AgentPo> agentPoList = agentService.selectAll();
         agentPoList.stream().forEach(agentPo -> {
@@ -75,6 +78,6 @@ public class AgentTotalService {
             });
 
         });
-        log.info("开始进行代理玩家的总充值统计结束{}",System.currentTimeMillis());
+        log.info("结束代理玩家的总充值统计:{}",format.format(new Date()));
     }
 }

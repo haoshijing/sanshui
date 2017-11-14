@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,7 +34,8 @@ public class PlayerTotalService {
     private final int BATCH_SIZE = 1000;
 
     public void work(){
-        log.info("开始统计充值额");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        log.info("开始统计充值额:{}",format.format(new Date()));
         long weekStartTimestamp = WeekUtil.getWeekStartTimestamp();
         long weekEndTimestamp = WeekUtil.getWeekEndTimestamp();
         List<PlayerPo> playerPoList = playerService.selectList(0,BATCH_SIZE);
@@ -66,7 +69,7 @@ public class PlayerTotalService {
                 nextMaxId = playerPoList.get(playerPoList.size()-1).getId();
             }
         }while (playerPoList.size() != 0);
-        log.info("结束统计充值额");
+        log.info("结束统计充值额:{}",format.format(new Date()));
 
     }
 }

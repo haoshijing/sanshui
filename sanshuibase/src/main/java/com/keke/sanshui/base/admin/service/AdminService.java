@@ -53,4 +53,22 @@ public class AdminService implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.ctx = applicationContext;
     }
+
+    public Boolean updatePwd(String oldPwd, String newPwd) {
+        AdminPo adminPo = adminDAO.selectByUsername("superadmin");
+        String dbPassword = adminPo.getPassword();
+        String userPassword = MD5Util.md5(MD5Util.md5(oldPwd)+saltEncrypt);
+        Boolean checkRet =  StringUtils.equals(dbPassword,userPassword);
+        if(!checkRet){
+            return false;
+        }
+        OperLogPo operLogPo = new OperLogPo();
+        operLogPo.setInsertTime(System.currentTimeMillis());
+        operLogPo.setOperType(6);
+        operLogPo.setOperTarget(1);
+        operLogPo.setMark("管理员修改了密码");
+        ctx.publishEvent(new OperLogEvent(ctx,operLogPo));
+        adminDAO.updatePwd(MD5Util.md5(MD5Util.md5(newPwd)+saltEncrypt),"superadmin");
+        return  true;
+    }
 }

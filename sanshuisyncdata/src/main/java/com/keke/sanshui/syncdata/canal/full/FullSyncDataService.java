@@ -90,7 +90,7 @@ public class FullSyncDataService {
                 }
             });
             playerAndAgentData.getAgentPos().forEach(agentPo -> {
-                AgentPo queryPo = agentDAO.selectById(agentPo.getPlayerId());
+                AgentPo queryPo = agentDAO.selectByPlayerId(agentPo.getPlayerId());
                 if(queryPo == null){
                     try {
                         agentDAO.insert(agentPo);
