@@ -46,6 +46,7 @@ public class AdminService implements ApplicationContextAware {
         operLogPo.setOperType(5);
         operLogPo.setOperTarget(1);
         operLogPo.setMark("管理员退出了系统");
+        ctx.publishEvent(new OperLogEvent(ctx,operLogPo));
     }
 
     @Override

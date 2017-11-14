@@ -51,6 +51,8 @@
         <include refid="queryWhere"/>
 
         limit #{param.offset},#{param.limit}
+
+        order by id desc
     </select>
 
     <select id="selectCount" parameterType="QueryOperLogPo"  resultType="java.lang.Long">
