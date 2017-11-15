@@ -83,8 +83,9 @@ public class FullSyncDataService {
             byte[] bytes = (byte[]) data.get("data");
             PlayerDataParser.PlayerAndAgentData playerAndAgentData = parser.parseFromWorldData(bytes);
             playerAndAgentData.getPlayerRelationPos().forEach(playerRelationPo -> {
-                boolean isInDb = playerRelationDAO.queryByAgentAndPlayerGuid(playerRelationPo.getPlayerId().intValue(),
-                        playerRelationPo.getPlayerId().intValue()) > 0;
+                Integer parentId = playerRelationPo.getParentPlayerId().intValue();
+                Integer playerId = playerRelationPo.getPlayerId().intValue();
+                boolean isInDb = playerRelationDAO.queryByAgentAndPlayerGuid(parentId, playerId) > 0;
                 if (!isInDb) {
                     playerRelationDAO.insertRelation(playerRelationPo);
                 }
