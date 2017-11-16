@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@Repository
+//@Repository
 public class CanalScheduling implements  ApplicationContextAware {
     private static final Logger logger = LoggerFactory.getLogger(CanalScheduling.class);
     private ApplicationContext applicationContext;

@@ -48,6 +48,12 @@ public class FullSyncDataService {
     @Value("${sync.db.ip}")
     private String syncDbIp;
 
+    @Value("${sync.db.name}")
+    private String syncDbName;
+
+    @Value("${sync.db.password}")
+    private String syncDbPassword;
+
     private static final String PLAYER_ID = "guid";
 
     public FullSyncDataService() {
@@ -57,8 +63,8 @@ public class FullSyncDataService {
     @PostConstruct
     public void init() {
         DruidDataSource druidDataSource = new DruidDataSource();
-        druidDataSource.setUsername("keke");
-        druidDataSource.setPassword("123456");
+        druidDataSource.setUsername(syncDbName);
+        druidDataSource.setPassword(syncDbPassword);
         druidDataSource.setUrl("jdbc:mysql://" + syncDbIp + ":3306/waterthirteen?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull");
         jdbcTemplate.setDataSource(druidDataSource);
     }

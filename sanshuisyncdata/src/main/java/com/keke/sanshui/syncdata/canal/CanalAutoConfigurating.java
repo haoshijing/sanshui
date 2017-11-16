@@ -20,7 +20,7 @@ import javax.annotation.PreDestroy;
  * @version 1.0
  * @since 2017-08-25 17:26:00
  */
-@Configuration
+//@Configuration
 public class CanalAutoConfigurating {
     private static final Logger logger = LoggerFactory.getLogger(CanalAutoConfigurating.class);
     private CanalConnector canalConnector;
@@ -36,7 +36,7 @@ public class CanalAutoConfigurating {
     @Value("${canal.password}")
     private String canalPassword;
 
-    @Bean
+    //@Bean
     public CanalConnector getCanalConnector() {
         canalConnector = CanalConnectors.newClusterConnector(Lists.newArrayList(new InetSocketAddress(canalHost, Integer.valueOf(canalPort))), canalDestination, canalUsername, canalPassword);
         canalConnector.connect();
