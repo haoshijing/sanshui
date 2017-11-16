@@ -6,10 +6,10 @@
         </encoder>
     </appender>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>d:/sanshui/logs/logs/info.log</file>
+        <file>../logs/synclog</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>d:/sanshui/logs/info.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>sync.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>300</maxHistory>
         </rollingPolicy>
         <encoder>
