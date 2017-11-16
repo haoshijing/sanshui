@@ -18,7 +18,7 @@ public interface OrderDAO {
 
     Long selectCount(@Param("param")QueryOrderPo orderPo);
 
-    Long queryPickupSum(@Param("guid") Integer guid, @Param("startTimeStamp") Long startTimeStamp,@Param("endTimestamp") Long endTimestamp);
+    Long queryPickupSum(@Param("guid") Integer guid, @Param("startTimestamp") Long startTimeStamp,@Param("endTimestamp") Long endTimestamp);
 
     List<Order> selectList(@Param("param")QueryOrderPo queryOrderPo);
 

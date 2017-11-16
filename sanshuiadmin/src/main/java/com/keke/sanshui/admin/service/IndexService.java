@@ -23,18 +23,24 @@ public class IndexService {
         QueryOrderPo queryOrderPo = new QueryOrderPo();
         queryOrderPo.setOrderStatus(2);
         queryOrderPo.setStartTimestamp(TimeUtil.getDayStartTimestamp(0));
-        queryOrderPo.setStartTimestamp(TimeUtil.getDayEndTimestamp(0));
+        queryOrderPo.setEndTimestamp(TimeUtil.getDayEndTimestamp(0));
+        queryOrderPo.setLimit(1000);
+        queryOrderPo.setOffset(0);
         List<Order> orderList = orderService.selectList(queryOrderPo);
         int sum = orderList.stream().mapToInt(order->{
             return Integer.valueOf(order.getPrice());
         }).sum();
-        pickDataResponse.setDaySuccessTotal(Long.valueOf(sum));
-        queryOrderPo.setOrderStatus(null);
-        orderList = orderService.selectList(queryOrderPo);
+        pickDataResponse.setDaySuccessTotal(Long.valueOf(sum/100));
+        QueryOrderPo newQueryPo = new QueryOrderPo();
+        newQueryPo.setStartTimestamp(TimeUtil.getDayStartTimestamp(0));
+        newQueryPo.setEndTimestamp(TimeUtil.getDayEndTimestamp(0));
+        newQueryPo.setLimit(1000);
+        newQueryPo.setOffset(0);
+        orderList = orderService.selectList(newQueryPo);
         int sumTotal = orderList.stream().mapToInt(order->{
             return Integer.valueOf(order.getPrice());
         }).sum();
-        pickDataResponse.setDayPickTotal(Long.valueOf(sumTotal));
+        pickDataResponse.setDayPickTotal(Long.valueOf(sumTotal/100));
         return pickDataResponse;
     }
 

@@ -33,7 +33,7 @@
             </if>
 
             <if test="param.startTimestamp != null and param.endTimestamp != null">
-                AND lastUpdateTime BETWEEN #{param.startTime} AND #{param.endTimestamp}
+                AND lastUpdateTime BETWEEN #{param.startTimestamp} AND #{param.endTimestamp}
             </if>
         </where>
     </sql>
@@ -101,7 +101,7 @@
     <select id="queryPickupSum" resultType="java.lang.Long">
         select sum(price) from t_order
         where clientGuid = #{guid} and orderStatus = 2
-        and lastUpdateTime BETWEEN #{startTimeStamp} AND #{endTimestamp}
+        and lastUpdateTime BETWEEN #{startTimestamp} AND #{endTimestamp}
     </select>
 
     <select id="selectList" parameterType="QueryOrderPo" resultType="Order">
