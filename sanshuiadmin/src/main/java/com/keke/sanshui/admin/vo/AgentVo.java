@@ -27,5 +27,10 @@ public class AgentVo {
      */
     private Long agentTotalPickUp;
 
+    /**
+     * 地区代理直接玩家充值额
+     */
+    private Long areaAgentUnderTotalPickUp;
+
     private String underAgentCount;
 }

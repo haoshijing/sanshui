@@ -50,12 +50,12 @@ public class PlayerTotalService {
                     if(playerPickTotalPo != null){
                         PlayerPickTotalPo updatePickTotalPo = new PlayerPickTotalPo();
                         updatePickTotalPo.setLastUpdateTime(System.currentTimeMillis());
-                        updatePickTotalPo.setTotalMoney(sumPickUp);
+                        updatePickTotalPo.setTotalMoney(sumPickUp/100);
                         updatePickTotalPo.setId(playerPickTotalPo.getId());
                         int ret = playerPickTotalDAO.updateTotalPo(updatePickTotalPo);
                     }else{
                         PlayerPickTotalPo newPlayerPickTotalPo = new PlayerPickTotalPo();
-                        newPlayerPickTotalPo.setTotalMoney(sumPickUp);
+                        newPlayerPickTotalPo.setTotalMoney(sumPickUp/100);
                         newPlayerPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
                         newPlayerPickTotalPo.setPlayerId(playerId);
                         newPlayerPickTotalPo.setWeek(week);

@@ -23,6 +23,7 @@
         agentId,
         week,
         totalMoney,
+        totalUnderMoney,
         lastUpdateTime
         )
         select
@@ -30,6 +31,7 @@
         #{param.agentId},
         #{param.week},
         #{param.totalMoney},
+        #{param.totalUnderMoney},
         #{param.lastUpdateTime}
 
     </insert>
@@ -37,6 +39,9 @@
     <update id="updateTotalPo" parameterType="AgentPickTotalPo">
         update <include refid="tableName"/>
         <set>
+            <if test = "param.totalUnderMoney != null">
+                totalUnderMoney = #{param.totalUnderMoney},
+            </if>
             <if test = "param.totalMoney != null">
                 totalMoney = #{param.totalMoney},
             </if>

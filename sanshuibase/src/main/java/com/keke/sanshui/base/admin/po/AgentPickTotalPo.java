@@ -11,6 +11,7 @@ public class AgentPickTotalPo {
     private Integer id;
     private Integer week;
     private Integer agentId;
-    private Long totalMoney; /*单位分*/
+    private Long totalMoney; /*单位元*/
+    private Long totalUnderMoney; /*单位元*/
     private Long lastUpdateTime;
 }

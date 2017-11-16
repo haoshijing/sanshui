@@ -6,6 +6,7 @@ import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
 import com.keke.sanshui.base.admin.po.AgentPickTotalPo;
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
 import com.keke.sanshui.base.admin.po.agent.AgentPo;
+import com.keke.sanshui.base.admin.po.agent.AgentQueryPo;
 import com.keke.sanshui.base.admin.service.AgentService;
 import com.keke.sanshui.base.util.WeekUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -42,42 +42,72 @@ public class AgentTotalService {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         log.info("开始代理玩家的总充值统计:{}",format.format(new Date()));
         int week = WeekUtil.getCurrentWeek();
+        try {
+            staticNormalAgent(week);
+            staticAreaAgent(week);
+        }catch (Exception e){
+            log.error("{}",e);
+        }
+        log.info("结束代理玩家的总充值统计:{}",format.format(new Date()));
+    }
+    private void staticAreaAgent(int week) {
+        List<AgentPo> agentPoList = agentService.selectAll();
+        agentPoList.stream().filter(agentPo -> {
+            return agentPo.getLevel() == 2;
+        }).forEach(agentPo -> {
+            AgentQueryPo agentQueryPo = new AgentQueryPo();
+            agentQueryPo.setParentId(agentPo.getId());
+            List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
+
+            List<Integer> agentIds = agentPos.stream().map(agentPo1 -> {
+                return agentPo1.getId();
+            }).collect(Collectors.toList());
+            if(agentPos.size() > 0) {
+                Long agentUnderTotal = agentPickTotalDAO.sumPickUp(agentIds, week);
+                AgentPickTotalPo agentPickTotalPo = new AgentPickTotalPo();
+                agentPickTotalPo.setTotalUnderMoney(agentUnderTotal);
+                AgentPickTotalPo queryAgentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(), week);
+                agentPickTotalPo.setId(queryAgentPickTotalPo.getId());
+                agentPickTotalDAO.updateTotalPo(agentPickTotalPo);
+                log.info("agentId = {} ,agentUnderTotal = {} ",agentPo.getId(),agentUnderTotal);
+            }
+        });
+    }
+
+    private void staticNormalAgent(int week) {
         List<AgentPo> agentPoList = agentService.selectAll();
         agentPoList.stream().forEach(agentPo -> {
             AgentPickTotalPo agentPickTotalPo = new AgentPickTotalPo();
             agentPickTotalPo.setAgentId(agentPo.getId());
-            Set<Integer> underAgentIds = agentService.getAllBranchAgent(agentPo.getId(), false);
-            underAgentIds.stream().forEach(agentId -> {
-                AgentPo underAgentPo = agentService.selectById(agentId);
-                if (underAgentPo != null) {
-                    List<PlayerRelationPo> underPlayerPos = playerRelationDAO.selectUnderByPlayerId(underAgentPo.getPlayerId());
-                    List<Integer> playerIds = underPlayerPos.stream().map((playerRelationPo -> {
-                        return playerRelationPo.getPlayerId();
-                    })).collect(Collectors.toList());
-                    if (playerIds.size() > 0) {
-                        Long pickSum = playerPickTotalDAO.sumPickUp(playerIds, week);
-                        if (pickSum != null && pickSum > 0) {
-                             AgentPickTotalPo queryAgentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(), week);
-                            if (queryAgentPickTotalPo != null) {
-                                AgentPickTotalPo updatePickTotalPo = new AgentPickTotalPo();
-                                updatePickTotalPo.setLastUpdateTime(System.currentTimeMillis());
-                                updatePickTotalPo.setTotalMoney(pickSum);
-                                updatePickTotalPo.setId(queryAgentPickTotalPo.getId());
-                                int ret = agentPickTotalDAO.updateTotalPo(updatePickTotalPo);
-                            } else {
-                                AgentPickTotalPo newAgentPickTotalPo = new AgentPickTotalPo();
-                                newAgentPickTotalPo.setTotalMoney(pickSum);
-                                newAgentPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
-                                newAgentPickTotalPo.setAgentId(agentPo.getId());
-                                newAgentPickTotalPo.setWeek(week);
-                                agentPickTotalDAO.insertTotalPo(newAgentPickTotalPo);
-                            }
-                        }
-                    }
+            List<PlayerRelationPo> underPlayerPos = playerRelationDAO.selectUnderByPlayerId(agentPo.getPlayerId());
+            List<Integer> playerIds = underPlayerPos.stream().map((playerRelationPo -> {
+                return playerRelationPo.getPlayerId();
+            })).collect(Collectors.toList());
+            if (playerIds.size() > 0) {
+                Long pickSum = playerPickTotalDAO.sumPickUp(playerIds, week);
+                if (pickSum != null && pickSum > 0) {
+                    handlerData(agentPo.getId(),week,pickSum);
                 }
-            });
-
+            }
         });
-        log.info("结束代理玩家的总充值统计:{}",format.format(new Date()));
+    }
+
+    private void handlerData(Integer agentId,Integer week,Long pickSum){
+        AgentPickTotalPo queryAgentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentId, week);
+        if (queryAgentPickTotalPo != null) {
+            AgentPickTotalPo updatePickTotalPo = new AgentPickTotalPo();
+            updatePickTotalPo.setLastUpdateTime(System.currentTimeMillis());
+            updatePickTotalPo.setTotalMoney(pickSum);
+            updatePickTotalPo.setId(queryAgentPickTotalPo.getId());
+            int ret = agentPickTotalDAO.updateTotalPo(updatePickTotalPo);
+        } else {
+            AgentPickTotalPo newAgentPickTotalPo = new AgentPickTotalPo();
+            newAgentPickTotalPo.setTotalMoney(pickSum);
+            newAgentPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
+            newAgentPickTotalPo.setAgentId(agentId);
+            newAgentPickTotalPo.setTotalUnderMoney(0l);
+            newAgentPickTotalPo.setWeek(week);
+            agentPickTotalDAO.insertTotalPo(newAgentPickTotalPo);
+        }
     }
 }

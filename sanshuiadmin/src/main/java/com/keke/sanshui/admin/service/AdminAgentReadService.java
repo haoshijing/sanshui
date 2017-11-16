@@ -88,9 +88,11 @@ public class AdminAgentReadService {
                     }
                     AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentVo.getAgentId(), week);
                     if(agentPickTotalPo != null) {
-                        agentVo.setAgentUnderTotalPickUp(agentPickTotalPo.getTotalMoney()/100);
+                        agentVo.setAgentUnderTotalPickUp(agentPickTotalPo.getTotalMoney());
+                        agentVo.setAreaAgentUnderTotalPickUp(agentPickTotalPo.getTotalUnderMoney());
                     }else{
                         agentVo.setAgentUnderTotalPickUp(0L);
+                        agentVo.setAreaAgentUnderTotalPickUp(0L);
                     }
                     return agentVo;
                 }

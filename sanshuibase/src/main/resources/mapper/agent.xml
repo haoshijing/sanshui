@@ -136,7 +136,7 @@
     </insert>
 
     <select id="selectAll" resultType="AgentPo">
-        select playerId , id from  <include refid="tableName"/>
+        select playerId , id,level from  <include refid="tableName"/>
     </select>
 
 </mapper>

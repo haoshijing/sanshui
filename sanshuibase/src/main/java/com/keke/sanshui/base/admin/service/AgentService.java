@@ -13,8 +13,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class AgentService implements ApplicationContextAware {
@@ -103,20 +106,13 @@ public class AgentService implements ApplicationContextAware {
      * @param agentId
      * @return
      */
-    public Set<Integer> getAllBranchAgent(Integer agentId,boolean first){
+    public List<Integer> getAllBranchAgent(Integer agentId){
         AgentQueryPo queryAgentPo = new AgentQueryPo();
         queryAgentPo.setParentId(agentId);
-        Set<Integer> agentList = Sets.newHashSet();
         List<AgentPo> branchAgentList = agentDAO.selectList(queryAgentPo);
-
-        for(AgentPo agentPo:branchAgentList){
-          Set<Integer> ids =   getAllBranchAgent(agentPo.getId(),false);
-          agentList.addAll(ids);
-        }
-        if(!first) {
-            agentList.add(agentId);
-        }
-        return agentList;
+        return  branchAgentList.stream().map(agentPo -> {
+            return agentPo.getId();
+        }).collect(Collectors.toList());
     }
 
 
