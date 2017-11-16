@@ -25,10 +25,7 @@ public class AgentDAOTest {
 
     @Test
     public void testSelectPlayer(){
-       Set<Integer> agents = agentService.getAllBranchAgent(1,true);
-       for(Integer ret:agents){
-           System.out.println(ret);
-       }
+
     }
 
     @Test

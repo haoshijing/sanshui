@@ -18,7 +18,7 @@ public final class WeekUtil {
         calendar.set(Calendar.YEAR,2017);
         calendar.set(Calendar.MONTH,Calendar.OCTOBER);
         calendar.set(Calendar.DATE,22);
-        calendar.set(Calendar.HOUR,0);
+        calendar.set(Calendar.HOUR_OF_DAY,0);
         calendar.set(Calendar.MINUTE,0);
         calendar.set(Calendar.SECOND,0);
         long startTimestamp = calendar.getTimeInMillis();
