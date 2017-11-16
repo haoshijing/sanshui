@@ -37,6 +37,7 @@ public class AdminOrderReadService {
             orderItemVo.setSendStatus(order.getSendStatus());
             orderItemVo.setTitle(order.getTitle());
             orderItemVo.setPayType(order.getPayType());
+            orderItemVo.setPrice(order.getPrice());
             return orderItemVo;
         }).collect(Collectors.toList());
         return orderItemVos;
