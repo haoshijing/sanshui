@@ -2,6 +2,7 @@ package com.keke.sanshui.admin.service;
 
 import com.google.common.collect.Lists;
 import com.keke.sanshui.admin.response.index.PickDataResponse;
+import com.keke.sanshui.admin.response.index.PickLastWeekData;
 import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.po.order.QueryOrderPo;
 import com.keke.sanshui.base.admin.service.OrderService;
@@ -9,6 +10,8 @@ import com.keke.sanshui.base.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -22,10 +25,18 @@ public class IndexService {
         return getCurrentDayPick(0);
     }
 
-    public List<PickDataResponse> getLast7DayPick(){
-        List<PickDataResponse> list = Lists.newArrayList();
+    public List<PickLastWeekData> getLast7DayPick(){
+        List<PickLastWeekData> list = Lists.newArrayList();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         for(int i = -7; i < 0 ;i++){
-            list.add(getCurrentDayPick(i));
+            PickLastWeekData pickLastWeekData = new PickLastWeekData();
+            PickDataResponse pickDataResponse = getCurrentDayPick(i);
+            pickLastWeekData.setDayPickTotal(pickDataResponse.getDayPickTotal());
+            pickLastWeekData.setDaySuccessTotal(pickDataResponse.getDaySuccessTotal());
+            Long timestamp = TimeUtil.getDayStartTimestamp(i);
+            pickLastWeekData.setDateStr(simpleDateFormat.format(new Date(timestamp)));
+            list.add(pickLastWeekData);
         }
         return list;
     }

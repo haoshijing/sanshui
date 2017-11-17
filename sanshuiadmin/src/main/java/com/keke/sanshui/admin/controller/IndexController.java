@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.keke.sanshui.admin.response.ApiResponse;
 import com.keke.sanshui.admin.response.RetCode;
 import com.keke.sanshui.admin.response.index.PickDataResponse;
+import com.keke.sanshui.admin.response.index.PickLastWeekData;
 import com.keke.sanshui.admin.service.IndexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,9 @@ public class IndexController {
 
     @RequestMapping("/getLastWeekPick")
     @ResponseBody
-    public ApiResponse<List<PickDataResponse>> getLastWeekPick(){
+    public ApiResponse<List<PickLastWeekData>> getLastWeekPick(){
         try{
-            List<PickDataResponse> responses = indexService.getLast7DayPick();
+            List<PickLastWeekData> responses = indexService.getLast7DayPick();
             return new ApiResponse<>(responses);
         }catch (Exception e){
             log.error("{}",e);
