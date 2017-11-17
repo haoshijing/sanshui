@@ -38,9 +38,6 @@
                             <value>dev</value>
                         </systemProperty>
                     </systemProperties>
-                    <webapp>
-                        <contextPath>/</contextPath>
-                    </webapp>
                 </configuration>
             </plugin>
         </plugins>

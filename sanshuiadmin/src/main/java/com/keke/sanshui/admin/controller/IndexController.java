@@ -1,5 +1,6 @@
 package com.keke.sanshui.admin.controller;
 
+import com.google.common.collect.Lists;
 import com.keke.sanshui.admin.response.ApiResponse;
 import com.keke.sanshui.admin.response.RetCode;
 import com.keke.sanshui.admin.response.index.PickDataResponse;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
+
 @RequestMapping("/index")
 @Controller
 @Slf4j
@@ -17,11 +20,12 @@ public class IndexController {
 
     @Autowired
     private IndexService indexService;
+
     @RequestMapping("/currentDayTotal")
     @ResponseBody
     public ApiResponse<PickDataResponse> currentDayTotal(){
         PickDataResponse pickDataResponse = new PickDataResponse();
-        pickDataResponse.setDayPickTotal(0l);
+        pickDataResponse.setDayPickTotal(0L);
         pickDataResponse.setDaySuccessTotal(0L);
         try{
             pickDataResponse = indexService.getCurrentDayPick();
@@ -29,6 +33,18 @@ public class IndexController {
         }catch (Exception e){
             log.error("{}",e);
             return new ApiResponse<>(RetCode.SERVER_ERROR,"获取失败",pickDataResponse);
+        }
+    }
+
+    @RequestMapping("/getLastWeekPick")
+    @ResponseBody
+    public ApiResponse<List<PickDataResponse>> getLastWeekPick(){
+        try{
+            List<PickDataResponse> responses = indexService.getLast7DayPick();
+            return new ApiResponse<>(responses);
+        }catch (Exception e){
+            log.error("{}",e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR,"获取失败", Lists.newArrayList());
         }
     }
 }
