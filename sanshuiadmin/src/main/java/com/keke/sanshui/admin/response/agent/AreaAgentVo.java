@@ -6,4 +6,5 @@ import lombok.Data;
 public class AreaAgentVo {
     private Integer agentId;
     private String wechartNo;
+    private Integer guid;
 }

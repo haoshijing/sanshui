@@ -151,7 +151,6 @@ public  class PlayerDataParser {
         playerPo.setInsertTime(System.currentTimeMillis());
         playerPo.setLastUpdateTime(System.currentTimeMillis());
 
-
         PlayerInfo playerInfo = new PlayerInfo();
         playerInfo.setPlayerCouponPo(playerCouponPo);
         playerInfo.setPlayerPo(playerPo);

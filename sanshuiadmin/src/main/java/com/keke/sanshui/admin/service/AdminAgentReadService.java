@@ -6,13 +6,11 @@ import com.keke.sanshui.admin.response.agent.UnderAgentVo;
 import com.keke.sanshui.admin.response.agent.UnderPlayerVo;
 import com.keke.sanshui.admin.vo.AgentVo;
 import com.keke.sanshui.base.admin.dao.AgentPickTotalDAO;
+import com.keke.sanshui.base.admin.dao.PlayerDAO;
 import com.keke.sanshui.base.admin.dao.PlayerPickTotalDAO;
 import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
-import com.keke.sanshui.base.admin.po.AgentPickTotalPo;
-import com.keke.sanshui.base.admin.po.PlayerRelationPo;
+import com.keke.sanshui.base.admin.po.*;
 import com.keke.sanshui.base.admin.po.agent.AgentPo;
-import com.keke.sanshui.base.admin.po.PlayerCouponPo;
-import com.keke.sanshui.base.admin.po.PlayerPickTotalPo;
 import com.keke.sanshui.base.admin.po.agent.AgentQueryPo;
 import com.keke.sanshui.base.admin.service.AgentService;
 import com.keke.sanshui.base.admin.service.PlayerCouponService;
@@ -40,6 +38,9 @@ public class AdminAgentReadService {
 
     @Autowired
     PlayerRelationDAO playerRelationDAO;
+
+    @Autowired
+    PlayerDAO playerDAO;
 
     public List<AgentVo> selectAgentVoList(AgentQueryVo agentQueryVo) {
         AgentQueryPo queryAgentPo = new AgentQueryPo();
@@ -128,6 +129,12 @@ public class AdminAgentReadService {
         return playerRelationPos.stream().map(playerRelationPo -> {
             UnderPlayerVo underPlayerVo = new UnderPlayerVo();
             Integer playerId = playerRelationPo.getPlayerId();
+            PlayerPo playerPo = playerDAO.selectByPlayId(playerId);
+            if(playerPo != null){
+                underPlayerVo.setName(playerPo.getName());
+            }else{
+                underPlayerVo.setName("");
+            }
             underPlayerVo.setPlayerGuid(playerRelationPo.getPlayerId());
             PlayerPickTotalPo playerPickTotalPo =  playerPickTotalDAO.selectByPlayerId(playerId,week);
             Long pickTotal = 0L;

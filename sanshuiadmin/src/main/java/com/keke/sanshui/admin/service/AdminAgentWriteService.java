@@ -130,6 +130,7 @@ public class AdminAgentWriteService {
             return true;
         }).map(agentPo -> {
             AreaAgentVo agentVo = new AreaAgentVo();
+            agentVo.setGuid(agentPo.getPlayerId());
             agentVo.setAgentId(agentPo.getId());
             agentVo.setWechartNo(agentPo.getAgentWeChartNo());
             return agentVo;

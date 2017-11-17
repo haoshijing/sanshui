@@ -12,6 +12,11 @@ public class UnderPlayerVo {
      * 玩家guid
      */
     private Integer playerGuid;
+
+    /**
+     * 玩家name
+     */
+    private String name;
     /**
      * 玩家总充值
      */
