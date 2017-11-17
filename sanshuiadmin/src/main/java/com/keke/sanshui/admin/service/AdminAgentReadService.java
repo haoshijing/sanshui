@@ -2,6 +2,7 @@ package com.keke.sanshui.admin.service;
 
 
 import com.keke.sanshui.admin.request.agent.AgentQueryVo;
+import com.keke.sanshui.admin.response.agent.AgentExportVo;
 import com.keke.sanshui.admin.response.agent.UnderAgentVo;
 import com.keke.sanshui.admin.response.agent.UnderPlayerVo;
 import com.keke.sanshui.admin.vo.AgentVo;
@@ -41,6 +42,7 @@ public class AdminAgentReadService {
 
     @Autowired
     PlayerDAO playerDAO;
+
 
     public List<AgentVo> selectAgentVoList(AgentQueryVo agentQueryVo) {
         AgentQueryPo queryAgentPo = new AgentQueryPo();
@@ -174,5 +176,21 @@ public class AdminAgentReadService {
             }
             return underAgentVo;
         }).collect(Collectors.toList());
+    }
+
+    public List<AgentExportVo> exportAgentPick(String week) {
+        List<AgentExportVo> agentExportVos = agentPickTotalDAO.exportAgent(Integer.valueOf(week))
+                .stream().map(agentPickTotalPo -> {
+                    AgentExportVo agentExportVo = new AgentExportVo();
+                    agentExportVo.setUnderAgentMoney(agentPickTotalPo.getTotalUnderMoney() == null ? 0L :agentPickTotalPo.getTotalUnderMoney());
+                    agentExportVo.setUnderMonery(agentPickTotalPo.getTotalMoney() == null ?0L:agentPickTotalPo.getTotalMoney());
+                    agentExportVo.setWeek(week);
+                    AgentPo agentPo  = agentService.selectById(agentPickTotalPo.getAgentId());
+                    if(agentPo != null) {
+                        agentExportVo.setGuid(agentPo.getPlayerId());
+                    }
+                    return agentExportVo;
+                }).collect(Collectors.toList());
+        return agentExportVos;
     }
 }

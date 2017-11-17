@@ -64,8 +64,12 @@ public class AgentTotalService {
             }).collect(Collectors.toList());
             if(agentPos.size() > 0) {
                 Long agentUnderTotal = agentPickTotalDAO.sumPickUp(agentIds, week);
+                if(agentUnderTotal == null){
+                    agentUnderTotal = 0L;
+                }
                 AgentPickTotalPo agentPickTotalPo = new AgentPickTotalPo();
                 agentPickTotalPo.setTotalUnderMoney(agentUnderTotal);
+
                 AgentPickTotalPo queryAgentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(), week);
                 if(queryAgentPickTotalPo == null){
                     AgentPickTotalPo newAgentPickTotalPo = new AgentPickTotalPo();

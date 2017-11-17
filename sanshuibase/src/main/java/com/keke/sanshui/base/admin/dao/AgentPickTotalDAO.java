@@ -27,4 +27,6 @@ public interface AgentPickTotalDAO {
     Long sumPickUp(@Param("agentIds") List<Integer> agentIds, @Param("week") Integer week);
 
     Long sumUnderPickUp(@Param("agentId") Integer parentAgentId, @Param("week") Integer week);
+
+    List<AgentPickTotalPo> exportAgent(@Param("week") Integer week);
 }

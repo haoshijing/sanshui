@@ -6,6 +6,7 @@ import com.keke.sanshui.admin.request.AgentRequestVo;
 import com.keke.sanshui.admin.request.agent.AgentQueryVo;
 import com.keke.sanshui.admin.response.ApiResponse;
 import com.keke.sanshui.admin.response.RetCode;
+import com.keke.sanshui.admin.response.agent.AgentExportVo;
 import com.keke.sanshui.admin.response.agent.AreaAgentVo;
 import com.keke.sanshui.admin.response.agent.UnderAgentVo;
 import com.keke.sanshui.admin.response.agent.UnderPlayerVo;
@@ -49,7 +50,6 @@ public class AgentController{
     @RequestMapping("/resetPwd")
     @ResponseBody
     public ApiResponse<Boolean> resetPwd(Integer agentId){
-        Integer week = WeekUtil.getCurrentWeek();
         try {
             return new ApiResponse<>(adminAgentWriteService.resetPwd(agentId));
         }catch (Exception e){
@@ -137,4 +137,16 @@ public class AgentController{
             return new ApiResponse<>(RetCode.SERVER_ERROR,"",Lists.newArrayList());
         }
     }
+    @RequestMapping("/exportAgentPick")
+    @ResponseBody
+    public ApiResponse<List<AgentExportVo>> exportAgentPick(String week){
+        try{
+            List<AgentExportVo> agentExportVos = adminAgentReadService.exportAgentPick(week);
+            return new ApiResponse<>(agentExportVos);
+        }catch (Exception e){
+            log.error("exportAgentPick {} error", week, e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR,"",Lists.newArrayList());
+        }
+    }
+
 }
