@@ -67,8 +67,18 @@ public class AgentTotalService {
                 AgentPickTotalPo agentPickTotalPo = new AgentPickTotalPo();
                 agentPickTotalPo.setTotalUnderMoney(agentUnderTotal);
                 AgentPickTotalPo queryAgentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(), week);
-                agentPickTotalPo.setId(queryAgentPickTotalPo.getId());
-                agentPickTotalDAO.updateTotalPo(agentPickTotalPo);
+                if(queryAgentPickTotalPo == null){
+                    AgentPickTotalPo newAgentPickTotalPo = new AgentPickTotalPo();
+                    newAgentPickTotalPo.setTotalMoney(0L);
+                    newAgentPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
+                    newAgentPickTotalPo.setAgentId(agentPo.getId());
+                    newAgentPickTotalPo.setTotalUnderMoney(agentUnderTotal);
+                    newAgentPickTotalPo.setWeek(week);
+                    agentPickTotalDAO.insertTotalPo(newAgentPickTotalPo);
+                }else {
+                    agentPickTotalPo.setId(queryAgentPickTotalPo.getId());
+                    agentPickTotalDAO.updateTotalPo(agentPickTotalPo);
+                }
                 log.info("agentId = {} ,agentUnderTotal = {} ",agentPo.getId(),agentUnderTotal);
             }
         });
@@ -105,7 +115,7 @@ public class AgentTotalService {
             newAgentPickTotalPo.setTotalMoney(pickSum);
             newAgentPickTotalPo.setLastUpdateTime(System.currentTimeMillis());
             newAgentPickTotalPo.setAgentId(agentId);
-            newAgentPickTotalPo.setTotalUnderMoney(0l);
+            newAgentPickTotalPo.setTotalUnderMoney(0L);
             newAgentPickTotalPo.setWeek(week);
             agentPickTotalDAO.insertTotalPo(newAgentPickTotalPo);
         }
