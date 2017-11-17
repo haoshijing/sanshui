@@ -50,7 +50,7 @@ public class AgentTotalService {
         }
         log.info("结束代理玩家的总充值统计:{}",format.format(new Date()));
     }
-    private void staticAreaAgent(int week) {
+    public void staticAreaAgent(int week) {
         List<AgentPo> agentPoList = agentService.selectAll();
         agentPoList.stream().filter(agentPo -> {
             return agentPo.getLevel() == 2;
@@ -84,7 +84,7 @@ public class AgentTotalService {
         });
     }
 
-    private void staticNormalAgent(int week) {
+    public void staticNormalAgent(int week) {
         List<AgentPo> agentPoList = agentService.selectAll();
         agentPoList.stream().forEach(agentPo -> {
             AgentPickTotalPo agentPickTotalPo = new AgentPickTotalPo();

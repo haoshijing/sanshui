@@ -38,6 +38,18 @@ public final class WeekUtil {
 
     }
 
+    public static long getWeekStartTimestamp(int week){
+        Calendar cal = Calendar.getInstance();
+        cal.set(2017,Calendar.OCTOBER,23,0,0,0);
+        cal.set(Calendar.WEEK_OF_YEAR,cal.get(Calendar.WEEK_OF_YEAR)+(week-1));
+        return cal.getTimeInMillis();
+    }
+    public static long getWeekEndTimestamp(int week){
+        Calendar cal = Calendar.getInstance();
+        cal.set(2017,Calendar.OCTOBER,29,23,59,59);
+        cal.set(Calendar.WEEK_OF_YEAR,cal.get(Calendar.WEEK_OF_YEAR)+(week-1));
+        return cal.getTimeInMillis();
+    }
     public static long getWeekStartTimestamp(){
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -59,7 +71,13 @@ public final class WeekUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(getWeekStartTimestamp());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      for(int i = 1 ; i < 4;i++){
+          long start = getWeekStartTimestamp(i);
+          long end = getWeekEndTimestamp(i);
+          System.out.println("start = [" + format.format(new Date(start)) + "]");
+          System.out.println("end = [" + format.format(new Date(end)) + "]");
+      }
     }
 
 }
