@@ -8,6 +8,7 @@ public class AgentQueryVo {
     private String nickName;
     private String userName;
     private Integer guid;
+    private Integer week;
     private Integer level;
     private Integer page = 1;
     private Integer limit = 20;

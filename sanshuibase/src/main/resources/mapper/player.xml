@@ -24,24 +24,37 @@
           playerId,
           openId ,
           name,
+          otherName,
           insertTime,
           lastUpdateTime,
-          status
+          status,
+          gameInsertTime
           )
          select
           #{player.id},
           #{player.playerId},
-          #{player.openId} ,
-          #{player.name} ,
+          #{player.openId},
+          #{player.name},
+          #{player.otherName} ,
           #{player.insertTime} ,
-          #{player.lastUpdateTime },
-          #{player.status}
-
+          #{player.lastUpdateTime},
+          #{player.status},
+          #{player.gameInsertTime}
     </insert>
 
     <select id="selectByPlayId" resultType="PlayerPo">
         select * from t_player where  playerId = #{playerId}
     </select>
+
+    <sql id="queryWhere">
+        <if test = "param.playerId != null and param.playerId != ''">
+            AND  playerId   = #{param.playerId }
+        </if>
+        <if test = "param.otherName != null and param.otherName != ''">
+            AND  otherName  like concat('%',concat(#{param.otherName},'%'))
+        </if>
+
+    </sql>
 
     <update id="updatePlayer" parameterType="PlayerPo">
         update t_player
@@ -49,6 +62,12 @@
         <set>
             <if test = "param.openId != null">
                 openId = #{param.openId},
+            </if>
+            <if test = "param.otherName != null">
+                otherName = #{param.otherName},
+            </if>
+            <if test = "param.name != null">
+                name = #{param.name},
             </if>
             <if test = "param.status != null">
                 status = #{param.status},
@@ -79,4 +98,20 @@
             </if>
         </where>
     </select>
+
+    <select id = "queryList" parameterType="QueryPlayerPo" resultType="PlayerPo">
+        select * from     <include refid="tableName"/>
+        <where>
+            <include refid="queryWhere"/>
+        </where>
+        order by id desc
+    </select>
+
+    <select id = "queryCount" parameterType="QueryPlayerPo" resultType="java.lang.Long">
+        select count(1) from   <include refid="tableName"/>
+        <where>
+            <include refid="queryWhere"/>
+        </where>
+    </select>
+
 </mapper>

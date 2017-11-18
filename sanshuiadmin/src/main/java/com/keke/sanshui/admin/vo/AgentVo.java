@@ -13,6 +13,7 @@ public class AgentVo {
     private Integer sliverCount;
     private Integer type;
     private String memo;
+    private String week;
     private Integer parentAgentId;
     /**
      * 会员个数

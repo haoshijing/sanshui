@@ -4,8 +4,17 @@ import lombok.Data;
 
 @Data
 public class AgentExportVo {
+    /**
+     * guid
+     */
     private Integer guid;
+    /**
+     * 下属直冲
+     */
     private Long underMonery;
+    /**
+     * 下级代理总充
+     */
     private Long underAgentMoney;
     private String week;
 }

@@ -15,6 +15,12 @@
         WHERE playerId = #{playerId}
     </select>
 
+    <update id="updatePlayerRelation" parameterType="PlayerRelationPo">
+        update   <include refid="tableName"/>
+        set parentPlayerId = #{param.parentPlayerId}
+        where id = #{param.id}
+    </update>
+
     <insert id="insertRelation" parameterType="PlayerRelationPo">
         INSERT INTO
         <include refid="tableName"/>

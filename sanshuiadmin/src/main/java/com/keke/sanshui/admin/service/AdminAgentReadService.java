@@ -19,6 +19,8 @@ import com.keke.sanshui.base.util.WeekUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +61,7 @@ public class AdminAgentReadService {
         }
         queryAgentPo.setOffset((page- 1)*agentQueryVo.getLimit());
         List<AgentPo> agentPos = agentService.selectList(queryAgentPo);
-        Integer week = WeekUtil.getCurrentWeek();
+        Integer week =  agentQueryVo.getWeek();
         List<AgentVo> agentVos = agentPos.stream().map(eachAgentPo -> {
             AgentVo agentVo = new AgentVo();
             agentVo.setGameId(eachAgentPo.getPlayerId());
@@ -70,6 +72,7 @@ public class AdminAgentReadService {
             agentVo.setAgentId(eachAgentPo.getId());
             agentVo.setParentAgentId(eachAgentPo.getParentId());
             agentVo.setMemo(eachAgentPo.getMemo());
+            agentVo.setWeek(agentQueryVo.getWeek().toString());
             return agentVo;
 
         }).map(agentVo -> {
@@ -127,15 +130,19 @@ public class AdminAgentReadService {
 
     public List<UnderPlayerVo> obtainUnderPlayer(Integer agentGuid) {
         List<PlayerRelationPo> playerRelationPos = playerRelationDAO.selectUnderByPlayerId(agentGuid);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Integer week = WeekUtil.getCurrentWeek();
         return playerRelationPos.stream().map(playerRelationPo -> {
             UnderPlayerVo underPlayerVo = new UnderPlayerVo();
             Integer playerId = playerRelationPo.getPlayerId();
             PlayerPo playerPo = playerDAO.selectByPlayId(playerId);
             if(playerPo != null){
-                underPlayerVo.setName(playerPo.getName());
+                underPlayerVo.setName(playerPo.getOtherName());
             }else{
                 underPlayerVo.setName("");
+            }
+            if(playerPo.getGameInsertTime() != null) {
+                underPlayerVo.setCreateTime(format.format(new Date(playerPo.getGameInsertTime())));
             }
             underPlayerVo.setPlayerGuid(playerRelationPo.getPlayerId());
             PlayerPickTotalPo playerPickTotalPo =  playerPickTotalDAO.selectByPlayerId(playerId,week);

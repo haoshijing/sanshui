@@ -109,12 +109,15 @@ id  int primary key auto_increment comment '主键id',
 playerId int comment '玩家游戏id',
 openId varchar(255) comment '玩家游戏id',
 name varchar(255) comment 'baseData中的name',
+otherName varchar(255) comment '昵称',
 insertTime bigint comment '写入到数据库的时间',
 lastUpdateTime bigint comment '最后修改时间',
+gameInsertTime varchar(25) comment '游戏服务创建时间',
 status int comment '玩家状态'
 );
+ALTER TABLE t_player MODIFY COLUMN otherName VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 alter table t_player add  index pid_idx(playerId);
-alter table t_player add unique index player_player_openid(playerId,openId);
+
 
 
 #后台权限管理表

@@ -21,4 +21,6 @@ public class UnderPlayerVo {
      * 玩家总充值
      */
     private Long playerPickUp;
+
+    private String createTime;
 }

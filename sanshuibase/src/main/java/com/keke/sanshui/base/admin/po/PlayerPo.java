@@ -12,4 +12,9 @@ public class PlayerPo {
     private Integer status;
     private String name;
     private Long money;
+    private String otherName;
+    /**
+     * 游戏服务器创建时间
+   */
+    private Long gameInsertTime;
 }

@@ -3,10 +3,10 @@ package com.keke.sanshui.syncdata.canal.util;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.po.PlayerCouponPo;
 import com.keke.sanshui.base.admin.po.PlayerPo;
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
+import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Data;
@@ -18,6 +18,7 @@ import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 @Repository
 @Slf4j
 public  class PlayerDataParser {
-
     @Autowired
     private HttpClient httpClient;
 
@@ -47,6 +47,12 @@ public  class PlayerDataParser {
         byte[] sourceData = (byte[]) data.get("base_data");
         byte[] deEncryptByteData = deEncrypt(sourceData);
         PlayerInfo playerInfo = getPlayerInfo(playerId.intValue(), deEncryptByteData);
+        Timestamp createTime = (Timestamp)data.get("create_time");
+        String otherName = (String)data.get("other_name");
+        otherName= removeNonBmpUnicode(otherName);
+        PlayerPo playerPo = playerInfo.getPlayerPo();
+        playerPo.setOtherName(otherName);
+        playerPo.setGameInsertTime(createTime.getTime());
         return playerInfo;
     }
 
@@ -179,5 +185,12 @@ public  class PlayerDataParser {
 
         }
         return responseData;
+    }
+    public static String removeNonBmpUnicode(String str) {
+        if (str == null) {
+            return null;
+        }
+        str = str.replaceAll("[^\\u0000-\\uFFFF]", "");
+        return str;
     }
 }

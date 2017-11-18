@@ -3,6 +3,7 @@ package com.keke.sanshui.syncdata.canal.full;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.keke.sanshui.base.admin.dao.AgentDAO;
 import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
+import com.keke.sanshui.base.admin.po.PlayerRelationPo;
 import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.service.PlayerService;
 import com.keke.sanshui.syncdata.canal.util.PlayerDataParser;
@@ -91,10 +92,18 @@ public class FullSyncDataService {
             playerAndAgentData.getPlayerRelationPos().forEach(playerRelationPo -> {
                 Integer parentId = playerRelationPo.getParentPlayerId().intValue();
                 Integer playerId = playerRelationPo.getPlayerId().intValue();
-                boolean isInDb = playerRelationDAO.queryByAgentAndPlayerGuid(parentId, playerId) > 0;
-                if (!isInDb) {
+
+                PlayerRelationPo playerRelationPo1 = playerRelationDAO.selectByPlayerId(playerId);
+                if(playerRelationPo1 != null){
+                    PlayerRelationPo updatePlayerRelationPo = new PlayerRelationPo();
+                    updatePlayerRelationPo.setPlayerId(playerId);
+                    updatePlayerRelationPo.setId(playerRelationPo1.getId());
+                    updatePlayerRelationPo.setParentPlayerId(parentId);
+                    playerRelationDAO.updatePlayerRelation(updatePlayerRelationPo);
+                }else{
                     playerRelationDAO.insertRelation(playerRelationPo);
                 }
+
             });
             playerAndAgentData.getAgentPos().forEach(agentPo -> {
                 AgentPo queryPo = agentDAO.selectByPlayerId(agentPo.getPlayerId());
@@ -121,8 +130,12 @@ public class FullSyncDataService {
                 if (!playerService.checkPlayerExsist(playerId.intValue())) {
                     PlayerDataParser.PlayerInfo playerInfo = parser.parseFromBaseData(data);
                     if (playerInfo != null) {
-                        playerService.insertPlayer(playerInfo.getPlayerPo());
-                        playerService.insertPlayerCoupon(playerInfo.getPlayerCouponPo());
+                        try {
+                            playerService.insertPlayer(playerInfo.getPlayerPo());
+                            playerService.insertPlayerCoupon(playerInfo.getPlayerCouponPo());
+                        }catch (Exception e){
+                            log.error("",e);
+                        }
                     }
                 }
             }catch (Exception e){

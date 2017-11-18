@@ -38,8 +38,12 @@ public class AgentController{
     @RequestMapping("/list")
     @ResponseBody
     public ApiResponse<List<AgentVo>> queryList(@RequestBody AgentQueryVo agentQueryVo){
-        Integer week = WeekUtil.getCurrentWeek();
+
         try {
+            if(agentQueryVo.getWeek() == null){
+                Integer week = WeekUtil.getCurrentWeek();
+                agentQueryVo.setWeek(week);
+            }
             return new ApiResponse<>(adminAgentReadService.selectAgentVoList(agentQueryVo));
         }catch (Exception e){
             log.error("{}",e);
