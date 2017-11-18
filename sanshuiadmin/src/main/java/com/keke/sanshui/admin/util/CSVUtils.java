@@ -1,5 +1,8 @@
 package com.keke.sanshui.admin.util;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,54 +12,100 @@ import java.util.List;
  * Created on 2014-08-07
  * @author
  * @reviewer
+
+
+/**
+ * CSV操作(导出和导入)
+ *
+ * @author 林计钦
+ * @version 1.0 Jan 27, 2014 4:30:58 PM
  */
+@Slf4j
 public class CSVUtils {
 
     /**
-     * CSV文件生成方法
-     * @param head
-     * @param dataList
+     * 导出
+     *
+     * @param file csv文件(路径+文件名)，csv文件不存在会自动创建
+     * @param dataList 数据
      * @return
      */
-    public static void createCSVFile(List<Object> head, List<List<Object>> dataList, Writer writer) {
+    public static boolean exportCsv(File file, List<String> dataList){
+        boolean isSucess=false;
 
-        BufferedWriter csvWtriter = null;
+        FileOutputStream out=null;
+        OutputStreamWriter osw=null;
+        BufferedWriter bw=null;
         try {
-
-            // GB2312使正确读取分隔符","
-            csvWtriter = new BufferedWriter(writer, 1024);
-            // 写入文件头部
-            writeRow(head, csvWtriter);
-
-            // 写入文件内容
-            for (List<Object> row : dataList) {
-                writeRow(row, csvWtriter);
+            out = new FileOutputStream(file);
+            osw = new OutputStreamWriter(out);
+            bw =new BufferedWriter(osw);
+            if(dataList!=null && !dataList.isEmpty()){
+                for(String data : dataList){
+                    bw.append(data).append("\r");
+                }
             }
-            csvWtriter.flush();
+            isSucess=true;
         } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                csvWtriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            isSucess=false;
+        }finally{
+            if(bw!=null){
+                try {
+                    bw.close();
+                    bw=null;
+                } catch (IOException e) {
+                    log.error("",e);
+                }
+            }
+            if(osw!=null){
+                try {
+                    osw.close();
+                    osw=null;
+                } catch (IOException e) {
+                    log.error("",e);
+                }
+            }
+            if(out!=null){
+                try {
+                    out.close();
+                    out=null;
+                } catch (IOException e) {
+                    log.error("",e);
+                }
             }
         }
+
+        return isSucess;
     }
 
     /**
-     * 写一行数据方法
-     * @param row
-     * @param csvWriter
-     * @throws IOException
+     * 导入
+     *
+     * @param file csv文件(路径+文件)
+     * @return
      */
-    private static void writeRow(List<Object> row, BufferedWriter csvWriter) throws IOException {
-        // 写入文件头部
-        for (Object data : row) {
-            StringBuffer sb = new StringBuffer();
-            String rowStr = sb.append("\"").append(data).append("\",").toString();
-            csvWriter.write(rowStr);
+    public static List<String> importCsv(File file){
+        List<String> dataList=new ArrayList<String>();
+
+        BufferedReader br=null;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                dataList.add(line);
+            }
+        }catch (Exception e) {
+        }finally{
+            if(br!=null){
+                try {
+                    br.close();
+                    br=null;
+                } catch (IOException e) {
+                    log.error("",e);
+                }
+            }
         }
-        csvWriter.newLine();
+
+        return dataList;
     }
 }

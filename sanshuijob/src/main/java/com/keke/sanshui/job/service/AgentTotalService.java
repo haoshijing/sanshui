@@ -57,6 +57,7 @@ public class AgentTotalService {
         }).forEach(agentPo -> {
             AgentQueryPo agentQueryPo = new AgentQueryPo();
             agentQueryPo.setParentId(agentPo.getId());
+            agentQueryPo.setLimit(10000);
             List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
 
             List<Integer> agentIds = agentPos.stream().map(agentPo1 -> {

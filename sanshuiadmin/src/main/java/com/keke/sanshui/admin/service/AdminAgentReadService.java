@@ -1,10 +1,12 @@
 package com.keke.sanshui.admin.service;
 
 
+import com.google.common.collect.Lists;
 import com.keke.sanshui.admin.request.agent.AgentQueryVo;
 import com.keke.sanshui.admin.response.agent.AgentExportVo;
 import com.keke.sanshui.admin.response.agent.UnderAgentVo;
 import com.keke.sanshui.admin.response.agent.UnderPlayerVo;
+import com.keke.sanshui.admin.util.CSVUtils;
 import com.keke.sanshui.admin.vo.AgentVo;
 import com.keke.sanshui.base.admin.dao.AgentPickTotalDAO;
 import com.keke.sanshui.base.admin.dao.PlayerDAO;
@@ -16,15 +18,28 @@ import com.keke.sanshui.base.admin.po.agent.AgentQueryPo;
 import com.keke.sanshui.base.admin.service.AgentService;
 import com.keke.sanshui.base.admin.service.PlayerCouponService;
 import com.keke.sanshui.base.util.WeekUtil;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
+@Slf4j
 public class AdminAgentReadService {
 
     @Autowired
@@ -56,12 +71,12 @@ public class AdminAgentReadService {
         queryAgentPo.setAgentWeChartNo(agentQueryVo.getWechartNo());
         queryAgentPo.setStatus(1);
         Integer page = agentQueryVo.getPage();
-        if(page == 0){
+        if (page == 0) {
             page = 1;
         }
-        queryAgentPo.setOffset((page- 1)*agentQueryVo.getLimit());
+        queryAgentPo.setOffset((page - 1) * agentQueryVo.getLimit());
         List<AgentPo> agentPos = agentService.selectList(queryAgentPo);
-        Integer week =  agentQueryVo.getWeek();
+        Integer week = agentQueryVo.getWeek();
         List<AgentVo> agentVos = agentPos.stream().map(eachAgentPo -> {
             AgentVo agentVo = new AgentVo();
             agentVo.setGameId(eachAgentPo.getPlayerId());
@@ -87,16 +102,16 @@ public class AdminAgentReadService {
             return agentVo;
         }).map(agentVo -> {
                     PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(agentVo.getGameId(), week);
-                    if(playerPickTotalPo != null) {
-                        agentVo.setAgentTotalPickUp(playerPickTotalPo.getTotalMoney() / 100);
-                    }else{
+                    if (playerPickTotalPo != null) {
+                        agentVo.setAgentTotalPickUp(playerPickTotalPo.getTotalMoney());
+                    } else {
                         agentVo.setAgentTotalPickUp(0L);
                     }
                     AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentVo.getAgentId(), week);
-                    if(agentPickTotalPo != null) {
+                    if (agentPickTotalPo != null) {
                         agentVo.setAgentUnderTotalPickUp(agentPickTotalPo.getTotalMoney());
                         agentVo.setAreaAgentUnderTotalPickUp(agentPickTotalPo.getTotalUnderMoney());
-                    }else{
+                    } else {
                         agentVo.setAgentUnderTotalPickUp(0L);
                         agentVo.setAreaAgentUnderTotalPickUp(0L);
                     }
@@ -106,10 +121,10 @@ public class AdminAgentReadService {
             Integer count = playerRelationDAO.selectUnderByPlayerId(agentVo.getGameId()).size();
             String underAgentCount = "-";
             agentVo.setMemberCount(count);
-            if(agentVo.getType() == 2){
+            if (agentVo.getType() == 2) {
                 AgentQueryPo tmpQueryVo = new AgentQueryPo();
                 tmpQueryVo.setParentId(agentVo.getAgentId());
-                underAgentCount = String.valueOf(agentService.selectList(tmpQueryVo).size());
+                underAgentCount = String.valueOf(agentService.selectCount(tmpQueryVo));
             }
             agentVo.setUnderAgentCount(underAgentCount);
             return agentVo;
@@ -136,18 +151,18 @@ public class AdminAgentReadService {
             UnderPlayerVo underPlayerVo = new UnderPlayerVo();
             Integer playerId = playerRelationPo.getPlayerId();
             PlayerPo playerPo = playerDAO.selectByPlayId(playerId);
-            if(playerPo != null){
+            if (playerPo != null) {
                 underPlayerVo.setName(playerPo.getOtherName());
-            }else{
+            } else {
                 underPlayerVo.setName("");
             }
-            if(playerPo.getGameInsertTime() != null) {
+            if (playerPo.getGameInsertTime() != null) {
                 underPlayerVo.setCreateTime(format.format(new Date(playerPo.getGameInsertTime())));
             }
             underPlayerVo.setPlayerGuid(playerRelationPo.getPlayerId());
-            PlayerPickTotalPo playerPickTotalPo =  playerPickTotalDAO.selectByPlayerId(playerId,week);
+            PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(playerId, week);
             Long pickTotal = 0L;
-            if(playerPickTotalPo != null){
+            if (playerPickTotalPo != null) {
                 pickTotal = playerPickTotalPo.getTotalMoney();
             }
             underPlayerVo.setPlayerPickUp(pickTotal);
@@ -159,6 +174,7 @@ public class AdminAgentReadService {
         AgentQueryPo agentQueryPo = new AgentQueryPo();
         agentQueryPo.setParentId(agentId);
         agentQueryPo.setStatus(1);
+        agentQueryPo.setLimit(10000);
         Integer week = WeekUtil.getCurrentWeek();
         List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
         return agentPos.stream().map(agentPo -> {
@@ -169,32 +185,86 @@ public class AdminAgentReadService {
             underAgentVo.setAgentId(agentPo.getId());
             underAgentVo.setUsername(agentPo.getAgentName());
 
-            PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(agentPo.getPlayerId(),week);
-            if(playerPickTotalPo != null){
+            PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(agentPo.getPlayerId(), week);
+            if (playerPickTotalPo != null) {
                 underAgentVo.setProxyPickTotal(playerPickTotalPo.getTotalMoney());
-            }else{
+            } else {
                 underAgentVo.setProxyPickTotal(0L);
             }
-            AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(),week);
-            if(agentPickTotalPo != null){
+            AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(), week);
+            if (agentPickTotalPo != null) {
                 underAgentVo.setProxyAgentTotal(agentPickTotalPo.getTotalMoney());
-            }else{
+            } else {
                 underAgentVo.setProxyAgentTotal(0L);
             }
             return underAgentVo;
         }).collect(Collectors.toList());
     }
 
-    public List<AgentExportVo> exportAgentPick(String week) {
-        List<AgentExportVo> agentExportVos = agentPickTotalDAO.exportAgent(Integer.valueOf(week))
+    public List<AgentExportVo> exportAgentPick(String weeks, HttpServletResponse response) {
+        List<AgentExportVo> agentExportVos = Lists.newArrayList();
+        Arrays.stream(weeks.split(",")).forEach(week -> {
+            Integer w = Integer.valueOf(week);
+            agentExportVos.addAll(getExportFromWeek(w));
+        });
+        String fileName = UUID.randomUUID().toString().replace("-", "");
+        File file = new File("e:/export/" + fileName + ".csv");
+        List<String> strList = agentExportVos.stream().map(agentExportVo -> {
+            StringBuilder stringBuilder = new StringBuilder(256);
+            stringBuilder .append(agentExportVo.getWeek()).append(",")
+                    .append(agentExportVo.getGuid()).append(",")
+                    .append(agentExportVo.getName()).append(",")
+                    .append(agentExportVo.getUnderMonery()).append(",")
+                    .append(agentExportVo.getSelfPickTotal());
+            return stringBuilder.toString();
+        }).collect(Collectors.toList());
+
+        CSVUtils.exportCsv(file, strList);
+        FileInputStream in = null;
+        OutputStream out = null;
+        try {
+            response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+            //创建字节输入流以读取本地文件
+             in = new FileInputStream(file);
+            //创建字节输出流，将文件数据写出给浏览器
+             out = response.getOutputStream();
+            byte[] buf = new byte[1024];
+            int len = 0;
+            //边读边写
+            while ((len = in.read(buf)) != -1) {
+                out.write(buf, 0, len);
+            }
+        }catch (Exception e){
+            log.error("",e);
+        }finally {
+            if(in != null){
+                try {
+                    in.close();
+                }catch (Exception e){
+
+                }
+            }
+        }
+        return agentExportVos;
+    }
+
+    private List<AgentExportVo> getExportFromWeek(Integer week) {
+        List<AgentExportVo> agentExportVos = agentPickTotalDAO.exportAgent(week)
                 .stream().map(agentPickTotalPo -> {
                     AgentExportVo agentExportVo = new AgentExportVo();
-                    agentExportVo.setUnderAgentMoney(agentPickTotalPo.getTotalUnderMoney() == null ? 0L :agentPickTotalPo.getTotalUnderMoney());
-                    agentExportVo.setUnderMonery(agentPickTotalPo.getTotalMoney() == null ?0L:agentPickTotalPo.getTotalMoney());
-                    agentExportVo.setWeek(week);
-                    AgentPo agentPo  = agentService.selectById(agentPickTotalPo.getAgentId());
-                    if(agentPo != null) {
+                    agentExportVo.setUnderAgentMoney(agentPickTotalPo.getTotalUnderMoney() == null ? 0L : agentPickTotalPo.getTotalUnderMoney());
+                    agentExportVo.setUnderMonery(agentPickTotalPo.getTotalMoney() == null ? 0L : agentPickTotalPo.getTotalMoney());
+                    agentExportVo.setWeek(week.toString());
+                    AgentPo agentPo = agentService.selectById(agentPickTotalPo.getAgentId());
+                    PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(agentPo.getPlayerId(), week);
+                    if (agentPo != null) {
                         agentExportVo.setGuid(agentPo.getPlayerId());
+                        agentExportVo.setName(agentPo.getAgentWeChartNo());
+                    }
+                    if (playerPickTotalPo != null) {
+                        agentExportVo.setSelfPickTotal(playerPickTotalPo.getTotalMoney());
+                    } else {
+                        agentExportVo.setSelfPickTotal(0L);
                     }
                     return agentExportVo;
                 }).collect(Collectors.toList());

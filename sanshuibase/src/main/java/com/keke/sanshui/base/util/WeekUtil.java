@@ -17,7 +17,7 @@ public final class WeekUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR,2017);
         calendar.set(Calendar.MONTH,Calendar.OCTOBER);
-        calendar.set(Calendar.DATE,22);
+        calendar.set(Calendar.DATE,23);
         calendar.set(Calendar.HOUR_OF_DAY,0);
         calendar.set(Calendar.MINUTE,0);
         calendar.set(Calendar.SECOND,0);
@@ -51,33 +51,15 @@ public final class WeekUtil {
         return cal.getTimeInMillis();
     }
     public static long getWeekStartTimestamp(){
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        return cal.getTimeInMillis();
+        return getWeekStartTimestamp(getCurrentWeek());
     }
 
     public static long getWeekEndTimestamp(){
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.WEEK_OF_MONTH, cal.get(Calendar.WEEK_OF_MONTH)+1);
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        cal.set(Calendar.WEEK_OF_MONTH,cal.get(Calendar.WEEK_OF_MONTH)+1);
-        cal.set(Calendar.HOUR_OF_DAY, 23);
-        cal.set(Calendar.MINUTE, 59);
-        cal.set(Calendar.SECOND, 59);
-        return cal.getTimeInMillis();
+        return   getWeekEndTimestamp(getCurrentWeek());
     }
 
     public static void main(String[] args) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-      for(int i = 1 ; i < 4;i++){
-          long start = getWeekStartTimestamp(i);
-          long end = getWeekEndTimestamp(i);
-          System.out.println("start = [" + format.format(new Date(start)) + "]");
-          System.out.println("end = [" + format.format(new Date(end)) + "]");
-      }
+        System.out.println(getWeekStartTimestamp());
     }
 
 }

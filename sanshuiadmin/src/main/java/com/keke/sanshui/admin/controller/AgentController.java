@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Controller
@@ -142,14 +143,12 @@ public class AgentController{
         }
     }
     @RequestMapping("/exportAgentPick")
-    @ResponseBody
-    public ApiResponse<List<AgentExportVo>> exportAgentPick(String week){
+    public void exportAgentPick(String weeks, HttpServletResponse response){
         try{
-            List<AgentExportVo> agentExportVos = adminAgentReadService.exportAgentPick(week);
-            return new ApiResponse<>(agentExportVos);
+         adminAgentReadService.exportAgentPick(weeks,response);
         }catch (Exception e){
-            log.error("exportAgentPick {} error", week, e);
-            return new ApiResponse<>(RetCode.SERVER_ERROR,"",Lists.newArrayList());
+            log.error("exportAgentPick {} error", weeks, e);
+
         }
     }
 

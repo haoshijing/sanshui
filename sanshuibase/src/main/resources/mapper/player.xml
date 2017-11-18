@@ -104,8 +104,9 @@
         <where>
             <include refid="queryWhere"/>
         </where>
-        limit #{param.offset} ,#{param.limit}
         order by id desc
+        limit #{param.offset} ,#{param.limit}
+
     </select>
 
     <select id = "queryCount" parameterType="QueryPlayerPo" resultType="java.lang.Long">

@@ -16,5 +16,14 @@ public class AgentExportVo {
      * 下级代理总充
      */
     private Long underAgentMoney;
+
+    private String name;
+    /**
+     * 所在周
+     */
     private String week;
+    /**
+     *
+     */
+    private Long selfPickTotal;
 }

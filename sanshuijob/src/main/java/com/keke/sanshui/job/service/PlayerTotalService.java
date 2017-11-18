@@ -38,6 +38,7 @@ public class PlayerTotalService {
         log.info("开始统计充值额:{}",format.format(new Date()));
         long weekStartTimestamp = WeekUtil.getWeekStartTimestamp();
         long weekEndTimestamp = WeekUtil.getWeekEndTimestamp();
+        log.info("statr = {} ,end = {}", weekStartTimestamp,weekEndTimestamp);
         int week = WeekUtil.getCurrentWeek();
         staticPlayerPick(weekStartTimestamp,weekEndTimestamp,week);
         log.info("结束统计充值额:{}",format.format(new Date()));
@@ -52,6 +53,10 @@ public class PlayerTotalService {
                 Integer playerId = playerPo.getPlayerId();
 
                 Long sumPickUp = orderService.queryPickupSum(playerId,weekStartTimestamp,weekEndTimestamp);
+                if(playerId == 1001041){
+                    log.info("playerId = {},weekStartTimestamp = {},weekEndTimestamp = {}, week = {}",
+                            playerId,weekStartTimestamp, weekEndTimestamp,week );
+                }
                 if(sumPickUp != null && sumPickUp > 0){
                     PlayerPickTotalPo playerPickTotalPo =  playerPickTotalDAO.selectByPlayerId(playerId,week);
                     if(playerPickTotalPo != null){
