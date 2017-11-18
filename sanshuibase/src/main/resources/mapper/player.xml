@@ -104,6 +104,7 @@
         <where>
             <include refid="queryWhere"/>
         </where>
+        limit #{param.offset} ,#{param.limit}
         order by id desc
     </select>
 

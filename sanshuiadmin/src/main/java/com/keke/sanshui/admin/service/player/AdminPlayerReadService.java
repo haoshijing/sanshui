@@ -41,7 +41,7 @@ public class AdminPlayerReadService {
             }
             playerResponseVo.setGuid(playerPo.getPlayerId());
             playerResponseVo.setInsertTime(playerPo.getGameInsertTime());
-            playerPo.setOtherName(playerPo.getOtherName());
+            playerResponseVo.setOtherName(playerPo.getOtherName());
             PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(playerPo.getPlayerId(),playerQueryVo.getWeek());
             if(playerPickTotalPo != null){
                 playerResponseVo.setPickTotal(playerPickTotalPo.getTotalMoney());
@@ -54,6 +54,7 @@ public class AdminPlayerReadService {
             }else{
                 playerResponseVo.setAgentGuidId(0);
             }
+            playerResponseVo.setWeek(playerQueryVo.getWeek().toString());
             return playerResponseVo;
         }).collect(Collectors.toList());
     }
