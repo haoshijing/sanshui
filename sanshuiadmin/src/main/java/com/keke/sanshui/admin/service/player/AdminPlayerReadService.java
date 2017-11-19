@@ -71,6 +71,46 @@ public class AdminPlayerReadService {
         }).collect(Collectors.toList());
     }
 
+    public List<PlayerResponseVo> queryAgentListList(PlayerQueryVo playerQueryVo) {
+        QueryPlayerRelationPo  relationPo = new QueryPlayerRelationPo();
+        relationPo.setLimit(playerQueryVo.getLimit());
+        relationPo.setParentPlayerId(playerQueryVo.getParentGuid());
+        relationPo.setOffset((playerQueryVo.getPage() - 1) * playerQueryVo.getLimit());
+        relationPo.setPlayerId(playerQueryVo.getGuid());
+        List<PlayerRelationPo> playerRelationPos = playerRelationDAO.queryList(relationPo);
+        return playerRelationPos.stream().map(playerRelationPo -> {
+            PlayerResponseVo playerResponseVo = new PlayerResponseVo();
+            PlayerCouponPo playerCouponPo = playerCouponDAO.selectByPlayerId(playerRelationPo.getPlayerId());
+            if (playerCouponPo != null) {
+                playerResponseVo.setSliverCount(playerCouponPo.getSilverCount());
+                playerResponseVo.setGoldCount(playerCouponPo.getGoldCount());
+            }
+            PlayerPo playerPo = playerDAO.selectByPlayId(playerRelationPo.getPlayerId());
+            playerResponseVo.setGuid(playerRelationPo.getPlayerId());
+            playerResponseVo.setInsertTime(playerPo.getGameInsertTime());
+            playerResponseVo.setOtherName(playerPo.getOtherName());
+            PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(playerPo.getPlayerId(), playerQueryVo.getWeek());
+            if (playerPickTotalPo != null) {
+                playerResponseVo.setPickTotal(playerPickTotalPo.getTotalMoney());
+            } else {
+                playerResponseVo.setPickTotal(0L);
+            }
+            playerResponseVo.setAgentGuidId(playerRelationPo.getParentPlayerId());
+            playerResponseVo.setWeek(playerQueryVo.getWeek().toString());
+            return playerResponseVo;
+        }).collect(Collectors.toList());
+    }
+
+    public Long queryAgentCount(PlayerQueryVo playerQueryVo){
+        QueryPlayerRelationPo  relationPo = new QueryPlayerRelationPo();
+        relationPo.setLimit(playerQueryVo.getLimit());
+        relationPo.setParentPlayerId(playerQueryVo.getParentGuid());
+        relationPo.setOffset((playerQueryVo.getPage() - 1) * playerQueryVo.getLimit());
+        relationPo.setPlayerId(playerQueryVo.getGuid());
+        return  playerRelationDAO.queryCount(relationPo);
+    }
+
+
     public Long queryCount(PlayerQueryVo playerQueryVo) {
         return playerDAO.queryCount(convert2QueryPo(playerQueryVo));
     }
@@ -78,6 +118,7 @@ public class AdminPlayerReadService {
     private QueryPlayerPo convert2QueryPo(PlayerQueryVo playerQueryVo) {
         QueryPlayerPo queryPlayerPo = new QueryPlayerPo();
         queryPlayerPo.setLimit(playerQueryVo.getLimit());
+        queryPlayerPo.setParentGuid(playerQueryVo.getParentGuid());
         queryPlayerPo.setOffset((playerQueryVo.getPage() - 1) * playerQueryVo.getLimit());
         queryPlayerPo.setPlayerId(playerQueryVo.getGuid());
         return queryPlayerPo;
@@ -90,7 +131,7 @@ public class AdminPlayerReadService {
         Long endTimestamp = WeekUtil.getWeekEndTimestamp(week);
 
         QueryOrderPo queryOrderPo = new QueryOrderPo();
-
+        queryOrderPo.setOrderStatus(2);
         queryOrderPo.setLimit(10000);
         queryOrderPo.setOffset(0);
         queryOrderPo.setClientGuids(Lists.newArrayList(playerId));

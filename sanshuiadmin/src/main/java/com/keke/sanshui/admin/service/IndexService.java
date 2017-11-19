@@ -1,12 +1,18 @@
 package com.keke.sanshui.admin.service;
 
 import com.google.common.collect.Lists;
+import com.keke.sanshui.admin.response.agent.AgentIndexVo;
 import com.keke.sanshui.admin.response.index.PickDataResponse;
 import com.keke.sanshui.admin.response.index.PickLastWeekData;
+import com.keke.sanshui.base.admin.dao.AgentDAO;
+import com.keke.sanshui.base.admin.dao.AgentPickTotalDAO;
+import com.keke.sanshui.base.admin.po.AgentPickTotalPo;
+import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.po.order.QueryOrderPo;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.util.TimeUtil;
+import com.keke.sanshui.base.util.WeekUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +26,12 @@ public class IndexService {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private AgentPickTotalDAO agentPickTotalDAO;
+
+    @Autowired
+    private AgentDAO agentDAO;
 
     public PickDataResponse getCurrentDayPick() {
         return getCurrentDayPick(0);
@@ -71,4 +83,14 @@ public class IndexService {
         return pickDataResponse;
     }
 
+    public AgentIndexVo obtainCurrentAgentInfo(Integer playerId) {
+        AgentPo agentPo = agentDAO.selectByPlayerId(playerId);
+        Integer week = WeekUtil.getCurrentWeek();
+        AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(),week);
+        AgentIndexVo agentIndexVo = new AgentIndexVo();
+        agentIndexVo.setTotalPick(agentPickTotalPo.getTotalMoney());
+        agentIndexVo.setWeek(week.toString());
+        return agentIndexVo;
+
+    }
 }

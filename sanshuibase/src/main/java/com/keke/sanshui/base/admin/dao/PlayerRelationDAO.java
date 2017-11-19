@@ -1,6 +1,7 @@
 package com.keke.sanshui.base.admin.dao;
 
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
+import com.keke.sanshui.base.admin.po.QueryPlayerRelationPo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -18,6 +19,10 @@ public interface PlayerRelationDAO {
      List<PlayerRelationPo> selectUnderByPlayerId(Integer playerId);
 
      List<PlayerRelationPo> selectAll();
+
+     List<PlayerRelationPo> queryList(@Param("param") QueryPlayerRelationPo queryPlayerRelationPo);
+
+     Long queryCount(@Param("param") QueryPlayerRelationPo queryPlayerRelationPo);
 
      int updatePlayerRelation(@Param("param")PlayerRelationPo playerRelationPo);
 

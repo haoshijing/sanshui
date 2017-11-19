@@ -3,8 +3,7 @@ package com.keke.sanshui.base.admin.po;
 import lombok.Data;
 
 @Data
-public class QueryPlayerPo  extends  PlayerPo{
+public class QueryPlayerRelationPo extends PlayerRelationPo {
     private Integer offset;
     private Integer limit;
-    private Integer parentGuid;
 }

@@ -36,7 +36,6 @@ public class PlayerController extends AbstractController {
     @ResponseBody
     public ApiResponse<List<PlayerResponseVo>> queryList(@RequestBody PlayerQueryVo playerQueryVo, HttpServletRequest request){
         try{
-            injectGuid(playerQueryVo,request);
             if(playerQueryVo.getWeek() == null){
                 playerQueryVo.setWeek(WeekUtil.getCurrentWeek());
             }
@@ -48,11 +47,43 @@ public class PlayerController extends AbstractController {
         }
     }
 
+    @RequestMapping("/agentList")
+    @ResponseBody
+    public ApiResponse<List<PlayerResponseVo>> agentList(@RequestBody PlayerQueryVo playerQueryVo, HttpServletRequest request){
+        try{
+            injectGuid(playerQueryVo,request);
+            if(playerQueryVo.getWeek() == null){
+                playerQueryVo.setWeek(WeekUtil.getCurrentWeek());
+            }
+            List<PlayerResponseVo> list =   adminPlayerReadService.queryAgentListList(playerQueryVo);
+            return new ApiResponse<>(list);
+        }catch (Exception e){
+            log.error("agentList error {}", JSON.toJSONString(playerQueryVo),e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(), Lists.newArrayList());
+        }
+    }
+
+    @RequestMapping("/agentCount")
+    @ResponseBody
+    public ApiResponse<Long> agentCount(@RequestBody PlayerQueryVo playerQueryVo, HttpServletRequest request){
+        try{
+            injectGuid(playerQueryVo,request);
+            if(playerQueryVo.getWeek() == null){
+                playerQueryVo.setWeek(WeekUtil.getCurrentWeek());
+            }
+            Long count =   adminPlayerReadService.queryAgentCount(playerQueryVo);
+            return new ApiResponse<>(count);
+        }catch (Exception e){
+            log.error("agentCount error {}", JSON.toJSONString(playerQueryVo),e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(),0L);
+        }
+    }
+
+
     @RequestMapping("/count")
     @ResponseBody
     public ApiResponse<Long> queryCount(@RequestBody PlayerQueryVo playerQueryVo,HttpServletRequest request){
         try{
-            injectGuid(playerQueryVo,request);
             Long count =  adminPlayerReadService.queryCount(playerQueryVo);
             return new ApiResponse<>(count);
         }catch (Exception e){
@@ -77,7 +108,7 @@ public class PlayerController extends AbstractController {
         AdminAuthInfo adminAuthInfo = getToken(request);
         int level = adminAuthInfo.getLevel();
         if(level != 1){
-            playerQueryVo.setGuid(Integer.valueOf(adminAuthInfo.getUserName()));
+            playerQueryVo.setParentGuid(Integer.valueOf(adminAuthInfo.getUserName()));
         }
 
     }

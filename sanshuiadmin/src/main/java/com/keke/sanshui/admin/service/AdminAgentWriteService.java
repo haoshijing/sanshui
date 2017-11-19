@@ -142,8 +142,7 @@ public class AdminAgentWriteService {
         updateAgentPo.setId(agentId);
         String encryptPwd = MD5Util.md5(MD5Util.md5(PROXY_PWD) + saltEncrypt);
         updateAgentPo.setPassword(encryptPwd);
-
-        return agentService.updateAgent(updateAgentPo) > 0;
+        return agentService.updateAgent(updateAgentPo,false) > 0;
     }
 
     public Boolean updatePwd(String oldPwd, String newPwd,String guid) {

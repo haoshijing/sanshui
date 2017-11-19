@@ -15,6 +15,17 @@
         WHERE playerId = #{playerId}
     </select>
 
+    <sql id = "queryWhere">
+        <where>
+            <if test = "param.playerId != null">
+                AND playerId = #{param.playerId}
+            </if>
+            <if test = "param.parentPlayerId != null">
+                And parentPlayerId = #{param.parentPlayerId}
+            </if>
+        </where>
+    </sql>
+
     <update id="updatePlayerRelation" parameterType="PlayerRelationPo">
         update   <include refid="tableName"/>
         set parentPlayerId = #{param.parentPlayerId}
@@ -52,4 +63,15 @@
         <include refid="tableName"/>
     </select>
 
+    <select id = "queryList" parameterType="QueryPlayerRelationPo" resultType="PlayerRelationPo">
+        select * from  <include refid="tableName"/>
+        <include refid="queryWhere"/>
+        limit #{param.offset} , #{param.limit}
+
+    </select>
+
+    <select id = "queryCount" parameterType="QueryPlayerRelationPo" resultType="java.lang.Long">
+        select count(1) from  <include refid="tableName"/>
+        <include refid="queryWhere"/>
+    </select>
 </mapper>

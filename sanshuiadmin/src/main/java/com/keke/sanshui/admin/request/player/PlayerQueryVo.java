@@ -6,6 +6,7 @@ import lombok.Data;
 public class PlayerQueryVo {
     private Integer week;
     private Integer guid;
+    private Integer parentGuid;
     private Integer page = 1;
     private Integer limit = 20;
 }

@@ -54,45 +54,51 @@ public class AgentService implements ApplicationContextAware {
 
         OperLogPo operLogPo = new OperLogPo();
        if(agentPo.getId() == null) {
-           int ret = agentDAO.updateAgent(agentPo);
-           operLogPo.setInsertTime(System.currentTimeMillis());
-           operLogPo.setOperTarget(agentPo.getPlayerId());
-           StringBuilder mark = new StringBuilder("管理员").append("把")
-                   .append("[玩家").
-                           append(agentPo.getPlayerId()).
-                           append("] 设置成[").append(AgentLevelEnums.getByType(agentPo.getLevel()).getMark())
-                   .append("]");
-           operLogPo.setMark(mark.toString());
-           operLogPo.setOperType(1);
+           agentDAO.updateAgent(agentPo);
+           if(needLog) {
+               operLogPo.setInsertTime(System.currentTimeMillis());
+               operLogPo.setOperTarget(agentPo.getPlayerId());
+               StringBuilder mark = new StringBuilder("管理员").append("把")
+                       .append("[玩家").
+                               append(agentPo.getPlayerId()).
+                               append("] 设置成[").append(AgentLevelEnums.getByType(agentPo.getLevel()).getMark())
+                       .append("]");
+               operLogPo.setMark(mark.toString());
+               operLogPo.setOperType(1);
+           }
 
        }else{
-           operLogPo.setInsertTime(System.currentTimeMillis());
            AgentPo dbAgentPo = agentDAO.selectById(agentPo.getId());
-           int ret = agentDAO.updateAgent(agentPo);
-           operLogPo.setOperTarget(dbAgentPo.getPlayerId());
-           boolean changeLevel = false;
-           boolean changeParentId = false;
-           if(dbAgentPo != null){
-                changeLevel = !dbAgentPo.getLevel().equals(agentPo.getLevel());
-                changeParentId = !dbAgentPo.getParentId().equals(agentPo.getParentId());
-           }
-           StringBuilder mark = new StringBuilder("管理员").append("修改了")
-                   .append("[玩家").append(dbAgentPo.getPlayerId()).append("资料");
-           if(changeLevel){
-               mark.append("等级由(").append(AgentLevelEnums.getByType(dbAgentPo.getLevel()).getMark())
-                       .append(")改为(").append(AgentLevelEnums.getByType(agentPo.getLevel()).getMark()).append(")");
-           }
-           if(changeParentId){
-               mark.append("上级代理id由(").append(dbAgentPo.getParentId())
-                       .append(")改为(").append(agentPo.getParentId()).append(")");
-           }
+            agentDAO.updateAgent(agentPo);
+           if(needLog) {
+               operLogPo.setInsertTime(System.currentTimeMillis());
+               operLogPo.setOperTarget(dbAgentPo.getPlayerId());
+               boolean changeLevel = false;
+               boolean changeParentId = false;
+               if (dbAgentPo != null) {
+                   changeLevel = !dbAgentPo.getLevel().equals(agentPo.getLevel());
+                   changeParentId = !dbAgentPo.getParentId().equals(agentPo.getParentId());
+               }
+               StringBuilder mark = new StringBuilder("管理员").append("修改了")
+                       .append("[玩家").append(dbAgentPo.getPlayerId()).append("资料");
+               if (changeLevel) {
+                   mark.append("等级由(").append(AgentLevelEnums.getByType(dbAgentPo.getLevel()).getMark())
+                           .append(")改为(").append(AgentLevelEnums.getByType(agentPo.getLevel()).getMark()).append(")");
+               }
+               if (changeParentId) {
+                   mark.append("上级代理id由(").append(dbAgentPo.getParentId())
+                           .append(")改为(").append(agentPo.getParentId()).append(")");
+               }
 
-           mark.append("]");
+               mark.append("]");
 
-           operLogPo.setMark(mark.toString());
-           operLogPo.setOperType(2);
+               operLogPo.setMark(mark.toString());
+               operLogPo.setOperType(2);
+           }
        }
-        applicationContext.publishEvent(new OperLogEvent(agentPo, operLogPo));
+       if(needLog) {
+           applicationContext.publishEvent(new OperLogEvent(agentPo, operLogPo));
+       }
         return 1;
     }
 
