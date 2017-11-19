@@ -25,11 +25,12 @@ public class IndexService {
         return getCurrentDayPick(0);
     }
 
-    public List<PickLastWeekData> getLast7DayPick(){
+    public List<PickLastWeekData> getLastPick(int day){
         List<PickLastWeekData> list = Lists.newArrayList();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        for(int i = -7; i < 0 ;i++){
+        int lastDay = 0 - day;
+        for(int i = lastDay; i < 0 ;i++){
             PickLastWeekData pickLastWeekData = new PickLastWeekData();
             PickDataResponse pickDataResponse = getCurrentDayPick(i);
             pickLastWeekData.setDayPickTotal(pickDataResponse.getDayPickTotal());
@@ -48,23 +49,25 @@ public class IndexService {
         queryOrderPo.setOrderStatus(2);
         queryOrderPo.setStartTimestamp(TimeUtil.getDayStartTimestamp(day));
         queryOrderPo.setEndTimestamp(TimeUtil.getDayEndTimestamp(day));
-        queryOrderPo.setLimit(1000);
+        queryOrderPo.setLimit(10000);
         queryOrderPo.setOffset(0);
         List<Order> orderList = orderService.selectList(queryOrderPo);
         int sum = orderList.stream().mapToInt(order->{
             return Integer.valueOf(order.getPrice());
         }).sum();
+        pickDataResponse.setSuccessCount(orderList.size());
         pickDataResponse.setDaySuccessTotal(Long.valueOf(sum/100));
         QueryOrderPo newQueryPo = new QueryOrderPo();
         newQueryPo.setStartTimestamp(TimeUtil.getDayStartTimestamp(day));
         newQueryPo.setEndTimestamp(TimeUtil.getDayEndTimestamp(day));
-        newQueryPo.setLimit(1000);
+        newQueryPo.setLimit(10000);
         newQueryPo.setOffset(0);
         orderList = orderService.selectList(newQueryPo);
         int sumTotal = orderList.stream().mapToInt(order->{
             return Integer.valueOf(order.getPrice());
         }).sum();
         pickDataResponse.setDayPickTotal(Long.valueOf(sumTotal/100));
+        pickDataResponse.setSuccessCount(orderList.size());
         return pickDataResponse;
     }
 

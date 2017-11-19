@@ -10,6 +10,7 @@ public class AgentQueryVo {
     private Integer guid;
     private Integer week;
     private Integer level;
+    private Integer parentGuid;
     private Integer page = 1;
     private Integer limit = 20;
 }

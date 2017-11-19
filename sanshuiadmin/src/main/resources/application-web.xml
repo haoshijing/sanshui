@@ -37,7 +37,7 @@
         location="/css/" /> -->
 
     <!-- 自动扫描该包，使SpringMVC认为包下用了@controller注解的类是控制器 -->
-    <context:component-scan base-package="com.keke.sanshui.admin.controller">
+    <context:component-scan base-package="com.keke.sanshui.admin">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
@@ -46,6 +46,7 @@
 
     <mvc:interceptors>
         <bean class="com.keke.sanshui.admin.intecptor.ProcessInterceptor"></bean>
+        <bean class="com.keke.sanshui.admin.intecptor.AuthInterceptor"></bean>
     </mvc:interceptors>
 
     <mvc:annotation-driven />

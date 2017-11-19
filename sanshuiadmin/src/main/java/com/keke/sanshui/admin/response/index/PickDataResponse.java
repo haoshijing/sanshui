@@ -6,4 +6,6 @@ import lombok.Data;
 public class PickDataResponse {
     private Long daySuccessTotal;
     private Long dayPickTotal;
+    private Integer successCount;
+    private Integer totalCount;
 }

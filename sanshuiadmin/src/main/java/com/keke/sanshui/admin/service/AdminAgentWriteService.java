@@ -4,15 +4,14 @@ import com.keke.sanshui.admin.request.AgentRequestVo;
 import com.keke.sanshui.admin.response.agent.AreaAgentVo;
 import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.po.agent.AgentQueryPo;
-import com.keke.sanshui.base.admin.po.order.QueryOrderPo;
 import com.keke.sanshui.base.admin.service.AgentService;
 import com.keke.sanshui.base.util.MD5Util;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +32,7 @@ public class AdminAgentWriteService {
             AgentPo updateAgentPo = new AgentPo();
             String encryptPwd = MD5Util.md5(MD5Util.md5(PROXY_PWD) + saltEncrypt);
             updateAgentPo.setPassword(encryptPwd);
+            updateAgentPo.setParentId(agentRequestVo.getParentAgentId());
             updateAgentPo.setLevel(agentRequestVo.getLevel());
             updateAgentPo.setLastUpdateTime(System.currentTimeMillis());
             updateAgentPo.setAgentWeChartNo(agentRequestVo.getWechartNo());
@@ -144,5 +144,20 @@ public class AdminAgentWriteService {
         updateAgentPo.setPassword(encryptPwd);
 
         return agentService.updateAgent(updateAgentPo) > 0;
+    }
+
+    public Boolean updatePwd(String oldPwd, String newPwd,String guid) {
+        AgentPo agentPo = agentService.findByGuid(Integer.valueOf(guid));
+        String dbPassword = agentPo.getPassword();
+        String userPassword = MD5Util.md5(MD5Util.md5(oldPwd)+saltEncrypt);
+        Boolean checkRet =  StringUtils.equals(dbPassword,userPassword);
+        if(!checkRet){
+            return false;
+        }
+        AgentPo updateAgentPo = new AgentPo();
+        updateAgentPo.setPassword(MD5Util.md5(MD5Util.md5(newPwd)+saltEncrypt));
+        updateAgentPo.setId(agentPo.getId());
+        agentService.updateAgent(updateAgentPo,false);
+        return  true;
     }
 }

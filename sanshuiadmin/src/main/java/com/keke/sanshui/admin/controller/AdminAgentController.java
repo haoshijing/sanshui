@@ -29,7 +29,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/agent")
 @Slf4j
-public class AgentController{
+public class AdminAgentController{
 
     @Autowired
     private AdminAgentReadService adminAgentReadService;

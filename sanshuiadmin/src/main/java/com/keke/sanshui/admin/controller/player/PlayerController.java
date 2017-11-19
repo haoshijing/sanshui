@@ -2,6 +2,8 @@ package com.keke.sanshui.admin.controller.player;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import com.keke.sanshui.admin.AbstractController;
+import com.keke.sanshui.admin.auth.AdminAuthInfo;
 import com.keke.sanshui.admin.request.order.OrderQueryVo;
 import com.keke.sanshui.admin.request.player.PlayerPickRequest;
 import com.keke.sanshui.admin.request.player.PlayerQueryVo;
@@ -20,19 +22,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
 @RequestMapping("/player")
 @Slf4j
-public class PlayerController {
+public class PlayerController extends AbstractController {
     @Autowired
     private AdminPlayerReadService adminPlayerReadService;
 
     @RequestMapping("/list")
     @ResponseBody
-    public ApiResponse<List<PlayerResponseVo>> queryList(@RequestBody PlayerQueryVo playerQueryVo){
+    public ApiResponse<List<PlayerResponseVo>> queryList(@RequestBody PlayerQueryVo playerQueryVo, HttpServletRequest request){
         try{
+            injectGuid(playerQueryVo,request);
             if(playerQueryVo.getWeek() == null){
                 playerQueryVo.setWeek(WeekUtil.getCurrentWeek());
             }
@@ -46,8 +50,9 @@ public class PlayerController {
 
     @RequestMapping("/count")
     @ResponseBody
-    public ApiResponse<Long> queryCount(@RequestBody PlayerQueryVo playerQueryVo){
+    public ApiResponse<Long> queryCount(@RequestBody PlayerQueryVo playerQueryVo,HttpServletRequest request){
         try{
+            injectGuid(playerQueryVo,request);
             Long count =  adminPlayerReadService.queryCount(playerQueryVo);
             return new ApiResponse<>(count);
         }catch (Exception e){
@@ -66,5 +71,14 @@ public class PlayerController {
             log.error("queryPickList error {}", JSON.toJSONString(playerPickRequest),e);
             return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(), Lists.newArrayList());
         }
+    }
+
+    private void injectGuid(PlayerQueryVo playerQueryVo,HttpServletRequest request){
+        AdminAuthInfo adminAuthInfo = getToken(request);
+        int level = adminAuthInfo.getLevel();
+        if(level != 1){
+            playerQueryVo.setGuid(Integer.valueOf(adminAuthInfo.getUserName()));
+        }
+
     }
 }

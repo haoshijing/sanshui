@@ -2,6 +2,7 @@ package com.keke.sanshui.admin.service;
 
 
 import com.google.common.collect.Lists;
+import com.keke.sanshui.admin.auth.AdminAuthCacheService;
 import com.keke.sanshui.admin.request.agent.AgentQueryVo;
 import com.keke.sanshui.admin.response.agent.AgentExportVo;
 import com.keke.sanshui.admin.response.agent.UnderAgentVo;
@@ -17,13 +18,13 @@ import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.po.agent.AgentQueryPo;
 import com.keke.sanshui.base.admin.service.AgentService;
 import com.keke.sanshui.base.admin.service.PlayerCouponService;
+import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.base.util.WeekUtil;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +43,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AdminAgentReadService {
 
+    @Value("${saltEncrypt}")
+    private String saltEncrypt;
+
     @Autowired
     AgentService agentService;
 
@@ -59,6 +63,9 @@ public class AdminAgentReadService {
 
     @Autowired
     PlayerDAO playerDAO;
+
+    @Autowired
+    AdminAuthCacheService adminAuthCacheService;
 
 
     public List<AgentVo> selectAgentVoList(AgentQueryVo agentQueryVo) {
@@ -269,5 +276,21 @@ public class AdminAgentReadService {
                     return agentExportVo;
                 }).collect(Collectors.toList());
         return agentExportVos;
+    }
+
+    public Pair<Boolean,Integer> checkUser(String name, String password) {
+        try {
+            AgentPo agentPo = agentService.findByGuid(Integer.valueOf(name));
+            if (agentPo != null) {
+                String dbPwd = agentPo.getPassword();
+                String encryptPwd = MD5Util.md5(MD5Util.md5(password) + saltEncrypt);
+                if (StringUtils.equals(dbPwd, encryptPwd)) {
+                    return Pair.of(true, agentPo.getLevel());
+                }
+            }
+        }catch (Exception e){
+
+        }
+        return  Pair.of(false,0);
     }
 }

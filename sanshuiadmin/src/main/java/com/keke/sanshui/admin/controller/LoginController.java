@@ -1,11 +1,17 @@
 package com.keke.sanshui.admin.controller;
 
+import com.keke.sanshui.admin.AbstractController;
+import com.keke.sanshui.admin.auth.AdminAuthCacheService;
+import com.keke.sanshui.admin.auth.AdminAuthInfo;
 import com.keke.sanshui.admin.request.LoginDataRequest;
 import com.keke.sanshui.admin.response.ApiResponse;
 import com.keke.sanshui.admin.response.RetCode;
 import com.keke.sanshui.admin.response.impl.LoginResponse;
+import com.keke.sanshui.admin.service.AdminAgentReadService;
 import com.keke.sanshui.base.admin.service.AdminService;
+import com.keke.sanshui.base.admin.service.AgentService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,10 +22,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
 @Controller
-public class LoginController {
+public class LoginController extends AbstractController{
 
     @Autowired
     private AdminService adminService;
+
+
+    @Autowired
+    private AdminAgentReadService adminAgentReadService;
 
     @RequestMapping("/login")
     @ResponseBody
@@ -31,21 +41,38 @@ public class LoginController {
             return new ApiResponse<>(RetCode.PARAM_ERROR,"参数错误",loginResponse);
         }
         String clientIp = request.getRemoteAddr();
-        Boolean check =   adminService.checkUser(loginDataRequest.getName(),loginDataRequest.getPassword(),clientIp);
+        Boolean isAdmin = StringUtils.equals(loginDataRequest.getName(),"superadmin");
+        Boolean check;
+        AdminAuthInfo adminAuthInfo = new AdminAuthInfo();
+        if(!isAdmin){
+           Pair<Boolean,Integer> pair =   adminAgentReadService.checkUser(loginDataRequest.getName(),loginDataRequest.getPassword());
+           if(pair.getLeft()){
+               adminAuthInfo.setLevel(pair.getRight());
+           }
+           check = pair.getLeft();
+        }else{
+            check =  adminService.checkUser(loginDataRequest.getName(),loginDataRequest.getPassword(),clientIp);
+            adminAuthInfo.setLevel(1);
+        }
         loginResponse.setSucc(check);
-        if(check) {
+        if(check){
             String token = UUID.randomUUID().toString().replace("-","");
-            request.getSession().setAttribute(token,loginDataRequest.getName());
             loginResponse.setToken(token);
+            adminAuthInfo.setToken(token);
+            adminAuthInfo.setUserName(loginDataRequest.getName());
+            adminAuthCacheService.setTokenCache(token,adminAuthInfo);
         }
         return new ApiResponse<>(loginResponse);
     }
 
     @RequestMapping("/logout")
     @ResponseBody
-    public ApiResponse<Boolean> login(String token,HttpServletRequest request){
-        request.getSession().removeAttribute(token);
-        adminService.logout();
+    public ApiResponse<Boolean> login(HttpServletRequest request){
+        AdminAuthInfo adminAuthInfo = getToken(request);
+        if(adminAuthInfo.getLevel() == 1) {
+            adminService.logout();
+        }
+        adminAuthCacheService.deleteToken(adminAuthInfo.getToken());
         return new ApiResponse<>(true);
     }
 }

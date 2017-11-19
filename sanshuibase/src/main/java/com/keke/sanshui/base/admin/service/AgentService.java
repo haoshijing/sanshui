@@ -7,11 +7,15 @@ import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.po.log.OperLogPo;
 import com.keke.sanshui.base.admin.po.agent.AgentQueryPo;
 import com.keke.sanshui.base.enums.AgentLevelEnums;
+import com.keke.sanshui.base.util.MD5Util;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
+import sun.net.www.protocol.http.AuthCache;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +43,14 @@ public class AgentService implements ApplicationContextAware {
         return true;
     }
 
-    public int updateAgent(AgentPo agentPo){
+    public AgentPo findByGuid(Integer playerId){
+        return agentDAO.selectByPlayerId(playerId);
+    }
+
+    public  int updateAgent(AgentPo agentPo){
+        return updateAgent(agentPo,true);
+    }
+    public int updateAgent(AgentPo agentPo, boolean needLog){
 
         OperLogPo operLogPo = new OperLogPo();
        if(agentPo.getId() == null) {
@@ -128,4 +139,5 @@ public class AgentService implements ApplicationContextAware {
     public Long selectCount(AgentQueryPo queryAgentPo) {
         return agentDAO.selectCount(queryAgentPo);
     }
+
 }
