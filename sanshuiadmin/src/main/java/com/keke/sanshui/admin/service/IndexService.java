@@ -88,7 +88,11 @@ public class IndexService {
         Integer week = WeekUtil.getCurrentWeek();
         AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(),week);
         AgentIndexVo agentIndexVo = new AgentIndexVo();
-        agentIndexVo.setTotalPick(agentPickTotalPo.getTotalMoney());
+        if(agentPickTotalPo == null){
+            agentIndexVo.setTotalPick(0l);
+        }else{
+            agentIndexVo.setTotalPick(agentPickTotalPo.getTotalMoney());
+        }
         agentIndexVo.setWeek(week.toString());
         return agentIndexVo;
 
