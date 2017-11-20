@@ -27,4 +27,6 @@ public interface PlayerRelationDAO {
      int updatePlayerRelation(@Param("param")PlayerRelationPo playerRelationPo);
 
      Integer queryByAgentAndPlayerGuid(@Param("parentPlayerId") Integer agentIdGuid,@Param("playerId") Integer playerGuid);
+
+     int deleteRelation(int id);
 }

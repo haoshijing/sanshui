@@ -92,7 +92,6 @@ public class FullSyncDataService {
             playerAndAgentData.getPlayerRelationPos().forEach(playerRelationPo -> {
                 Integer parentId = playerRelationPo.getParentPlayerId().intValue();
                 Integer playerId = playerRelationPo.getPlayerId().intValue();
-
                 PlayerRelationPo playerRelationPo1 = playerRelationDAO.selectByPlayerId(playerId);
                 if(playerRelationPo1 != null){
                     PlayerRelationPo updatePlayerRelationPo = new PlayerRelationPo();
@@ -106,6 +105,13 @@ public class FullSyncDataService {
 
             });
             playerAndAgentData.getAgentPos().forEach(agentPo -> {
+                //去找这个人的上级
+                PlayerRelationPo playerRelationPo = playerRelationDAO.selectByPlayerId(agentPo.getPlayerId());
+                Integer parentGuid = playerRelationPo.getParentPlayerId();
+                AgentPo parentAgent = agentDAO.selectByPlayerId(parentGuid);
+                if(parentAgent != null && parentAgent.getLevel() == 3){
+                    //上级只是一个群主代理,则把它的关系给断了
+                }
                 AgentPo queryPo = agentDAO.selectByPlayerId(agentPo.getPlayerId());
                 if(queryPo == null){
                     try {

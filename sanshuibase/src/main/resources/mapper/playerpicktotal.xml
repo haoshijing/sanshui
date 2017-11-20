@@ -77,4 +77,8 @@
         </if>
     </select>
 
+    <delete id="deleteRelation">
+        delete from  <include refid="tableName"/>
+         where id = #{id}
+    </delete>
 </mapper>
