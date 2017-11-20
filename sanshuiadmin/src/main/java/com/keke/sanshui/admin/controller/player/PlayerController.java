@@ -10,8 +10,10 @@ import com.keke.sanshui.admin.request.player.PlayerQueryVo;
 import com.keke.sanshui.admin.response.ApiResponse;
 import com.keke.sanshui.admin.response.RetCode;
 import com.keke.sanshui.admin.response.order.OrderItemVo;
+import com.keke.sanshui.admin.response.player.AgentPlayerResponseVo;
 import com.keke.sanshui.admin.response.player.PlayerPickResponseVo;
 import com.keke.sanshui.admin.response.player.PlayerResponseVo;
+import com.keke.sanshui.admin.service.AdminAgentReadService;
 import com.keke.sanshui.admin.service.order.AdminOrderReadService;
 import com.keke.sanshui.admin.service.player.AdminPlayerReadService;
 import com.keke.sanshui.base.util.WeekUtil;
@@ -32,6 +34,9 @@ public class PlayerController extends AbstractController {
     @Autowired
     private AdminPlayerReadService adminPlayerReadService;
 
+    @Autowired
+    private AdminAgentReadService adminAgentReadService;
+
     @RequestMapping("/list")
     @ResponseBody
     public ApiResponse<List<PlayerResponseVo>> queryList(@RequestBody PlayerQueryVo playerQueryVo, HttpServletRequest request){
@@ -49,17 +54,22 @@ public class PlayerController extends AbstractController {
 
     @RequestMapping("/agentList")
     @ResponseBody
-    public ApiResponse<List<PlayerResponseVo>> agentList(@RequestBody PlayerQueryVo playerQueryVo, HttpServletRequest request){
+    public ApiResponse<AgentPlayerResponseVo> agentList(@RequestBody PlayerQueryVo playerQueryVo, HttpServletRequest request){
         try{
             injectGuid(playerQueryVo,request);
+            Integer playerId = Integer.valueOf(getToken(request).getUserName());
             if(playerQueryVo.getWeek() == null){
                 playerQueryVo.setWeek(WeekUtil.getCurrentWeek());
             }
             List<PlayerResponseVo> list =   adminPlayerReadService.queryAgentListList(playerQueryVo);
-            return new ApiResponse<>(list);
+            AgentPlayerResponseVo agentPlayerResponseVo = new AgentPlayerResponseVo();
+            agentPlayerResponseVo.setPlayerResponseVoList(list);
+            long underMoney = adminAgentReadService.getWeekMoney(playerId,playerQueryVo.getWeek());
+            agentPlayerResponseVo.setUnderMoney(underMoney);
+            return new ApiResponse<>(agentPlayerResponseVo);
         }catch (Exception e){
             log.error("agentList error {}", JSON.toJSONString(playerQueryVo),e);
-            return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(), Lists.newArrayList());
+            return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(), null);
         }
     }
 

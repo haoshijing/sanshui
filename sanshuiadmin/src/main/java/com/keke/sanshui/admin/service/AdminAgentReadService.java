@@ -293,4 +293,18 @@ public class AdminAgentReadService {
         }
         return  Pair.of(false,0);
     }
+
+    public long getWeekMoney(Integer playerId, Integer week) {
+
+        AgentPo agentPo = agentService.findByGuid(playerId);
+        if(agentPo != null){
+            AgentPickTotalPo agentPickTotalPo =
+                    agentPickTotalDAO.selectByAgentId(agentPo.getId(),week);
+            if(agentPickTotalPo == null){
+                return 0l;
+            }
+            return  agentPickTotalPo.getTotalMoney();
+        }
+        return 0L;
+    }
 }
