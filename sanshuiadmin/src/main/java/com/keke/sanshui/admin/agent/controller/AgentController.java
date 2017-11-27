@@ -6,6 +6,8 @@ import com.keke.sanshui.admin.request.player.PlayerQueryVo;
 import com.keke.sanshui.admin.response.ApiResponse;
 import com.keke.sanshui.admin.response.RetCode;
 import com.keke.sanshui.admin.service.AdminAgentReadService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
+@Slf4j
 @RequestMapping("/agentbiz/")
 public class AgentController extends AbstractController{
+    @Autowired
     private AdminAgentReadService adminAgentReadService;
 
     @RequestMapping("/queryUnderAgentList")
@@ -24,6 +28,7 @@ public class AgentController extends AbstractController{
             UnderAgentResponseVo underAgentResponseVo = adminAgentReadService.queryUnderAgentList(areaAgentGuid,playerQueryVo);
             return new ApiResponse<>(underAgentResponseVo);
         }catch (Exception e){
+            log.error("",e);
             return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(),null);
         }
     }
@@ -35,6 +40,7 @@ public class AgentController extends AbstractController{
             Long count = adminAgentReadService.queryUnderAgentCount(areaAgentGuid,playerQueryVo);
             return new ApiResponse<>(count);
         }catch (Exception e){
+            log.error("",e);
             return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(),0L);
         }
     }

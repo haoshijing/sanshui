@@ -330,17 +330,17 @@ public class AdminAgentReadService {
             List<UnderProxyVo> underProxyVos = agentPos.stream().map((dbAgentPo)->{
                 UnderProxyVo underProxyVo = new UnderProxyVo();
                 underProxyVo.setWeek(currentWeek);
-                underProxyVo.setGuid(agentPo.getPlayerId());
-                PlayerPo playerPo = playerDAO.selectByPlayId(agentPo.getPlayerId());
+                underProxyVo.setGuid(dbAgentPo.getPlayerId());
+                PlayerPo playerPo = playerDAO.selectByPlayId(dbAgentPo.getPlayerId());
                 underProxyVo.setOtherName(playerPo.getOtherName());
                 //这里改为批量的
-                AgentPickTotalPo agentPickTotalPo1 = agentPickTotalDAO.selectByAgentId(agentPo.getId(),currentWeek);
+                AgentPickTotalPo agentPickTotalPo1 = agentPickTotalDAO.selectByAgentId(dbAgentPo.getId(),currentWeek);
                 if(agentPickTotalPo != null){
                     underProxyVo.setAgentTotal(agentPickTotalPo1.getTotalMoney());
                 }else{
                     underProxyVo.setAgentTotal(0L);
                 }
-                PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(agentPo.getPlayerId(),currentWeek);
+                PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(dbAgentPo.getPlayerId(),currentWeek);
                 if(playerPickTotalPo != null) {
                     underProxyVo.setPickTotal(playerPickTotalPo.getTotalMoney());
                 }else{
