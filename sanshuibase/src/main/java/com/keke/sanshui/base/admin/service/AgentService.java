@@ -1,26 +1,18 @@
 package com.keke.sanshui.base.admin.service;
 
-import com.google.common.collect.Sets;
 import com.keke.sanshui.base.admin.dao.AgentDAO;
 import com.keke.sanshui.base.admin.event.OperLogEvent;
 import com.keke.sanshui.base.admin.po.agent.AgentPo;
-import com.keke.sanshui.base.admin.po.log.OperLogPo;
 import com.keke.sanshui.base.admin.po.agent.AgentQueryPo;
+import com.keke.sanshui.base.admin.po.log.OperLogPo;
 import com.keke.sanshui.base.enums.AgentLevelEnums;
-import com.keke.sanshui.base.util.MD5Util;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
-import sun.net.www.protocol.http.AuthCache;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
