@@ -2,8 +2,11 @@ package com.keke.sanshui.admin.service;
 
 
 import com.google.common.collect.Lists;
+import com.keke.sanshui.admin.agent.response.UnderAgentResponseVo;
+import com.keke.sanshui.admin.agent.response.UnderProxyVo;
 import com.keke.sanshui.admin.auth.AdminAuthCacheService;
 import com.keke.sanshui.admin.request.agent.AgentQueryVo;
+import com.keke.sanshui.admin.request.player.PlayerQueryVo;
 import com.keke.sanshui.admin.response.agent.AgentExportVo;
 import com.keke.sanshui.admin.response.agent.UnderAgentVo;
 import com.keke.sanshui.admin.response.agent.UnderPlayerVo;
@@ -30,7 +33,6 @@ import org.springframework.stereotype.Repository;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -304,6 +306,71 @@ public class AdminAgentReadService {
                 return 0l;
             }
             return  agentPickTotalPo.getTotalMoney();
+        }
+        return 0L;
+    }
+
+    public UnderAgentResponseVo queryUnderAgentList(Integer areaAgentGuid,PlayerQueryVo playerQueryVo) {
+        UnderAgentResponseVo underAgentResponseVo = new UnderAgentResponseVo();
+        Integer week = playerQueryVo.getWeek();
+        if(week == null){
+            week = WeekUtil.getCurrentWeek();
+        }
+        final Integer currentWeek = week;
+        AgentPo agentPo = agentService.findByGuid(areaAgentGuid);
+
+        if(agentPo != null) {
+            AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(),week);
+            underAgentResponseVo.setWeekAgentPickTotal(agentPickTotalPo.getTotalUnderMoney());
+            AgentQueryPo agentQueryPo = new AgentQueryPo();
+            agentQueryPo.setLimit(playerQueryVo.getLimit());
+            agentQueryPo.setOffset((playerQueryVo.getPage() - 1) * playerQueryVo.getLimit());
+            agentQueryPo.setParentId(agentPo.getId());
+            List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
+            List<UnderProxyVo> underProxyVos = agentPos.stream().map((dbAgentPo)->{
+                UnderProxyVo underProxyVo = new UnderProxyVo();
+                underProxyVo.setWeek(currentWeek);
+                underProxyVo.setGuid(agentPo.getPlayerId());
+                PlayerPo playerPo = playerDAO.selectByPlayId(agentPo.getPlayerId());
+                underProxyVo.setOtherName(playerPo.getOtherName());
+                //这里改为批量的
+                AgentPickTotalPo agentPickTotalPo1 = agentPickTotalDAO.selectByAgentId(agentPo.getId(),currentWeek);
+                if(agentPickTotalPo != null){
+                    underProxyVo.setAgentTotal(agentPickTotalPo1.getTotalMoney());
+                }else{
+                    underProxyVo.setAgentTotal(0L);
+                }
+                PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(agentPo.getPlayerId(),currentWeek);
+                if(playerPickTotalPo != null) {
+                    underProxyVo.setPickTotal(playerPickTotalPo.getTotalMoney());
+                }else{
+                    underProxyVo.setPickTotal(0L);
+                }
+
+                return underProxyVo;
+            }).collect(Collectors.toList());
+            underAgentResponseVo.setUnderProxyVos(underProxyVos);
+        }
+
+        return underAgentResponseVo;
+    }
+
+    public Long queryUnderAgentCount(Integer areaAgentGuid, PlayerQueryVo playerQueryVo) {
+        UnderAgentResponseVo underAgentResponseVo = new UnderAgentResponseVo();
+        Integer week = playerQueryVo.getWeek();
+        if(week == null){
+            week = WeekUtil.getCurrentWeek();
+        }
+        final Integer currentWeek = week;
+        AgentPo agentPo = agentService.findByGuid(areaAgentGuid);
+
+        if(agentPo != null) {
+            AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(), week);
+            underAgentResponseVo.setWeekAgentPickTotal(agentPickTotalPo.getTotalUnderMoney());
+            AgentQueryPo agentQueryPo = new AgentQueryPo();
+            agentQueryPo.setParentId(agentPo.getId());
+             Long count = agentService.selectCount(agentQueryPo);
+             return count;
         }
         return 0L;
     }

@@ -164,4 +164,49 @@ public class AdminPlayerReadService {
         });
         return playerPickResponseVos;
     }
+
+    public List<PlayerPickResponseVo> queryPickListForAgent(PlayerPickRequest playerPickRequest) {
+        Integer agentGuid = playerPickRequest.getGuid();
+        List<PlayerRelationPo> playerRelationPos = playerRelationDAO.selectUnderByPlayerId(agentGuid);
+        List<Integer> guids = playerRelationPos.stream().map(playerRelationPo -> {
+            return playerRelationPo.getPlayerId();
+        }).collect(Collectors.toList());
+        Integer week = playerPickRequest.getWeek();
+        Long startTimestamp = WeekUtil.getWeekStartTimestamp(week);
+        Long endTimestamp = WeekUtil.getWeekEndTimestamp(week);
+
+        QueryOrderPo queryOrderPo = new QueryOrderPo();
+        queryOrderPo.setOrderStatus(2);
+        queryOrderPo.setLimit(10000);
+        queryOrderPo.setOffset(0);
+        queryOrderPo.setClientGuids(Lists.newArrayList(guids));
+        queryOrderPo.setStartTimestamp(startTimestamp);
+        queryOrderPo.setEndTimestamp(endTimestamp);
+        SimpleDateFormat format  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<Order> list =  orderService.selectList(queryOrderPo);
+        List<PlayerPickResponseVo> playerPickResponseVos = list.stream().map(order -> {
+            PlayerPickResponseVo playerPickResponseVo = new PlayerPickResponseVo();
+            playerPickResponseVo.setGuid(order.getClientGuid());
+            playerPickResponseVo.setMoney(Integer.valueOf(order.getPrice()) /100);
+            playerPickResponseVo.setOrderStatus(order.getOrderStatus());
+            playerPickResponseVo.setOrderStatusStr(order.getOrderStatus() == 1 ? "未支付":"已支付");
+            playerPickResponseVo.setOrderTime(format.format(order.getInsertTime()));
+            return playerPickResponseVo;
+        }).collect(Collectors.toList());
+        playerPickResponseVos.sort(new Comparator<PlayerPickResponseVo>() {
+            @Override
+            public int compare(PlayerPickResponseVo o1, PlayerPickResponseVo o2) {
+                if(o1.getOrderStatus() > o2.getOrderStatus()){
+                    return 1;
+                }
+                if(o1.getOrderStatus() == o2.getOrderStatus()){
+                    if(o1.getMoney() > o2.getMoney()){
+                        return 1;
+                    }
+                }
+                return 0;
+            }
+        });
+        return playerPickResponseVos;
+    }
 }

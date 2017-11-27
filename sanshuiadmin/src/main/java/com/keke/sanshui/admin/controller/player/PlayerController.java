@@ -114,6 +114,18 @@ public class PlayerController extends AbstractController {
         }
     }
 
+    @RequestMapping("/queryPickListForAgent")
+    @ResponseBody
+    public ApiResponse<List<PlayerPickResponseVo>> queryPickListForAgent(@RequestBody PlayerPickRequest playerPickRequest){
+        try{
+            List<PlayerPickResponseVo> playerPickResponseVos =  adminPlayerReadService.queryPickListForAgent(playerPickRequest);
+            return new ApiResponse<>(playerPickResponseVos);
+        }catch (Exception e){
+            log.error("queryPickList error {}", JSON.toJSONString(playerPickRequest),e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(), Lists.newArrayList());
+        }
+    }
+
     private void injectGuid(PlayerQueryVo playerQueryVo,HttpServletRequest request){
         AdminAuthInfo adminAuthInfo = getToken(request);
         int level = adminAuthInfo.getLevel();
