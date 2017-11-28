@@ -6,6 +6,7 @@ import lombok.Data;
 public class PlayerPickResponseVo {
     private Integer guid;
     private Integer money;
+    private String otherName;
     private String orderTime;
     private String orderStatusStr;
     private Integer orderStatus;

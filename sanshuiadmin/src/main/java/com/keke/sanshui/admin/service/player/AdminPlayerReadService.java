@@ -186,27 +186,17 @@ public class AdminPlayerReadService {
         List<Order> list =  orderService.selectList(queryOrderPo);
         List<PlayerPickResponseVo> playerPickResponseVos = list.stream().map(order -> {
             PlayerPickResponseVo playerPickResponseVo = new PlayerPickResponseVo();
+            PlayerPo playerPo = playerDAO.selectByPlayId(order.getClientGuid());
             playerPickResponseVo.setGuid(order.getClientGuid());
             playerPickResponseVo.setMoney(Integer.valueOf(order.getPrice()) /100);
             playerPickResponseVo.setOrderStatus(order.getOrderStatus());
+            if(playerPo != null) {
+                playerPickResponseVo.setOtherName(playerPo.getOtherName());
+            }
             playerPickResponseVo.setOrderStatusStr(order.getOrderStatus() == 1 ? "未支付":"已支付");
             playerPickResponseVo.setOrderTime(format.format(order.getInsertTime()));
             return playerPickResponseVo;
         }).collect(Collectors.toList());
-        playerPickResponseVos.sort(new Comparator<PlayerPickResponseVo>() {
-            @Override
-            public int compare(PlayerPickResponseVo o1, PlayerPickResponseVo o2) {
-                if(o1.getOrderStatus() > o2.getOrderStatus()){
-                    return 1;
-                }
-                if(o1.getOrderStatus() == o2.getOrderStatus()){
-                    if(o1.getMoney() > o2.getMoney()){
-                        return 1;
-                    }
-                }
-                return 0;
-            }
-        });
         return playerPickResponseVos;
     }
 }

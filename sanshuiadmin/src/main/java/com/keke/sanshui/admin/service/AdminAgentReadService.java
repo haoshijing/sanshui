@@ -335,7 +335,7 @@ public class AdminAgentReadService {
                 underProxyVo.setOtherName(playerPo.getOtherName());
                 //这里改为批量的
                 AgentPickTotalPo agentPickTotalPo1 = agentPickTotalDAO.selectByAgentId(dbAgentPo.getId(),currentWeek);
-                if(agentPickTotalPo != null){
+                if(agentPickTotalPo != null && agentPickTotalPo1.getTotalMoney() != null){
                     underProxyVo.setAgentTotal(agentPickTotalPo1.getTotalMoney());
                 }else{
                     underProxyVo.setAgentTotal(0L);
