@@ -318,7 +318,7 @@ public class AdminAgentReadService {
         }
         final Integer currentWeek = week;
         AgentPo agentPo = agentService.findByGuid(areaAgentGuid);
-
+        List<Integer> agentPlayerGuids = Lists.newArrayList();
         if(agentPo != null) {
             AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(),week);
             underAgentResponseVo.setWeekAgentPickTotal(agentPickTotalPo.getTotalUnderMoney());
@@ -326,6 +326,7 @@ public class AdminAgentReadService {
             agentQueryPo.setLimit(playerQueryVo.getLimit());
             agentQueryPo.setOffset((playerQueryVo.getPage() - 1) * playerQueryVo.getLimit());
             agentQueryPo.setParentId(agentPo.getId());
+            agentPlayerGuids.add(agentPo.getParentId());
             List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
             List<UnderProxyVo> underProxyVos = agentPos.stream().map((dbAgentPo)->{
                 UnderProxyVo underProxyVo = new UnderProxyVo();
@@ -349,6 +350,11 @@ public class AdminAgentReadService {
 
                 return underProxyVo;
             }).collect(Collectors.toList());
+            Long money = playerPickTotalDAO.sumPickUp(agentPlayerGuids,currentWeek);
+            if(money == null){
+                money = 0L;
+            }
+            underAgentResponseVo.setUnderAgengtSelfTotal(money);
             underAgentResponseVo.setUnderProxyVos(underProxyVos);
         }
 
