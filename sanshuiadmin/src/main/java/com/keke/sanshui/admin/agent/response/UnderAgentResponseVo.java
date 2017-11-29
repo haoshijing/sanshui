@@ -10,6 +10,6 @@ public class UnderAgentResponseVo {
     /**
      * 下属自己的充值总额
      */
-    private Long underAgengtSelfTotal;
+    private Long underAgentSelfTotal;
     private List<UnderProxyVo> underProxyVos;
 }

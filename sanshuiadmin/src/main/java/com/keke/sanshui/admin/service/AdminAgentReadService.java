@@ -354,7 +354,7 @@ public class AdminAgentReadService {
             if(money == null){
                 money = 0L;
             }
-            underAgentResponseVo.setUnderAgengtSelfTotal(money);
+            underAgentResponseVo.setUnderAgentSelfTotal(money);
             underAgentResponseVo.setUnderProxyVos(underProxyVos);
         }
 
