@@ -318,7 +318,7 @@ public class AdminAgentReadService {
         }
         final Integer currentWeek = week;
         AgentPo agentPo = agentService.findByGuid(areaAgentGuid);
-        List<Integer> agentPlayerGuids = Lists.newArrayList();
+        List<Integer> agentPlayerGuids =    agentService.getAllBranchAgent(agentPo.getId());
         if(agentPo != null) {
             AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(),week);
             underAgentResponseVo.setWeekAgentPickTotal(agentPickTotalPo.getTotalUnderMoney());
@@ -329,14 +329,15 @@ public class AdminAgentReadService {
             List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
             List<UnderProxyVo> underProxyVos = agentPos.stream().map((dbAgentPo)->{
                 UnderProxyVo underProxyVo = new UnderProxyVo();
-                agentPlayerGuids.add(dbAgentPo.getPlayerId());
                 underProxyVo.setWeek(currentWeek);
                 underProxyVo.setGuid(dbAgentPo.getPlayerId());
                 PlayerPo playerPo = playerDAO.selectByPlayId(dbAgentPo.getPlayerId());
                 underProxyVo.setOtherName(playerPo.getOtherName());
                 //这里改为批量的
                 AgentPickTotalPo agentPickTotalPo1 = agentPickTotalDAO.selectByAgentId(dbAgentPo.getId(),currentWeek);
-                if(agentPickTotalPo1 != null && agentPickTotalPo1.getTotalMoney() != null){
+                if(agentPickTotalPo1 != null &&
+                        agentPickTotalPo1.getTotalMoney() != null
+                        && dbAgentPo.getIsNeedAreaCal() == 1){
                     underProxyVo.setAgentTotal(agentPickTotalPo1.getTotalMoney());
                 }else{
                     underProxyVo.setAgentTotal(0L);

@@ -156,7 +156,7 @@ create table sys_func(
   lastUpdateTime bigint comment '最后修改时间'
 );
 
-
+alter table t_agent add COLUMN isNeedAreaCal int default 1;
 
 
 

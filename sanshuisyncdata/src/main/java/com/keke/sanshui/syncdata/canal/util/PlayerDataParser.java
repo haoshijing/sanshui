@@ -113,6 +113,7 @@ public  class PlayerDataParser {
                     agentPo.setLastUpdateTime(System.currentTimeMillis());
                     agentPo.setStatus(2);
                     agentPo.setLevel(3);
+                    agentPo.setIsNeedAreaCal(1);
                     agentPo.setAgentWeChartNo(name);
                     agentPo.setAgentNickName(otherName);
                     agentPo.setMemo("");

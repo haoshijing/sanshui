@@ -118,9 +118,12 @@ public class AgentService implements ApplicationContextAware {
     public List<Integer> getAllBranchAgent(Integer agentId){
         AgentQueryPo queryAgentPo = new AgentQueryPo();
         queryAgentPo.setParentId(agentId);
+        queryAgentPo.setLimit(10000);
+        queryAgentPo.setOffset(0);
+        queryAgentPo.setIsNeedAreaCal(1);
         List<AgentPo> branchAgentList = agentDAO.selectList(queryAgentPo);
         return  branchAgentList.stream().map(agentPo -> {
-            return agentPo.getId();
+            return agentPo.getPlayerId();
         }).collect(Collectors.toList());
     }
 

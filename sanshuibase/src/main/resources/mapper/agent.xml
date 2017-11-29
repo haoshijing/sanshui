@@ -33,14 +33,15 @@
         <if test ="param.level != null">
             AND level = #{param.level}
         </if>
+
         <if test = "param.playerId != null and param.playerId > 0">
             AND  playerId  = #{param.playerId}
         </if>
         <if test = "param.parentId != null">
             AND parentId = #{param.parentId}
         </if>
-        <if test ="param.status != null">
-            AND status = #{param.status}
+        <if test ="param.isNeedAreaCal != null">
+            AND isNeedAreaCal = #{param.isNeedAreaCal}
         </if>
     </sql>
     <select id="selectList" parameterType="AgentQueryPo" resultType="AgentPo">
@@ -117,7 +118,8 @@
         status,
         memo,
         insertTime,
-        lastUpdateTime
+        lastUpdateTime,
+        isNeedAreaCal
         )
         select
          #{agent.id},
@@ -131,7 +133,8 @@
         #{agent.status},
         #{agent.memo},
         #{agent.insertTime},
-        #{agent.lastUpdateTime}
+        #{agent.lastUpdateTime},
+        #{agent.isNeedAreaCal}
 
     </insert>
 

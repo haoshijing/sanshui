@@ -110,12 +110,9 @@ public class FullSyncDataService {
                 Integer parentGuid = playerRelationPo.getParentPlayerId();
                 AgentPo parentAgent = agentDAO.selectByPlayerId(parentGuid);
                 if(parentAgent != null && parentAgent.getLevel() == 3){
-                    //上级只是一个群主代理,则把它的关系给断了
-                    if(playerRelationPo != null) {
-                        playerRelationDAO.deleteRelation(playerRelationPo.getId());
-                    }
+                    //这里处理后就不会在进入到地区计算了
+                    agentPo.setIsNeedAreaCal(2);
                 }
-                //将它做为它的上衣蛾上级
                 AgentPo queryPo = agentDAO.selectByPlayerId(agentPo.getPlayerId());
                 if(queryPo == null){
                     try {

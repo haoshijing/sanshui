@@ -20,5 +20,5 @@ public class AgentPo {
     private String memo;
     private String password;
     private String avatar;
-
+    private Integer isNeedAreaCal;
 }
