@@ -326,10 +326,10 @@ public class AdminAgentReadService {
             agentQueryPo.setLimit(playerQueryVo.getLimit());
             agentQueryPo.setOffset((playerQueryVo.getPage() - 1) * playerQueryVo.getLimit());
             agentQueryPo.setParentId(agentPo.getId());
-            agentPlayerGuids.add(agentPo.getParentId());
             List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
             List<UnderProxyVo> underProxyVos = agentPos.stream().map((dbAgentPo)->{
                 UnderProxyVo underProxyVo = new UnderProxyVo();
+                agentPlayerGuids.add(dbAgentPo.getPlayerId());
                 underProxyVo.setWeek(currentWeek);
                 underProxyVo.setGuid(dbAgentPo.getPlayerId());
                 PlayerPo playerPo = playerDAO.selectByPlayId(dbAgentPo.getPlayerId());
