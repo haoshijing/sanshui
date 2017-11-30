@@ -1,6 +1,7 @@
 package com.keke.sanshui.job.service;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -14,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Repository
+@Slf4j
 public class TotalLauncherService {
     @Autowired
     private AgentTotalService agentTotalService;
@@ -26,8 +28,12 @@ public class TotalLauncherService {
         executorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                playerTotalService.work();
-                agentTotalService.work();
+                try {
+                    playerTotalService.work();
+                    agentTotalService.work();
+                }catch (Exception e){
+                    log.error("",e);
+                }
             }
         }, 1000, 120 * 1000, TimeUnit.MILLISECONDS);
     }

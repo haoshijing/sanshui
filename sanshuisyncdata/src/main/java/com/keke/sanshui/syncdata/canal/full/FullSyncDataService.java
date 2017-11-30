@@ -76,8 +76,12 @@ public class FullSyncDataService {
         scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                syncCharacterData();
-                syncRelation();
+                try {
+                    syncCharacterData();
+                    syncRelation();
+                }catch (Exception e){
+                    log.error("",e);
+                }
             }
         },1000,60000, TimeUnit.MILLISECONDS);
     }

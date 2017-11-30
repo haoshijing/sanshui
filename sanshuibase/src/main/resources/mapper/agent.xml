@@ -33,6 +33,9 @@
         <if test ="param.level != null">
             AND level = #{param.level}
         </if>
+        <if test ="param.status != null">
+            AND status = #{param.status}
+        </if>
 
         <if test = "param.playerId != null and param.playerId > 0">
             AND  playerId  = #{param.playerId}
