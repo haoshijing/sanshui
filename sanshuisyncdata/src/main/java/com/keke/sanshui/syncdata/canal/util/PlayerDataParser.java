@@ -7,6 +7,7 @@ import com.keke.sanshui.base.admin.po.PlayerCouponPo;
 import com.keke.sanshui.base.admin.po.PlayerPo;
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
 import com.keke.sanshui.base.admin.po.agent.AgentPo;
+import com.keke.sanshui.base.admin.service.AgentService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Data;
@@ -29,6 +30,9 @@ import java.util.concurrent.TimeUnit;
 public  class PlayerDataParser {
     @Autowired
     private HttpClient httpClient;
+
+    @Autowired
+    private AgentService agentService;
 
     @Data
     public static class PlayerInfo {
@@ -96,7 +100,7 @@ public  class PlayerDataParser {
                 if(curPlayerVersion >= 2){
                     byte chooseType = byteBuf.readByte();
                 }
-                if(!isAgent) {
+                if(!isAgent && parentIsNormalAgent(invitedGuid.intValue())) {
                     PlayerRelationPo playerRelationPo = new PlayerRelationPo();
                     playerRelationPo.setParentPlayerId(invitedGuid.intValue());
                     playerRelationPo.setLastUpdateTime(System.currentTimeMillis());
@@ -134,6 +138,10 @@ public  class PlayerDataParser {
         return playerAndAgentData;
     }
 
+    private boolean parentIsNormalAgent(Integer playerId){
+        AgentPo agentPo = agentService.findByGuid(playerId);
+        return agentPo != null && agentPo.getLevel() == 3 && agentPo.getStatus() == 2;
+    }
     private PlayerInfo getPlayerInfo(Integer playerId, byte[] data) {
 
         ByteBuf byteBuf = Unpooled.buffer(data.length);

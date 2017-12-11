@@ -21,8 +21,6 @@ public class InsertEventListener implements ApplicationListener<InsertCanalEvent
 
     @Autowired
     PlayerService playerService;
-
-
     @Autowired
     PlayerDataParser parser;
 
