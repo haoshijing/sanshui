@@ -111,18 +111,20 @@ public class FullSyncDataService {
             playerAndAgentData.getAgentPos().forEach(agentPo -> {
                 //去找这个人的上级
                 PlayerRelationPo playerRelationPo = playerRelationDAO.selectByPlayerId(agentPo.getPlayerId());
-                Integer parentGuid = playerRelationPo.getParentPlayerId();
-                AgentPo parentAgent = agentDAO.selectByPlayerId(parentGuid);
-                if(parentAgent != null && parentAgent.getLevel() == 3){
-                    //这里处理后就不会在进入到地区计算了
-                    agentPo.setIsNeedAreaCal(2);
+                if(playerRelationPo != null){
+                    Integer parentGuid = playerRelationPo.getParentPlayerId();
+                    AgentPo parentAgent = agentDAO.selectByPlayerId(parentGuid);
+                    if (parentAgent != null && parentAgent.getLevel() == 3) {
+                        //这里处理后就不会在进入到地区计算了
+                        agentPo.setIsNeedAreaCal(2);
+                    }
                 }
                 AgentPo queryPo = agentDAO.selectByPlayerId(agentPo.getPlayerId());
-                if(queryPo == null){
+                if (queryPo == null) {
                     try {
                         agentDAO.insert(agentPo);
-                    }catch (Exception e){
-                        log.error("{}",e);
+                    } catch (Exception e) {
+                        log.error("{}", e);
                     }
                 }
             });
