@@ -101,7 +101,7 @@ public  class PlayerDataParser {
                     byte chooseType = byteBuf.readByte();
                 }
 
-                if(!isAgent || (isAgent &&  parentIsNormalAgent(invitedGuid.intValue()))) {
+                if(!isAgent || (isAgent &&  parentIsNormalAgent(guid.intValue(),invitedGuid.intValue()))) {
                     PlayerRelationPo playerRelationPo = new PlayerRelationPo();
                     playerRelationPo.setParentPlayerId(invitedGuid.intValue());
                     playerRelationPo.setLastUpdateTime(System.currentTimeMillis());
@@ -139,12 +139,12 @@ public  class PlayerDataParser {
         return playerAndAgentData;
     }
 
-    private boolean parentIsNormalAgent(Integer parentGuid){
+    private boolean parentIsNormalAgent(Integer guid,Integer parentGuid){
         if(parentGuid.equals(0)){
             return  false;
         }
         AgentPo agentPo = agentService.findByGuid(parentGuid.intValue());
-        log.info("parentGuid = {},agentPo = {}",parentGuid,agentPo);
+        log.info("guid = {},parentGuid = {},agentPo = {}",guid,parentGuid,agentPo);
         return agentPo != null && agentPo.getLevel() == 3 && agentPo.getStatus() == 1;
     }
     private PlayerInfo getPlayerInfo(Integer playerId, byte[] data) {

@@ -71,7 +71,10 @@
       UPDATE  t_agent
       <set>
           <if test = "param.agentName != null and param.agentName != ''">
-              agentName = #{param.agentName},
+          agentName = #{param.agentName},
+       </if>
+          <if test = "param.isNeedAreaCal != null ">
+              isNeedAreaCal = #{param.isNeedAreaCal},
           </if>
           <if test = "param.agentNickName != null and param.agentNickName != ''">
               agentNickName = #{param.agentNickName},

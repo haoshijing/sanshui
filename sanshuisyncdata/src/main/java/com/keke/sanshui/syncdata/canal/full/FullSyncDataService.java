@@ -112,6 +112,7 @@ public class FullSyncDataService {
                 //去找这个人的上级
                 PlayerRelationPo playerRelationPo = playerRelationDAO.selectByPlayerId(agentPo.getPlayerId());
                 if(playerRelationPo != null){
+                    log.info("playerRelationPo = {}",playerRelationPo);
                     Integer parentGuid = playerRelationPo.getParentPlayerId();
                     AgentPo parentAgent = agentDAO.selectByPlayerId(parentGuid);
                     if (parentAgent != null && parentAgent.getLevel() == 3) {
@@ -126,6 +127,11 @@ public class FullSyncDataService {
                     } catch (Exception e) {
                         log.error("{}", e);
                     }
+                }else{
+                    AgentPo updatePo = new AgentPo();
+                    updatePo.setId(queryPo.getId());
+                    updatePo.setIsNeedAreaCal(agentPo.getIsNeedAreaCal());
+                    agentDAO.updateAgent(updatePo);
                 }
             });
 
