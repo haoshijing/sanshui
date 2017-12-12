@@ -100,8 +100,15 @@ public  class PlayerDataParser {
                 if(curPlayerVersion >= 2){
                     byte chooseType = byteBuf.readByte();
                 }
-
-                if(!isAgent || (isAgent &&  parentIsNormalAgent(guid.intValue(),invitedGuid.intValue()))) {
+                boolean needAddRelation = false;
+                if(!isAgent){
+                    needAddRelation = true;
+                }else{
+                    if(parentIsNormalAgent(guid.intValue(),invitedGuid.intValue())){
+                        needAddRelation = true;
+                    }
+                }
+                if(needAddRelation) {
                     PlayerRelationPo playerRelationPo = new PlayerRelationPo();
                     playerRelationPo.setParentPlayerId(invitedGuid.intValue());
                     playerRelationPo.setLastUpdateTime(System.currentTimeMillis());
@@ -112,13 +119,18 @@ public  class PlayerDataParser {
                         relationMaps.put(guid.intValue(), playerRelationPos);
                     }
                     playerRelationPos.add(playerRelationPo);
-                }else{
+                }
+                if(isAgent){
                     AgentPo agentPo = new AgentPo();
                     agentPo.setInsertTime(System.currentTimeMillis());
                     agentPo.setLastUpdateTime(System.currentTimeMillis());
                     agentPo.setStatus(2);
                     agentPo.setLevel(3);
-                    agentPo.setIsNeedAreaCal(1);
+                    if(parentIsNormalAgent(guid.intValue(),invitedGuid.intValue())) {
+                        agentPo.setIsNeedAreaCal(2);
+                    }else{
+                        agentPo.setIsNeedAreaCal(1);
+                    }
                     agentPo.setAgentWeChartNo(name);
                     agentPo.setAgentNickName(otherName);
                     agentPo.setMemo("");
@@ -144,7 +156,6 @@ public  class PlayerDataParser {
             return  false;
         }
         AgentPo agentPo = agentService.findByGuid(parentGuid.intValue());
-        log.info("guid = {},parentGuid = {},agentPo = {}",guid,parentGuid,agentPo);
         return agentPo != null && agentPo.getLevel() == 3 && agentPo.getStatus() == 1;
     }
     private PlayerInfo getPlayerInfo(Integer playerId, byte[] data) {

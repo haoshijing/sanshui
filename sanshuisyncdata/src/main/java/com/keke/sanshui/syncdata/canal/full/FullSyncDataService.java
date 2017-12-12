@@ -83,7 +83,7 @@ public class FullSyncDataService {
                     log.error("",e);
                 }
             }
-        },1000,60000, TimeUnit.MILLISECONDS);
+        },10000,60000, TimeUnit.MILLISECONDS);
     }
 
     public void syncRelation() {
@@ -110,17 +110,8 @@ public class FullSyncDataService {
             });
             playerAndAgentData.getAgentPos().forEach(agentPo -> {
                 //去找这个人的上级
-                PlayerRelationPo playerRelationPo = playerRelationDAO.selectByPlayerId(agentPo.getPlayerId());
-                if(playerRelationPo != null){
-                    log.info("playerRelationPo = {}",playerRelationPo);
-                    Integer parentGuid = playerRelationPo.getParentPlayerId();
-                    AgentPo parentAgent = agentDAO.selectByPlayerId(parentGuid);
-                    if (parentAgent != null && parentAgent.getLevel() == 3) {
-                        //这里处理后就不会在进入到地区计算了
-                        agentPo.setIsNeedAreaCal(2);
-                    }
-                }
-                AgentPo queryPo = agentDAO.selectByPlayerId(agentPo.getPlayerId());
+                Integer playerId = agentPo.getPlayerId();
+                AgentPo queryPo = agentDAO.selectByPlayerId(playerId);
                 if (queryPo == null) {
                     try {
                         agentDAO.insert(agentPo);
@@ -128,10 +119,13 @@ public class FullSyncDataService {
                         log.error("{}", e);
                     }
                 }else{
-                    AgentPo updatePo = new AgentPo();
-                    updatePo.setId(queryPo.getId());
-                    updatePo.setIsNeedAreaCal(agentPo.getIsNeedAreaCal());
-                    agentDAO.updateAgent(updatePo);
+                    if(agentPo.getIsNeedAreaCal() == 2) {
+                        log.info("agentId = {}",queryPo.getId());
+                        AgentPo updatePo = new AgentPo();
+                        updatePo.setId(queryPo.getId());
+                        updatePo.setIsNeedAreaCal(agentPo.getIsNeedAreaCal());
+                        agentDAO.updateAgent(updatePo);
+                    }
                 }
             });
 
