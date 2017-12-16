@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title>付钱拉拉起支付</title>
+    <script src="https://lib.fuqian.la/h5jssdk.4.0.js"></script>
+    <script type="text/javascript" src="${rc.contextPath}/js/jquery-1.7.1.min.js"></script>
+</head>
+<body>
+<script>
+    $(document).ready(function(){
+        FUQIANLA.init({
+            app_id: '${payRequest.appId}',
+            order_no: '${payRequest.orderId}',
+            amount: '${payRequest.amount}',
+            channel: '${payRequest.channel}',
+            subject: '${payRequest.subject}',
+            notify_url:'${payRequest.notifyUrl}',
+            extra: {
+                openid: 'odKIlw0xYWR0mqXZ4VHER611W990',
+            }
+            });
+
+    });
+</script>
+</body>
+</html>

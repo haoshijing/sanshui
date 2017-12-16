@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
+import com.keke.sanshui.pay.fuqianla.FuqianResponseVo;
+import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
 import com.keke.sanshui.pay.zpay.ZPayResponseVo;
 import com.keke.sanshui.pay.zpay.ZPayService;
 import com.keke.sanshui.util.SignUtil;
@@ -45,6 +47,67 @@ public class GatewayController {
 
     @Autowired
     ZPayService zPayService;
+
+    @Autowired
+    FuqianlaPayService fuqianlaPayService;
+
+    @RequestMapping("/fuqianLa/callback")
+    public void handleFuQianNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        FuqianResponseVo fuqianResponseVo = parseFuQianlaRepsonse(request);
+        log.info("fuqianResponseVo = {}", fuqianResponseVo);
+        boolean matchSign = fuqianlaPayService.checkSign(fuqianResponseVo);
+        if (matchSign && StringUtils.equals(fuqianResponseVo.getRet_code(), PAY_PULL_OK)) {
+            //支付成功,发送给游戏服务
+            try {
+                String orderId = fuqianResponseVo.getOrder_no();
+                Order order = orderService.queryOrderByNo(orderId);
+                if (order == null) {
+                    log.error("错误的订单,orderId = {}", orderId);
+                    String envName = System.getProperty("env");
+                    if(StringUtils.isEmpty(envName)){
+                        envName = System.getenv("env");
+                    }
+                    if(StringUtils.equals(envName,"test")){
+                        response.getWriter().print("0");
+                        return;
+                    }
+                }
+                Order updateOrder = new Order();
+                //已支付
+                updateOrder.setSelfOrderNo(orderId);
+                updateOrder.setOrderStatus(3);
+                updateOrder.setPayState(0);
+                updateOrder.setPayTime(String.valueOf(System.currentTimeMillis()));
+                updateOrder.setLastUpdateTime(System.currentTimeMillis());
+                updateOrder.setOrderNo(fuqianResponseVo.getMerch_id());
+                int updateStatus = orderService.updateOrder(updateOrder);
+                if(updateStatus == 0){
+                    log.warn("update data effect 0,{}",JSON.toJSONString(fuqianResponseVo));
+                }
+                //发送给gameServer
+                Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                        order.getMoney(), "0");
+                if(pair.getLeft()){
+                    Order newUpdateOrder = new Order();
+                    newUpdateOrder.setSelfOrderNo(orderId);
+                    if(pair.getRight()) {
+                        newUpdateOrder.setOrderStatus(2);
+                    }
+                    newUpdateOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                    newUpdateOrder.setSendTime(System.currentTimeMillis());
+                    orderService.updateOrder(newUpdateOrder);
+                }
+                /**
+                 * 发送给服务器支付成功
+                 */
+                response.getWriter().print("success");
+            } catch (Exception e) {
+                log.error(" update error ", e);
+            }
+        }else{
+            log.error("秘钥匹配不上{}",fuqianResponseVo);
+        }
+    }
 
 
     @RequestMapping("/paypull/callback")
@@ -167,28 +230,6 @@ public class GatewayController {
         }
     }
 
-    private ZPayResponseVo parseZPayReponse(HttpServletRequest request) {
-        ZPayResponseVo responseVo = new ZPayResponseVo();
-        String app_id = request.getParameter("app_id");
-        String code = request.getParameter("code");
-        String invoice_no = request.getParameter("invoice_no");
-        String money = request.getParameter("money");
-        String out_trade_no = request.getParameter("out_trade_no");
-        String pay_way = request.getParameter("pay_way");
-        String qn = request.getParameter("qn");
-        String up_invoice_no = request.getParameter("up_invoice_no");
-        String sign = request.getParameter("sign");
-        responseVo.setApp_id(app_id);
-        responseVo.setCode(code);
-        responseVo.setInvoice_no(invoice_no);
-        responseVo.setMoney(money);
-        responseVo.setOut_trade_no(out_trade_no);
-        responseVo.setPay_way(pay_way);
-        responseVo.setQn(qn);
-        responseVo.setUp_invoice_no(up_invoice_no);
-        responseVo.setSign(sign);
-        return responseVo;
-    }
 
     @RequestMapping(value = "/pay/callback", method = RequestMethod.POST)
     void doCallback(HttpServletRequest request) {
@@ -249,6 +290,61 @@ public class GatewayController {
         }
         return payVo;
     }
+
+    private ZPayResponseVo parseZPayReponse(HttpServletRequest request) {
+        ZPayResponseVo responseVo = new ZPayResponseVo();
+        String app_id = request.getParameter("app_id");
+        String code = request.getParameter("code");
+        String invoice_no = request.getParameter("invoice_no");
+        String money = request.getParameter("money");
+        String out_trade_no = request.getParameter("out_trade_no");
+        String pay_way = request.getParameter("pay_way");
+        String qn = request.getParameter("qn");
+        String up_invoice_no = request.getParameter("up_invoice_no");
+        String sign = request.getParameter("sign");
+        responseVo.setApp_id(app_id);
+        responseVo.setCode(code);
+        responseVo.setInvoice_no(invoice_no);
+        responseVo.setMoney(money);
+        responseVo.setOut_trade_no(out_trade_no);
+        responseVo.setPay_way(pay_way);
+        responseVo.setQn(qn);
+        responseVo.setUp_invoice_no(up_invoice_no);
+        responseVo.setSign(sign);
+        return responseVo;
+    }
+
+    private FuqianResponseVo parseFuQianlaRepsonse(HttpServletRequest request) {
+        FuqianResponseVo fuqianResponseVo = new FuqianResponseVo();
+        Integer  amount =  Integer.valueOf(request.getParameter("amount"));
+        String  receive_time =  request.getParameter("receive_time");
+        String  complete_time =  request.getParameter("complete_time");
+        String  merch_id =  request.getParameter("merch_id");
+        String  charge_id =  request.getParameter("charge_id");
+        String  order_no =  request.getParameter("order_no");
+        String ret_code = request.getParameter("ret_code");
+        String ret_info = request.getParameter("ret_info");
+        String optional = request.getParameter("optional");
+        String version = request.getParameter("version");
+        String sign_type = request.getParameter("sign_type");
+        String sign_info = request.getParameter("sign_info");
+
+        fuqianResponseVo.setAmount(amount);
+        fuqianResponseVo.setReceive_time(receive_time);
+        fuqianResponseVo.setComplete_time(complete_time);
+        fuqianResponseVo.setMerch_id(merch_id);
+        fuqianResponseVo.setCharge_id(charge_id);
+        fuqianResponseVo.setOrder_no(order_no);
+        fuqianResponseVo.setRet_code(ret_code);
+        fuqianResponseVo.setRet_info(ret_info);
+        fuqianResponseVo.setOptional(optional);
+        fuqianResponseVo.setVersion(version);
+        fuqianResponseVo.setSign_type(sign_type);
+        fuqianResponseVo.setSign_info(sign_info);
+        return fuqianResponseVo;
+    }
+
+
 
     public  byte[] getRequestPostBytes(HttpServletRequest request)
             throws IOException {

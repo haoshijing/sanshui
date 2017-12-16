@@ -3,6 +3,7 @@ package com.keke.sanshui.util;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.base.vo.PayVo;
+import com.keke.sanshui.pay.fuqianla.FuqianResponseVo;
 import com.keke.sanshui.pay.zpay.ZPayQueryRequestVO;
 import com.keke.sanshui.pay.zpay.ZPayRequestVo;
 import com.keke.sanshui.pay.zpay.ZPayResponseVo;
@@ -58,6 +59,31 @@ public class SignUtil {
             if (!field.getName().equals("sign")) {
                 field.setAccessible(true);
                 String data = String.valueOf(ReflectionUtils.getField(field,zPayResponseVo));
+                if(StringUtils.isEmpty(data)) {
+                    continue;
+                }
+                sortedMap.put(field.getName(),data);
+            }
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, String> entry : sortedMap.entrySet()) {
+            if (stringBuilder.toString().length() != 0) {
+                stringBuilder.append("&");
+            }
+            stringBuilder.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        stringBuilder.append("&key=").append(signKey);
+        String md5Sign = MD5Util.md5(stringBuilder.toString()).toUpperCase();
+        return md5Sign;
+    }
+
+    public final static String createFullqianResponseSign(FuqianResponseVo fuqianResponseVo, String signKey){
+        Field[] fields = ZPayResponseVo.class.getDeclaredFields();
+        SortedMap<String, String> sortedMap = Maps.newTreeMap();
+        for (Field field : fields) {
+            if (!(field.getName().equals("sign_info")  || field.getName().equals("sign_type") )) {
+                field.setAccessible(true);
+                String data = String.valueOf(ReflectionUtils.getField(field,fuqianResponseVo));
                 if(StringUtils.isEmpty(data)) {
                     continue;
                 }

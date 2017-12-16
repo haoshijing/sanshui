@@ -354,6 +354,9 @@ public class AdminAgentReadService {
             }
 
             List<Integer> notNeedCalPlayerGuids =    agentService.getAllBranchAgent(agentPo.getId(),2);
+            for(Integer guid:notNeedCalPlayerGuids){
+                log.info("guid = {}",guid);
+            }
             Long money2 = playerPickTotalDAO.sumPickUp(notNeedCalPlayerGuids,currentWeek);
             if(money2 == null){
                 money2 = 0L;

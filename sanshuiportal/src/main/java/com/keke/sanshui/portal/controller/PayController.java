@@ -5,6 +5,8 @@ import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PayService;
+import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
+import com.keke.sanshui.pay.fuqianla.FuqianlaRequestVo;
 import com.keke.sanshui.pay.paypull.PaypullRequestVo;
 import com.keke.sanshui.pay.zpay.ZPayRequestVo;
 import com.keke.sanshui.pay.zpay.ZPayService;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +44,9 @@ public class PayController {
     private ZPayService zPayService;
 
     private final static String ZPAY_BASE_URL = "http://pay.csl2016.cn:8000";
+
+    @Autowired
+    private FuqianlaPayService fuqianlaPayService;
 
     @RequestMapping("/goPay")
     String goPay(HttpServletRequest request, String guid, Model modelAttribute) {
@@ -93,6 +99,21 @@ public class PayController {
 
         return "payPage";
     }
+
+    @RequestMapping("/doFuQianLa")
+    public String doFuQianLa(Integer pickId, Integer guid, String payType, ModelAndView modelAndView) {
+        log.info("doFuQianLa pickId={},guid = {}", pickId, guid);
+        String selfOrderId = guid + "" + System.currentTimeMillis();
+        PayLink payLink = payService.getCid(pickId);
+        FuqianlaRequestVo payRequest = fuqianlaPayService.createRequestVo(payLink,payType, selfOrderId);
+        modelAndView.addObject("payRequest",payRequest);
+        Map<String, String> attach = Maps.newHashMap();
+        attach.put("guid", guid.toString());
+        payRequest.setGuid(guid.toString());
+        orderService.insertOrder(payLink, attach, selfOrderId);
+        return "fuqian";
+    }
+
 
     @RequestMapping("/doGo51PayPage")
     void doGo51PayPage(Integer pickId, Integer guid, String payType,HttpServletResponse response) {
