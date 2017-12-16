@@ -43,6 +43,7 @@ public class AgentTotalService {
         log.info("开始代理玩家的总充值统计:{}",format.format(new Date()));
         int week = WeekUtil.getCurrentWeek();
         try {
+            agentPickTotalDAO.deleteAgentTotal(week);
             staticNormalAgent(week);
             staticAreaAgent(week);
         }catch (Exception e){

@@ -67,4 +67,8 @@
         </if>
     </select>
 
+    <delete id="deleteAgentTotal">
+        DELETE  FROM  <include refid="tableName"/>
+        WHERE week = #{week}
+    </delete>
 </mapper>
