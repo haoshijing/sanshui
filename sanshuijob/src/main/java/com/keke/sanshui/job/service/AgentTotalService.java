@@ -58,7 +58,6 @@ public class AgentTotalService {
         }).forEach(agentPo -> {
             AgentQueryPo agentQueryPo = new AgentQueryPo();
             agentQueryPo.setParentId(agentPo.getId());
-            agentQueryPo.setIsNeedAreaCal(1);
             agentQueryPo.setLimit(10000);
             List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
 

@@ -318,7 +318,6 @@ public class AdminAgentReadService {
         }
         final Integer currentWeek = week;
         AgentPo agentPo = agentService.findByGuid(areaAgentGuid);
-        List<Integer> agentPlayerGuids =    agentService.getAllBranchAgent(agentPo.getId());
         if(agentPo != null) {
             AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(),week);
             underAgentResponseVo.setWeekAgentPickTotal(agentPickTotalPo.getTotalUnderMoney());
@@ -336,11 +335,8 @@ public class AdminAgentReadService {
                 //这里改为批量的
                 AgentPickTotalPo agentPickTotalPo1 = agentPickTotalDAO.selectByAgentId(dbAgentPo.getId(),currentWeek);
                 if(agentPickTotalPo1 != null &&
-                        agentPickTotalPo1.getTotalMoney() != null
-                        && dbAgentPo.getIsNeedAreaCal() == 1){
+                        agentPickTotalPo1.getTotalMoney() != null){
                     underProxyVo.setAgentTotal(agentPickTotalPo1.getTotalMoney());
-                }else{
-                    underProxyVo.setAgentTotal(0L);
                 }
                 PlayerPickTotalPo playerPickTotalPo = playerPickTotalDAO.selectByPlayerId(dbAgentPo.getPlayerId(),currentWeek);
                 if(playerPickTotalPo != null) {
@@ -351,11 +347,19 @@ public class AdminAgentReadService {
 
                 return underProxyVo;
             }).collect(Collectors.toList());
-            Long money = playerPickTotalDAO.sumPickUp(agentPlayerGuids,currentWeek);
-            if(money == null){
-                money = 0L;
+            List<Integer> agentPlayerGuids =    agentService.getAllBranchAgent(agentPo.getId(),1);
+            Long money1 = playerPickTotalDAO.sumPickUp(agentPlayerGuids,currentWeek);
+            if(money1 == null){
+                money1 = 0L;
             }
-            underAgentResponseVo.setUnderAgentSelfTotal(money);
+
+            List<Integer> notNeedCalPlayerGuids =    agentService.getAllBranchAgent(agentPo.getId(),2);
+            Long money2 = playerPickTotalDAO.sumPickUp(notNeedCalPlayerGuids,currentWeek);
+            if(money2 == null){
+                money2 = 0L;
+            }
+            underAgentResponseVo.setUnderAgentSelfTotal(money1);
+            underAgentResponseVo.setNotBelongToSelfPickTotal(money2);
             underAgentResponseVo.setUnderProxyVos(underProxyVos);
         }
 
