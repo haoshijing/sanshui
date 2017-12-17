@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.UUID;
@@ -43,7 +44,11 @@ public class WechartPayService {
         weChartPreOrderVo.setOut_trade_no(selfOrderId);
         weChartPreOrderVo.setTotal_fee(payLink.getPickRmb());
         weChartPreOrderVo.setSpbill_create_ip(IpUtils.getIpAddr(httpServletRequest));
-        weChartPreOrderVo.setNotify_url(new StringBuilder(callbackHost).append("/wechart/callback").toString());
+        try{
+            weChartPreOrderVo.setNotify_url(URLEncoder.encode(new StringBuilder(callbackHost).append("/wechart/callback").toString(),"UTF-8"));
+        }catch (Exception e){
+
+        }
         weChartPreOrderVo.setTrade_type("MWEB");
         Map<String,String> info = Maps.newHashMap();
         Map<String,String> data = Maps.newHashMap();
