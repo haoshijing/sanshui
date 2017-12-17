@@ -2,6 +2,9 @@ package com.keke.sanshui.portal.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.github.wxpay.sdk.WXPay;
+import com.github.wxpay.sdk.WXPayConfig;
+import com.github.wxpay.sdk.WXPayUtil;
 import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
@@ -27,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -47,6 +51,9 @@ public class GatewayController {
 
     @Autowired
     ZPayService zPayService;
+
+    @Autowired
+    private WXPayConfig wxPayConfig;
 
     @Autowired
     FuqianlaPayService fuqianlaPayService;
@@ -108,6 +115,74 @@ public class GatewayController {
             log.error("秘钥匹配不上{}",fuqianResponseVo);
         }
     }
+
+    @RequestMapping("/wechart/callback")
+    public void handleWxNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        byte[] datas = getRequestPostBytes(request);
+        String xmlData = new String(datas);
+        log.info("xmdData = {}",xmlData);
+        WXPay wxPay = new WXPay(wxPayConfig);
+        try {
+            Map<String, String> notifyMap = WXPayUtil.xmlToMap(xmlData);
+            if(wxPay.isPayResultNotifySignatureValid(notifyMap)){
+                String returnCode = notifyMap.get("return_code");
+                String returnMsg = notifyMap.get("return_msg");
+                if(StringUtils.equals(returnCode,"SUCCESS")){
+                    String orderId = notifyMap.get("out_trade_no");
+                    Order order = orderService.queryOrderByNo(orderId);
+                    if (order == null) {
+                        log.error("错误的订单,orderId = {}", orderId);
+                        String envName = System.getProperty("env");
+                        if(StringUtils.isEmpty(envName)){
+                            envName = System.getenv("env");
+                        }
+                        if(StringUtils.equals(envName,"test")){
+                            response.getWriter().print("0");
+                            return;
+                        }
+                    }
+                    Order updateOrder = new Order();
+                    //已支付
+                    updateOrder.setSelfOrderNo(orderId);
+                    updateOrder.setOrderStatus(3);
+                    updateOrder.setPayState(0);
+                    updateOrder.setPayTime(String.valueOf(System.currentTimeMillis()));
+                    updateOrder.setLastUpdateTime(System.currentTimeMillis());
+                    updateOrder.setOrderNo(notifyMap.get("transaction_id"));
+                    int updateStatus = orderService.updateOrder(updateOrder);
+                    if(updateStatus == 0){
+                        log.warn("update data effect 0,{}",JSON.toJSONString(notifyMap));
+                    }
+                    //发送给gameServer
+                    Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                            order.getMoney(), "0");
+                    if(pair.getLeft()){
+                        Order newUpdateOrder = new Order();
+                        newUpdateOrder.setSelfOrderNo(orderId);
+                        if(pair.getRight()) {
+                            newUpdateOrder.setOrderStatus(2);
+                        }
+                        newUpdateOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                        newUpdateOrder.setSendTime(System.currentTimeMillis());
+                        orderService.updateOrder(newUpdateOrder);
+                    }
+                    /**
+                     * 发送给服务器支付成功
+                     */
+                    response.getWriter().print("<xml>\n" +
+                            "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
+                            "  <return_msg><![CDATA[OK]]></return_msg>\n" +
+                            "</xml>");
+                }
+            }else{
+                log.info("sign error");
+            }
+        }catch (Exception e){
+            log.error("handleWxNotify error",e);
+        }
+
+    }
+
 
 
     @RequestMapping("/paypull/callback")

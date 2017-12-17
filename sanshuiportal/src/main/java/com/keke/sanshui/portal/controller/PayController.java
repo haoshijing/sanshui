@@ -1,16 +1,28 @@
 package com.keke.sanshui.portal.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.github.wxpay.sdk.WXPay;
+import com.github.wxpay.sdk.WXPayConfig;
 import com.google.common.collect.Maps;
+import com.keke.sanshui.base.admin.dao.PlayerDAO;
 import com.keke.sanshui.base.admin.po.PayLink;
+import com.keke.sanshui.base.admin.po.PlayerPo;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PayService;
+import com.keke.sanshui.base.admin.service.PlayerService;
 import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
 import com.keke.sanshui.pay.fuqianla.FuqianlaRequestVo;
 import com.keke.sanshui.pay.paypull.PaypullRequestVo;
+import com.keke.sanshui.pay.wechart.MyWxConfig;
+import com.keke.sanshui.pay.wechart.WeChartPreOrderVo;
+import com.keke.sanshui.pay.wechart.WechartPayService;
 import com.keke.sanshui.pay.zpay.ZPayRequestVo;
 import com.keke.sanshui.pay.zpay.ZPayService;
+import com.keke.sanshui.wechart.WeChartService;
+import com.keke.sanshui.wechart.constants.Constants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -21,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +43,6 @@ import java.util.Map;
 public class PayController {
     @Autowired
     private PayService payService;
-
-    @Value("${callbackHost}")
-    private String callbackHost;
 
     @Value("${payPullAppId}")
     private String payPullAppId;
@@ -48,8 +58,16 @@ public class PayController {
     @Autowired
     private FuqianlaPayService fuqianlaPayService;
 
+    @Value("${callbackHost}")
+    private String callbackHost;
+    @Autowired
+    private WechartPayService wechartPayService;
+
+    @Autowired
+    MyWxConfig wxPayConfig;
+
     @RequestMapping("/goPay")
-    String goPay(HttpServletRequest request, String guid, Model modelAttribute) {
+    String goPay(HttpServletRequest request, String guid, Model modelAttribute, HttpServletResponse httpResponse) {
         log.info("guid = {}", guid);
         Integer defaultPick = 0;
         String token = new StringBuilder(guid).append("-").append(System.currentTimeMillis()).toString();
@@ -101,16 +119,47 @@ public class PayController {
     }
 
     @RequestMapping("/doFuQianLa")
-    public String doFuQianLa(Integer pickId, Integer guid, String payType, ModelAndView modelAndView) {
+    public String doFuQianLa(Integer pickId, Integer guid, String payType,Model modelAttribute) {
         log.info("doFuQianLa pickId={},guid = {}", pickId, guid);
         String selfOrderId = guid + "" + System.currentTimeMillis();
         PayLink payLink = payService.getCid(pickId);
         FuqianlaRequestVo payRequest = fuqianlaPayService.createRequestVo(payLink,payType, selfOrderId);
-        modelAndView.addObject("payRequest",payRequest);
         Map<String, String> attach = Maps.newHashMap();
         attach.put("guid", guid.toString());
         payRequest.setGuid(guid.toString());
         orderService.insertOrder(payLink, attach, selfOrderId);
+        modelAttribute.addAttribute("payRequest",payRequest);
+        return "fuqian";
+    }
+
+    @RequestMapping("/doWxPay")
+    public String doWxPay(HttpServletRequest request ,Integer pickId, Integer guid,HttpServletResponse response) {
+        log.info("doWxPay pickId={},guid = {}", pickId, guid);
+        String selfOrderId = guid + "" + System.currentTimeMillis();
+        PayLink payLink = payService.getCid(pickId);
+        WXPay wxPay = new WXPay(wxPayConfig);
+        Map<String,String> datas = wechartPayService.createPreOrderVo(request,payLink,selfOrderId);
+        try{
+            Map<String,String> responseData = wxPay.unifiedOrder(datas);
+            if(response != null){
+                String return_msg = responseData.get("return_msg");
+                if(StringUtils.equals(return_msg,"OK")){
+                    String url = responseData.get("mweb_url");
+                    String prepare_id = responseData.get("prepare_id");
+                    Map<String, String> attach = Maps.newHashMap();
+                    attach.put("guid", guid.toString());
+                    attach.put("prepare_id",prepare_id);
+                    orderService.insertOrder(payLink, attach, selfOrderId);
+                    if(StringUtils.isNotEmpty(url)){
+                        response.sendRedirect(url);
+                    }
+                    return null;
+                }
+            }
+        }catch (Exception e){
+            log.error("",e);
+        }
+
         return "fuqian";
     }
 
@@ -133,7 +182,6 @@ public class PayController {
         }
 
     }
-
 
     @RequestMapping("/goPayPullPage")
     String doGoPayPullPage(Integer pickId, Integer guid, String token, HttpServletRequest request, Model modelAttribute) {

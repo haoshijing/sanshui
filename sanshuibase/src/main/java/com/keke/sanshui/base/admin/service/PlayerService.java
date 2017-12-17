@@ -46,4 +46,8 @@ public class PlayerService {
             playerCouponDAO.insertPlayerCouponPo(playerCouponPo);
         }
     }
+
+    public PlayerPo selectById(Integer guid) {
+        return playerDAO.selectByPlayId(guid);
+    }
 }
