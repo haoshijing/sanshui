@@ -62,7 +62,6 @@ public class GateTestController implements ApplicationContextAware{
         }catch (Exception e){
 
         }
-
     }
 
 

@@ -159,8 +159,7 @@ public class PayController {
         }catch (Exception e){
             log.error("",e);
         }
-
-        return "fuqian";
+        return null;
     }
 
 
