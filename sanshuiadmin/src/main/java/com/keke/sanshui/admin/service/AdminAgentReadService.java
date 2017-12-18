@@ -329,6 +329,7 @@ public class AdminAgentReadService {
             List<UnderProxyVo> underProxyVos = agentPos.stream().map((dbAgentPo) -> {
                 UnderProxyVo underProxyVo = new UnderProxyVo();
                 underProxyVo.setWeek(currentWeek);
+                underProxyVo.setIsNotCal(dbAgentPo.getIsNeedAreaCal());
                 underProxyVo.setGuid(dbAgentPo.getPlayerId());
                 PlayerPo playerPo = playerDAO.selectByPlayId(dbAgentPo.getPlayerId());
                 underProxyVo.setOtherName(playerPo.getOtherName());

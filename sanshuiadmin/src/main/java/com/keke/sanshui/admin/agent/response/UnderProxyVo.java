@@ -26,4 +26,5 @@ public class UnderProxyVo {
      * 周
      */
     private Integer week;
+    private Integer isNotCal;
 }
