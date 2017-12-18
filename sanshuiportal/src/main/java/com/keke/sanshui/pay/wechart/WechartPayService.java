@@ -13,7 +13,6 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
-import java.net.URLEncoder;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.UUID;
@@ -46,7 +45,6 @@ public class WechartPayService {
         weChartPreOrderVo.setSpbill_create_ip(IpUtils.getIpAddr(httpServletRequest));
         try{
             weChartPreOrderVo.setNotify_url(new StringBuilder(callbackHost).append("/wechart/callback").toString());
-            weChartPreOrderVo.setReturn_url(new StringBuilder(callbackHost).append("/wxpay/user/").append(selfOrderId).toString());
         }catch (Exception e){
 
         }
@@ -68,7 +66,6 @@ public class WechartPayService {
         datas.put("sign_type",weChartPreOrderVo.getSign_type());
         datas.put("nonce_str", weChartPreOrderVo.getNonce_str());
         datas.put("notify_url", weChartPreOrderVo.getNotify_url());
-        datas.put("return_url", weChartPreOrderVo.getReturn_url());
         datas.put("device_info", weChartPreOrderVo.getDevice_info());
         return datas;
 
