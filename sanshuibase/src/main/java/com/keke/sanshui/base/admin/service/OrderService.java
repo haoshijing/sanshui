@@ -40,7 +40,6 @@ public class OrderService {
         int insertRet = 0;
         try {
             insertRet = orderDAO.insert(order);
-
         } catch (Exception e) {
             e.printStackTrace();
         }

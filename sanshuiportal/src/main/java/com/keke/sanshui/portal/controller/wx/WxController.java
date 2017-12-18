@@ -23,7 +23,6 @@ public class WxController {
     @RequestMapping("/")
     public void checkServer(HttpServletRequest request, HttpServletResponse response) {
         try {
-            System.out.println("1111 = [" + 1111 + "], 222 = [" + 22 + "]");
             String signature = request.getParameter("signature");
             String timestamp = request.getParameter("timestamp");
             String nonce = request.getParameter("nonce");

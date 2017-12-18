@@ -28,6 +28,7 @@ public class WeChartPreOrderVo {
     private String time_expire;
     private String goods_tag;
     private String notify_url;
+    private String return_url;
     private String trade_type;
     private String product_id;
     private String limit_pay;

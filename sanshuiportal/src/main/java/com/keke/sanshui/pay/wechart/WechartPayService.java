@@ -45,7 +45,8 @@ public class WechartPayService {
         weChartPreOrderVo.setTotal_fee(payLink.getPickRmb());
         weChartPreOrderVo.setSpbill_create_ip(IpUtils.getIpAddr(httpServletRequest));
         try{
-            weChartPreOrderVo.setNotify_url(URLEncoder.encode(new StringBuilder(callbackHost).append("/wechart/callback").toString(),"UTF-8"));
+            weChartPreOrderVo.setNotify_url(new StringBuilder(callbackHost).append("/wechart/callback").toString());
+            weChartPreOrderVo.setReturn_url(new StringBuilder(callbackHost).append("/wxpay/user/").append(selfOrderId).toString());
         }catch (Exception e){
 
         }
@@ -67,6 +68,7 @@ public class WechartPayService {
         datas.put("sign_type",weChartPreOrderVo.getSign_type());
         datas.put("nonce_str", weChartPreOrderVo.getNonce_str());
         datas.put("notify_url", weChartPreOrderVo.getNotify_url());
+        datas.put("return_url", weChartPreOrderVo.getReturn_url());
         datas.put("device_info", weChartPreOrderVo.getDevice_info());
         return datas;
 

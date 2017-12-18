@@ -357,6 +357,9 @@ public class AdminAgentReadService {
             for(Integer guid:notNeedCalPlayerGuids){
                 log.info("guid = {}",guid);
             }
+            if(notNeedCalPlayerGuids.size() == 0){
+
+            }
             Long money2 = playerPickTotalDAO.sumPickUp(notNeedCalPlayerGuids,currentWeek);
             if(money2 == null){
                 money2 = 0L;

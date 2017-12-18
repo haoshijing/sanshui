@@ -116,6 +116,8 @@ public class GatewayController {
         }
     }
 
+
+
     @RequestMapping("/wechart/callback")
     public void handleWxNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
         byte[] datas = getRequestPostBytes(request);
