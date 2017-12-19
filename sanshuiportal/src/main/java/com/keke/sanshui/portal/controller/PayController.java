@@ -1,12 +1,22 @@
 package com.keke.sanshui.portal.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.request.AlipayTradeWapPayRequest;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayConfig;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PayService;
+import com.keke.sanshui.pay.alipay.AliPayService;
+import com.keke.sanshui.pay.alipay.AlipayConfig;
 import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
 import com.keke.sanshui.pay.fuqianla.FuqianlaRequestVo;
 import com.keke.sanshui.pay.paypull.PaypullRequestVo;
@@ -23,10 +33,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +67,11 @@ public class PayController {
     private String callbackHost;
     @Autowired
     private WechartPayService wechartPayService;
+    @Resource
+    AliPayService aliPayService;
+
+    @Autowired
+    AlipayConfig alipayConfig;
 
     @Autowired
     MyWxConfig wxPayConfig;
@@ -85,6 +103,32 @@ public class PayController {
             model.addAttribute("message", data.get("message"));
         } catch (Exception e) {
             model.addAttribute("message", "支付未完成");
+        }
+        return "success";
+    }
+    @RequestMapping("/alipay/user/{orderId}")
+    String alipaySuccess(HttpServletRequest request ,@PathVariable String orderId, Model model) {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", alipayConfig.getAppId(),
+                alipayConfig.getRsaPrivateKey(),
+                "json", AlipayConfig.CHARSET,
+                alipayConfig.getRsaPublicKey(),
+                "RSA2"); //获得初始化的AlipayClient
+        AlipayTradeQueryRequest alipayTradeQueryRequest = new AlipayTradeQueryRequest();//创建API对应的request类
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("out_trade_no",orderId);
+        alipayTradeQueryRequest.setBizContent(jsonObject.toJSONString());//设置业务参数
+        try {
+            AlipayTradeQueryResponse response = alipayClient.execute(alipayTradeQueryRequest);
+            if(response != null){
+                String tradeStatus = response.getTradeStatus();
+                model.addAttribute("message","");
+                if(StringUtils.equals(tradeStatus,"sucess")){
+                    model.addAttribute("message", "支付成功");
+                }
+            }
+        }catch (Exception e){
+            model.addAttribute("message","");
+            log.error("查询失败,",e);
         }
         return "success";
     }
@@ -180,6 +224,36 @@ public class PayController {
             log.error("", e);
         }
         return "forward:/wxpay/user/" + selfOrderId;
+    }
+    @RequestMapping("/doAlipay")
+    public String doAlipay(HttpServletRequest request, Integer pickId, Integer guid, HttpServletResponse response) {
+        log.info("doAlipay pickId={},guid = {}", pickId, guid);
+        String selfOrderId = guid + "" + System.currentTimeMillis();
+        PayLink payLink = payService.getCid(pickId);
+        AlipayClient client = new DefaultAlipayClient(AlipayConfig.URL,
+                alipayConfig.getAppId(),
+                alipayConfig.getRsaPrivateKey(),
+                AlipayConfig.FORMAT,
+                AlipayConfig.CHARSET,
+                alipayConfig.getRsaPublicKey(),
+                AlipayConfig.SIGNTYPE);
+
+        AlipayTradeWapPayRequest alipayTradeWapPayRequest = aliPayService.getPayRequest(payLink,selfOrderId);
+        String form = "";
+        try {
+            // 调用SDK生成表单
+            form = client.pageExecute(alipayTradeWapPayRequest).getBody();
+            response.setContentType("text/html;charset=" + AlipayConfig.CHARSET);
+            response.getWriter().write(form);//直接将完整的表单html输出到页面
+            response.getWriter().flush();
+            response.getWriter().close();
+        } catch (AlipayApiException e) {
+            log.error("",e);
+        }catch (IOException e){
+            log.error("",e);
+        }
+        // 封装请求支付信息
+        return null;
     }
 
 

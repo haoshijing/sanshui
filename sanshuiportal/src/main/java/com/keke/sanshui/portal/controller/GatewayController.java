@@ -2,12 +2,15 @@ package com.keke.sanshui.portal.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayConfig;
 import com.github.wxpay.sdk.WXPayUtil;
+import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
+import com.keke.sanshui.pay.alipay.AlipayConfig;
 import com.keke.sanshui.pay.fuqianla.FuqianResponseVo;
 import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
 import com.keke.sanshui.pay.zpay.ZPayResponseVo;
@@ -30,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 
 @Controller
@@ -57,6 +61,9 @@ public class GatewayController {
 
     @Autowired
     FuqianlaPayService fuqianlaPayService;
+
+    @Autowired
+    AlipayConfig alipayConfig;
 
     @RequestMapping("/fuqianLa/callback")
     public void handleFuQianNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -181,6 +188,76 @@ public class GatewayController {
             }
         }catch (Exception e){
             log.error("handleWxNotify error",e);
+        }
+
+    }
+
+    @RequestMapping("/alipay/callback")
+    public void handleAlipayNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Map<String,String> params = Maps.newHashMap();
+        Map requestParams = request.getParameterMap();
+        for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
+            String name = (String) iter.next();
+            String[] values = (String[]) requestParams.get(name);
+            String valueStr = "";
+            for (int i = 0; i < values.length; i++) {
+                valueStr = (i == values.length - 1) ? valueStr + values[i]
+                        : valueStr + values[i] + ",";
+            }
+            //乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
+            //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "gbk");
+            params.put(name, valueStr);
+        }
+        log.info("params = {}",params);
+        String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"),"UTF-8");
+        String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"),"UTF-8");
+        String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"),"UTF-8");
+        try {
+            boolean verify_result = AlipaySignature.rsaCheckV1(params, alipayConfig.getRsaPublicKey(), AlipayConfig.CHARSET, "RSA2");
+            if(verify_result){
+                if(trade_status.equals("TRADE_FINISHED")){
+                    log.warn("{} finished",out_trade_no);
+                }else if (trade_status.equals("TRADE_SUCCESS")){
+                    Order order = orderService.queryOrderByNo(out_trade_no);
+                    if (order == null) {
+                        log.error("错误的订单,orderId = {}", out_trade_no);
+                        //修改订单
+                    }
+                    Order updateOrder = new Order();
+                    //已支付
+                    updateOrder.setSelfOrderNo(out_trade_no);
+                    updateOrder.setOrderStatus(3);
+                    updateOrder.setPayState(0);
+                    updateOrder.setPayType("aplipay");
+                    updateOrder.setPayTime(params.get("gmt_payment"));
+                    updateOrder.setLastUpdateTime(System.currentTimeMillis());
+                    updateOrder.setOrderNo(trade_no);
+                    int updateStatus = orderService.updateOrder(updateOrder);
+                    if(updateStatus == 0){
+                        log.warn("update data effect 0,{}",JSON.toJSONString(params));
+                    }
+                    //发送给gameServer
+                    Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                            order.getMoney(), "0");
+                    if(pair.getLeft()){
+                        Order updateSendOrder = new Order();
+                        updateSendOrder.setSelfOrderNo(out_trade_no);
+                        if(!pair.getRight()) {
+                            updateOrder.setOrderStatus(2);
+                        }
+                        updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                        updateSendOrder.setSendTime(System.currentTimeMillis());
+                        orderService.updateOrder(updateSendOrder);
+                    }
+                }
+                response.flushBuffer();
+                response.getWriter().println("success");
+            }else{//验证失败
+                log.error("签名验证失败,{}",params);
+                response.getWriter().println("fail");
+            }
+        }catch (Exception e){
+            log.error("",e);
         }
 
     }

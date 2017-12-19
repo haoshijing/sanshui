@@ -18,7 +18,11 @@
             <artifactId>wxpay-sdk</artifactId>
             <version>0.0.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.alipay</groupId>
+            <artifactId>sdk-java</artifactId>
+            <version>20170307171631</version>
+        </dependency>
         <dependency>
             <groupId>com.keke</groupId>
             <artifactId>sanshui.base</artifactId>
