@@ -149,9 +149,11 @@ public class PayController {
         data.put("out_trade_no", orderId);
         try {
             Map<String, String> resp = wxpay.orderQuery(data);
-            String resultCode = data.get("result_code");
+            log.info("resp = {}",resp);
+            String resultCode = resp.get("result_code");
+            model.addAttribute("message", "");
             if(StringUtils.equals(resultCode,"SUCCESS")){
-                String trade_state = data.get("trade_state");
+                String trade_state = resp.get("trade_state");
                 if(StringUtils.equals(trade_state,"SUCCESS")){
                     model.addAttribute("message", "支付成功");
                 }else if(StringUtils.equals(trade_state,"NOTPAY")){
@@ -230,6 +232,7 @@ public class PayController {
                     attach.put("guid", guid.toString());
                     attach.put("prepare_id", prepare_id);
                     orderService.insertOrder(payLink, attach, selfOrderId);
+                    url+="&redirect_url="+wechartPayService.getReturnUrl(selfOrderId);
                     if (StringUtils.isNotEmpty(url)) {
                         response.sendRedirect(url);
                     }

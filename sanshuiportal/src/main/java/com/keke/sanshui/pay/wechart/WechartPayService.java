@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.UUID;
@@ -68,7 +69,16 @@ public class WechartPayService {
         datas.put("notify_url", weChartPreOrderVo.getNotify_url());
         datas.put("device_info", weChartPreOrderVo.getDevice_info());
         return datas;
+    }
 
+    public String getReturnUrl(String orderId){
+        try {
+            String url =  new StringBuilder(callbackHost).append("/wxpay/user/").append(orderId).toString();
+             url = URLEncoder.encode(url,"utf-8");
+             return url;
+        }catch (Exception e){
+            return "";
+        }
     }
     String createWxSign(WeChartPreOrderVo weChartPreOrderVo){
         Field[] fields = ZPayResponseVo.class.getDeclaredFields();
