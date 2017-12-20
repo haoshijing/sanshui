@@ -222,6 +222,8 @@ public class GatewayController {
                     if (order == null) {
                         log.error("错误的订单,orderId = {}", out_trade_no);
                         //修改订单
+                        response.getWriter().println("success");
+                        return;
                     }
                     Order updateOrder = new Order();
                     //已支付

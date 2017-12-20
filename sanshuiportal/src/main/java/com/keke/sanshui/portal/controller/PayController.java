@@ -24,6 +24,7 @@ import com.keke.sanshui.pay.wechart.MyWxConfig;
 import com.keke.sanshui.pay.wechart.WechartPayService;
 import com.keke.sanshui.pay.zpay.ZPayRequestVo;
 import com.keke.sanshui.pay.zpay.ZPayService;
+import com.sun.org.apache.regexp.internal.RE;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,11 +120,18 @@ public class PayController {
         alipayTradeQueryRequest.setBizContent(jsonObject.toJSONString());//设置业务参数
         try {
             AlipayTradeQueryResponse response = alipayClient.execute(alipayTradeQueryRequest);
+            log.info("response = {}",response);
             if(response != null){
                 String tradeStatus = response.getTradeStatus();
                 model.addAttribute("message","");
-                if(StringUtils.equals(tradeStatus,"sucess")){
+                if(StringUtils.equals(tradeStatus,"TRADE_SUCCESS")){
                     model.addAttribute("message", "支付成功");
+                }else if(StringUtils.equals(tradeStatus,"TRADE_CLOSED")){
+                    model.addAttribute("message", "交易已关闭");
+                }else if(StringUtils.equals(tradeStatus,"TRADE_FINISHED")){
+                    model.addAttribute("message", "交易结束");
+                }else if(StringUtils.equals(tradeStatus,"WAIT_BUYER_PAY")){
+                    model.addAttribute("message", "未付款");
                 }
             }
         }catch (Exception e){
@@ -195,6 +203,14 @@ public class PayController {
         modelAttribute.addAttribute("payRequest", payRequest);
         return "fuqian";
     }
+    @RequestMapping("/doNewPay")
+    public String doNewPay(HttpServletRequest request,Integer pickId, Integer guid, String payType,HttpServletResponse response) {
+        if(StringUtils.equals(payType,"1")){
+            return doWxPay(request,pickId,guid,response);
+        }else{
+            return doAlipay(request,pickId,guid,response);
+        }
+    }
 
     @RequestMapping("/doWxPay")
     public String doWxPay(HttpServletRequest request, Integer pickId, Integer guid, HttpServletResponse response) {
@@ -239,6 +255,9 @@ public class PayController {
                 AlipayConfig.SIGNTYPE);
 
         AlipayTradeWapPayRequest alipayTradeWapPayRequest = aliPayService.getPayRequest(payLink,selfOrderId);
+        Map<String, String> attach = Maps.newHashMap();
+        attach.put("guid", guid.toString());
+        orderService.insertOrder(payLink, attach, selfOrderId);
         String form = "";
         try {
             // 调用SDK生成表单
