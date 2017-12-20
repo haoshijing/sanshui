@@ -145,6 +145,7 @@ public class AdminAgentReadService {
         AgentQueryPo queryAgentPo = new AgentQueryPo();
         queryAgentPo.setPlayerId(agentQueryVo.getGuid());
         queryAgentPo.setLimit(agentQueryVo.getLimit());
+        queryAgentPo.setLevel(agentQueryVo.getLevel());
         queryAgentPo.setAgentName(agentQueryVo.getUserName());
         queryAgentPo.setAgentNickName(agentQueryVo.getNickName());
         queryAgentPo.setAgentWeChartNo(agentQueryVo.getWechartNo());
