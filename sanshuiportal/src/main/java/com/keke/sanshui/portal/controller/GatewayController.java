@@ -155,6 +155,7 @@ public class GatewayController {
                     updateOrder.setSelfOrderNo(orderId);
                     updateOrder.setOrderStatus(3);
                     updateOrder.setPayState(0);
+                    updateOrder.setPayType("wxpay");
                     updateOrder.setPayTime(String.valueOf(System.currentTimeMillis()));
                     updateOrder.setLastUpdateTime(System.currentTimeMillis());
                     updateOrder.setOrderNo(notifyMap.get("transaction_id"));
