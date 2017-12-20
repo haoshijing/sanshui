@@ -120,7 +120,7 @@ public class PayController {
         alipayTradeQueryRequest.setBizContent(jsonObject.toJSONString());//设置业务参数
         try {
             AlipayTradeQueryResponse response = alipayClient.execute(alipayTradeQueryRequest);
-            log.info("response = {}",response);
+            log.info("response = {}",JSON.toJSONString(response));
             if(response != null){
                 String tradeStatus = response.getTradeStatus();
                 model.addAttribute("message","");

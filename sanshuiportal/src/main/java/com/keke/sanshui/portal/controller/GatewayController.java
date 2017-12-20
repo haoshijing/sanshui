@@ -204,8 +204,6 @@ public class GatewayController {
                 valueStr = (i == values.length - 1) ? valueStr + values[i]
                         : valueStr + values[i] + ",";
             }
-            //乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
-            //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "gbk");
             params.put(name, valueStr);
         }
         log.info("params = {}",params);
@@ -241,14 +239,16 @@ public class GatewayController {
                     //发送给gameServer
                     Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
                             order.getMoney(), "0");
+                    log.info("orderId={},pair = {}",out_trade_no,JSON.toJSONString(pair));
                     if(pair.getLeft()){
                         Order updateSendOrder = new Order();
                         updateSendOrder.setSelfOrderNo(out_trade_no);
-                        if(!pair.getRight()) {
-                            updateOrder.setOrderStatus(2);
+                        if(pair.getRight()) {
+                            updateSendOrder.setOrderStatus(2);
                         }
                         updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
                         updateSendOrder.setSendTime(System.currentTimeMillis());
+                        log.info("orderStatus = {}",updateOrder.getOrderStatus());
                         orderService.updateOrder(updateSendOrder);
                     }
                 }
@@ -263,8 +263,6 @@ public class GatewayController {
         }
 
     }
-
-
 
     @RequestMapping("/paypull/callback")
     public void handleNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -300,7 +298,7 @@ public class GatewayController {
                         if(pair.getLeft()){
                             Order updateSendOrder = new Order();
                             updateSendOrder.setSelfOrderNo(orderId);
-                            if(!pair.getRight()) {
+                            if(pair.getRight()) {
                                 updateOrder.setOrderStatus(2);
                             }
                             updateSendOrder.setSendStatus(SendStatus.Alread_Send.getCode());
