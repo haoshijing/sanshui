@@ -3,6 +3,7 @@ package com.keke.sanshui.syncdata.canal.full;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.keke.sanshui.base.admin.dao.AgentDAO;
 import com.keke.sanshui.base.admin.dao.PlayerRelationDAO;
+import com.keke.sanshui.base.admin.po.PlayerCouponPo;
 import com.keke.sanshui.base.admin.po.PlayerRelationPo;
 import com.keke.sanshui.base.admin.po.agent.AgentPo;
 import com.keke.sanshui.base.admin.service.PlayerService;
@@ -149,6 +150,11 @@ public class FullSyncDataService {
                         }catch (Exception e){
                             log.error("",e);
                         }
+                    }else{
+                        PlayerCouponPo updatePlayerCouponPo = new PlayerCouponPo();
+                        updatePlayerCouponPo.setPlayerId(playerInfo.getPlayerCouponPo().getPlayerId());
+                        updatePlayerCouponPo.setSilverCount(playerInfo.getPlayerCouponPo().getSilverCount());
+                        playerService.updatePlayerCoupon(updatePlayerCouponPo);
                     }
                 }
             }catch (Exception e){
