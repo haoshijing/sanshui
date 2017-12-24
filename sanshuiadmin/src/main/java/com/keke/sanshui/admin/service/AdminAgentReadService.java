@@ -380,16 +380,19 @@ public class AdminAgentReadService {
         if (week == null) {
             week = WeekUtil.getCurrentWeek();
         }
-        final Integer currentWeek = week;
         AgentPo agentPo = agentService.findByGuid(areaAgentGuid);
 
         if (agentPo != null) {
             AgentPickTotalPo agentPickTotalPo = agentPickTotalDAO.selectByAgentId(agentPo.getId(), week);
-            underAgentResponseVo.setWeekAgentPickTotal(agentPickTotalPo.getTotalUnderMoney());
-            AgentQueryPo agentQueryPo = new AgentQueryPo();
-            agentQueryPo.setParentId(agentPo.getId());
-            Long count = agentService.selectCount(agentQueryPo);
-            return count;
+            if(agentPickTotalPo != null) {
+                underAgentResponseVo.setWeekAgentPickTotal(agentPickTotalPo.getTotalUnderMoney());
+                AgentQueryPo agentQueryPo = new AgentQueryPo();
+                agentQueryPo.setParentId(agentPo.getId());
+                Long count = agentService.selectCount(agentQueryPo);
+                return count;
+            }else{
+                log.warn(" agentId = {}",agentPo.getId());
+            }
         }
         return 0L;
     }

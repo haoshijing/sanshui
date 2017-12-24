@@ -223,7 +223,9 @@ public class PayController {
         Map<String, String> datas = wechartPayService.createPreOrderVo(request, payLink, selfOrderId);
         try {
             Map<String, String> responseData = wxPay.unifiedOrder(datas);
-            if (response != null) {
+            log.info("gui= {}, orderId = {},responseData = {},datas = {}",
+                    guid,selfOrderId,responseData,datas);
+            if (responseData != null) {
                 String return_msg = responseData.get("return_msg");
                 if (StringUtils.equals(return_msg, "OK")) {
                     String url = responseData.get("mweb_url");

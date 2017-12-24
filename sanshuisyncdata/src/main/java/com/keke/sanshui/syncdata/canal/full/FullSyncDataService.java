@@ -72,19 +72,19 @@ public class FullSyncDataService {
     }
 
     @EventListener
-    public void startWork(EmbeddedServletContainerInitializedEvent event){
-        scheduledExecutorService = Executors.newScheduledThreadPool(1,new DefaultThreadFactory("SyncDataThread"));
+    public void startWork(EmbeddedServletContainerInitializedEvent event) {
+        scheduledExecutorService = Executors.newScheduledThreadPool(1, new DefaultThreadFactory("SyncDataThread"));
         scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 try {
                     syncCharacterData();
                     syncRelation();
-                }catch (Exception e){
-                    log.error("",e);
+                } catch (Exception e) {
+                    log.error("", e);
                 }
             }
-        },10000,60000, TimeUnit.MILLISECONDS);
+        }, 10000, 60000, TimeUnit.MILLISECONDS);
     }
 
     public void syncRelation() {
@@ -98,16 +98,15 @@ public class FullSyncDataService {
                 Integer parentId = playerRelationPo.getParentPlayerId().intValue();
                 Integer playerId = playerRelationPo.getPlayerId().intValue();
                 PlayerRelationPo playerRelationPo1 = playerRelationDAO.selectByPlayerId(playerId);
-                if(playerRelationPo1 != null){
+                if (playerRelationPo1 != null) {
                     PlayerRelationPo updatePlayerRelationPo = new PlayerRelationPo();
                     updatePlayerRelationPo.setPlayerId(playerId);
                     updatePlayerRelationPo.setId(playerRelationPo1.getId());
                     updatePlayerRelationPo.setParentPlayerId(parentId);
                     playerRelationDAO.updatePlayerRelation(updatePlayerRelationPo);
-                }else{
+                } else {
                     playerRelationDAO.insertRelation(playerRelationPo);
                 }
-
             });
             playerAndAgentData.getAgentPos().forEach(agentPo -> {
                 //去找这个人的上级
@@ -119,9 +118,9 @@ public class FullSyncDataService {
                     } catch (Exception e) {
                         log.error("{}", e);
                     }
-                }else{
-                    if(agentPo.getIsNeedAreaCal() == 2) {
-                        log.info("agentId = {}",queryPo.getId());
+                } else {
+                    if (agentPo.getIsNeedAreaCal() == 2) {
+                        log.info("agentId = {}", queryPo.getId());
                         AgentPo updatePo = new AgentPo();
                         updatePo.setId(queryPo.getId());
                         updatePo.setIsNeedAreaCal(agentPo.getIsNeedAreaCal());
@@ -129,7 +128,6 @@ public class FullSyncDataService {
                     }
                 }
             });
-
         });
     }
 
@@ -141,24 +139,25 @@ public class FullSyncDataService {
             BigInteger playerId = (BigInteger) data.get(PLAYER_ID);
             data.put(PLAYER_ID, playerId.intValue());
             try {
-                if (!playerService.checkPlayerExsist(playerId.intValue())) {
-                    PlayerDataParser.PlayerInfo playerInfo = parser.parseFromBaseData(data);
-                    if (playerInfo != null) {
+                PlayerDataParser.PlayerInfo playerInfo = parser.parseFromBaseData(data);
+                boolean exist = playerService.checkPlayerExsist(playerId.intValue());
+                if (playerInfo != null) {
+                    if (!exist) {
                         try {
                             playerService.insertPlayer(playerInfo.getPlayerPo());
                             playerService.insertPlayerCoupon(playerInfo.getPlayerCouponPo());
-                        }catch (Exception e){
-                            log.error("",e);
+                        } catch (Exception e) {
+                            log.error("", e);
                         }
-                    }else{
+                    } else {
                         PlayerCouponPo updatePlayerCouponPo = new PlayerCouponPo();
                         updatePlayerCouponPo.setPlayerId(playerInfo.getPlayerCouponPo().getPlayerId());
                         updatePlayerCouponPo.setSilverCount(playerInfo.getPlayerCouponPo().getSilverCount());
                         playerService.updatePlayerCoupon(updatePlayerCouponPo);
                     }
                 }
-            }catch (Exception e){
-                log.error("",e);
+            } catch (Exception e) {
+                log.error("", e);
                 e.printStackTrace();
             }
         });

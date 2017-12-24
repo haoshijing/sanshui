@@ -7,6 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 public final  class IpUtils {
     public static String getIpAddr(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
+        if(StringUtils.isNotEmpty(ip)){
+          String[] ips  =   ip.split(",");
+          if(ips.length > 0){
+              ip = ips[0];
+          }
+        }
         if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
         }
@@ -15,9 +21,6 @@ public final  class IpUtils {
         }
         if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
-        }
-        if(StringUtils.equals(ip,"127.0.0.1")){
-            ip = "183.128.213.50";
         }
         return ip;
     }
