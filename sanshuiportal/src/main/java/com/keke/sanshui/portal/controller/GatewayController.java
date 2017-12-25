@@ -231,6 +231,11 @@ public class GatewayController {
                         response.getWriter().println("success");
                         return;
                     }
+                    if(order.getOrderStatus() == 2){
+                        log.info("order deal ready {}",order.getSelfOrderNo());
+                        response.flushBuffer();
+                        response.getWriter().println("success");
+                    }
                     Order updateOrder = new Order();
                     //已支付
                     updateOrder.setSelfOrderNo(out_trade_no);
