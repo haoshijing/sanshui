@@ -133,9 +133,9 @@ public class AdminAgentController{
 
     @RequestMapping("/obtainUnderAgent")
     @ResponseBody
-    public ApiResponse<List<UnderAgentVo>> obtainUnderAgent(Integer agentId){
+    public ApiResponse<List<UnderAgentVo>> obtainUnderAgent(Integer agentId,Integer week){
         try{
-            List<UnderAgentVo> underAgentVos = adminAgentReadService.obtainUnderAgent(agentId);
+            List<UnderAgentVo> underAgentVos = adminAgentReadService.obtainUnderAgent(agentId,week);
             return new ApiResponse<>(underAgentVos);
         }catch (Exception e){
             log.error("obtainUnderAgent {} error", agentId, e);

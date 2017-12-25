@@ -180,12 +180,11 @@ public class AdminAgentReadService {
         }).collect(Collectors.toList());
     }
 
-    public List<UnderAgentVo> obtainUnderAgent(Integer agentId) {
+    public List<UnderAgentVo> obtainUnderAgent(Integer agentId,Integer week) {
         AgentQueryPo agentQueryPo = new AgentQueryPo();
         agentQueryPo.setParentId(agentId);
         agentQueryPo.setStatus(1);
         agentQueryPo.setLimit(10000);
-        Integer week = WeekUtil.getCurrentWeek();
         List<AgentPo> agentPos = agentService.selectList(agentQueryPo);
         return agentPos.stream().map(agentPo -> {
             UnderAgentVo underAgentVo = new UnderAgentVo();
