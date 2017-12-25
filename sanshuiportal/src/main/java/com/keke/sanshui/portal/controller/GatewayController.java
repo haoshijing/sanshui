@@ -150,6 +150,13 @@ public class GatewayController {
                             return;
                         }
                     }
+                    if(order.getOrderStatus() == 2){
+                        log.info("order deal ready {}",order.getSelfOrderNo());
+                        response.getWriter().print("<xml>\n" +
+                                "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
+                                "  <return_msg><![CDATA[OK]]></return_msg>\n" +
+                                "</xml>");
+                    }
                     Order updateOrder = new Order();
                     //已支付
                     updateOrder.setSelfOrderNo(orderId);
