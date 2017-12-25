@@ -104,7 +104,8 @@ public  class PlayerDataParser {
                 if(!isAgent){
                     needAddRelation = true;
                 }else{
-                    if(parentIsNormalAgent(guid.intValue(),invitedGuid.intValue())){
+                    if(invitedGuid.intValue() == 0 ||
+                            parentIsNormalAgent(guid.intValue(),invitedGuid.intValue())){
                         needAddRelation = true;
                     }
                 }

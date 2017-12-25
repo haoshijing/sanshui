@@ -119,13 +119,10 @@ public class FullSyncDataService {
                         log.error("{}", e);
                     }
                 } else {
-                    if (agentPo.getIsNeedAreaCal() == 2) {
-                        log.info("agentId = {}", queryPo.getId());
-                        AgentPo updatePo = new AgentPo();
-                        updatePo.setId(queryPo.getId());
-                        updatePo.setIsNeedAreaCal(agentPo.getIsNeedAreaCal());
-                        agentDAO.updateAgent(updatePo);
-                    }
+                    AgentPo updatePo = new AgentPo();
+                    updatePo.setId(queryPo.getId());
+                    updatePo.setIsNeedAreaCal(agentPo.getIsNeedAreaCal());
+                    agentDAO.updateAgent(updatePo);
                 }
             });
         });
