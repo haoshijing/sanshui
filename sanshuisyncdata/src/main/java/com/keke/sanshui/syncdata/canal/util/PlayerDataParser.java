@@ -73,76 +73,77 @@ public  class PlayerDataParser {
         ByteBuf byteBuf = Unpooled.buffer(deEncryptByteData.length);
         byteBuf.writeBytes(deEncryptByteData);
         byte curVersion = byteBuf.readByte();
-        int count = byteBuf.readIntLE();
         PlayerAndAgentData playerAndAgentData = new PlayerAndAgentData();
-        byteBuf.writeBytes(deEncryptByteData);
-        try {
-            while (count-- > 0) {
-                byte curPlayerVersion = byteBuf.readByte();
-                Long guid = byteBuf.readLongLE();
-                String name = readString(byteBuf);
-                String otherName = readString(byteBuf);
-                String headId = readString(byteBuf);
-                byte sex = byteBuf.readByte();
-                Integer costMoney = byteBuf.readIntLE();
-                Long invitedGuid = byteBuf.readLongLE();
-                int orderCount = byteBuf.readIntLE();
-                while (orderCount-- > 0) {
-                    String orderId = readString(byteBuf);
-                    //log.info("orderId = {}",orderId);
-                }
-                int childrenCount = byteBuf.readIntLE();
-                while (childrenCount-- > 0) {
-                    Long childrenId = byteBuf.readLongLE();
-                    //log.info("childrenId = {}",childrenId);
-                }
-                boolean isAgent = byteBuf.readBoolean();
-                if(curPlayerVersion >= 2){
-                    byte chooseType = byteBuf.readByte();
-                }
-                boolean needAddRelation = false;
-                if(!isAgent){
-                    needAddRelation = true;
-                }else{
-                    if(invitedGuid.intValue() == 0 ||
-                            parentIsNormalAgent(guid.intValue(),invitedGuid.intValue())){
+        if(curVersion > 1) {
+            int count = byteBuf.readIntLE();
+            try {
+                while (count-- > 0) {
+                    byte curPlayerVersion = byteBuf.readByte();
+                    Long guid = byteBuf.readLongLE();
+                    String name = readString(byteBuf);
+                    String otherName = readString(byteBuf);
+                    String headId = readString(byteBuf);
+                    byte sex = byteBuf.readByte();
+                    Long costMoney = byteBuf.readLongLE();
+                    Long invitedGuid = byteBuf.readLongLE();
+                    int orderCount = byteBuf.readIntLE();
+                    while (orderCount-- > 0) {
+                        String orderId = readString(byteBuf);
+                        //log.info("orderId = {}",orderId);
+                    }
+                    int childrenCount = byteBuf.readIntLE();
+                    while (childrenCount-- > 0) {
+                        Long childrenId = byteBuf.readLongLE();
+                        //log.info("childrenId = {}",childrenId);
+                    }
+                    boolean isAgent = byteBuf.readBoolean();
+                    if (curPlayerVersion >= 2) {
+                        byte chooseType = byteBuf.readByte();
+                    }
+                    boolean needAddRelation = false;
+                    if (!isAgent) {
                         needAddRelation = true;
+                    } else {
+                        if (invitedGuid.intValue() == 0 ||
+                                parentIsNormalAgent(guid.intValue(), invitedGuid.intValue())) {
+                            needAddRelation = true;
+                        }
                     }
-                }
-                if(needAddRelation) {
-                    PlayerRelationPo playerRelationPo = new PlayerRelationPo();
-                    playerRelationPo.setParentPlayerId(invitedGuid.intValue());
-                    playerRelationPo.setLastUpdateTime(System.currentTimeMillis());
-                    playerRelationPo.setPlayerId(guid.intValue());
-                    Set<PlayerRelationPo> playerRelationPos = relationMaps.get(guid.intValue());
-                    if (playerRelationPos == null) {
-                        playerRelationPos = Sets.newHashSet();
-                        relationMaps.put(guid.intValue(), playerRelationPos);
+                    if (needAddRelation) {
+                        PlayerRelationPo playerRelationPo = new PlayerRelationPo();
+                        playerRelationPo.setParentPlayerId(invitedGuid.intValue());
+                        playerRelationPo.setLastUpdateTime(System.currentTimeMillis());
+                        playerRelationPo.setPlayerId(guid.intValue());
+                        Set<PlayerRelationPo> playerRelationPos = relationMaps.get(guid.intValue());
+                        if (playerRelationPos == null) {
+                            playerRelationPos = Sets.newHashSet();
+                            relationMaps.put(guid.intValue(), playerRelationPos);
+                        }
+                        playerRelationPos.add(playerRelationPo);
                     }
-                    playerRelationPos.add(playerRelationPo);
-                }
-                if(isAgent){
-                    AgentPo agentPo = new AgentPo();
-                    agentPo.setInsertTime(System.currentTimeMillis());
-                    agentPo.setLastUpdateTime(System.currentTimeMillis());
-                    agentPo.setStatus(2);
-                    agentPo.setLevel(3);
-                    if(parentIsNormalAgent(guid.intValue(),invitedGuid.intValue())) {
-                        agentPo.setIsNeedAreaCal(2);
-                    }else{
-                        agentPo.setIsNeedAreaCal(1);
+                    if (isAgent) {
+                        AgentPo agentPo = new AgentPo();
+                        agentPo.setInsertTime(System.currentTimeMillis());
+                        agentPo.setLastUpdateTime(System.currentTimeMillis());
+                        agentPo.setStatus(2);
+                        agentPo.setLevel(3);
+                        if (parentIsNormalAgent(guid.intValue(), invitedGuid.intValue())) {
+                            agentPo.setIsNeedAreaCal(2);
+                        } else {
+                            agentPo.setIsNeedAreaCal(1);
+                        }
+                        agentPo.setAgentWeChartNo(name);
+                        agentPo.setAgentNickName(otherName);
+                        agentPo.setMemo("");
+                        agentPo.setParentId(0);
+                        agentPo.setPlayerId(guid.intValue());
+                        agentPos.add(agentPo);
                     }
-                    agentPo.setAgentWeChartNo(name);
-                    agentPo.setAgentNickName(otherName);
-                    agentPo.setMemo("");
-                    agentPo.setParentId(0);
-                    agentPo.setPlayerId(guid.intValue());
-                    agentPos.add(agentPo);
-                }
 
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         relationMaps.forEach((inviteId,relationPoSet)->{
             relationPos.addAll(relationPoSet);

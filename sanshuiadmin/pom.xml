@@ -19,7 +19,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>sanshuiadmin</finalName>
+        <finalName>xcmjadmin</finalName>
         <plugins>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
