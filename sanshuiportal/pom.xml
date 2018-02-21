@@ -31,6 +31,6 @@
     </dependencies>
 
     <build>
-        <finalName>sanshui</finalName>
+        <finalName>szmj</finalName>
     </build>
 </project>

@@ -22,15 +22,17 @@ import java.util.stream.Collectors;
 public class AdminAgentWriteService {
     @Autowired
     AgentService agentService;
-    private final static String PROXY_PWD = "13shui";
 
     @Value("${saltEncrypt}")
     private String saltEncrypt;
 
+    @Value("${initPwd}")
+    private String initPwd;
+
     public Pair<Boolean,String> createOrUpdateAgent(AgentRequestVo agentRequestVo) {
         if (agentRequestVo.getId() == null) {
             AgentPo updateAgentPo = new AgentPo();
-            String encryptPwd = MD5Util.md5(MD5Util.md5(PROXY_PWD) + saltEncrypt);
+            String encryptPwd = MD5Util.md5(MD5Util.md5(initPwd) + saltEncrypt);
             updateAgentPo.setPassword(encryptPwd);
             updateAgentPo.setParentId(agentRequestVo.getParentAgentId());
             updateAgentPo.setLevel(agentRequestVo.getLevel());
@@ -140,7 +142,7 @@ public class AdminAgentWriteService {
     public Boolean resetPwd(Integer agentId) {
         AgentPo updateAgentPo = new AgentPo();
         updateAgentPo.setId(agentId);
-        String encryptPwd = MD5Util.md5(MD5Util.md5(PROXY_PWD) + saltEncrypt);
+        String encryptPwd = MD5Util.md5(MD5Util.md5(initPwd) + saltEncrypt);
         updateAgentPo.setPassword(encryptPwd);
         return agentService.updateAgent(updateAgentPo,false) > 0;
     }
