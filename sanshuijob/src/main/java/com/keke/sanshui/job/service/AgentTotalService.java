@@ -64,11 +64,22 @@ public class AgentTotalService {
             List<Integer> agentIds = agentPos.stream().map(agentPo1 -> {
                 return agentPo1.getId();
             }).collect(Collectors.toList());
+            agentQueryPo.setIsNeedAreaCal(1);
+            agentPos = agentService.selectList(agentQueryPo);
+            List<Integer> playerIds = agentPos.stream().map(agentPo1 -> {
+                return agentPo1.getPlayerId();
+            }).collect(Collectors.toList());
             if(agentPos.size() > 0) {
                 Long agentUnderTotal = agentPickTotalDAO.sumPickUp(agentIds, week);
                 if(agentUnderTotal == null){
                     agentUnderTotal = 0L;
                 }
+
+                Long playerUnderTotal = playerPickTotalDAO.sumPickUp(playerIds,week);
+                if(playerUnderTotal == null){
+                    playerUnderTotal = 0L;
+                }
+                agentUnderTotal += playerUnderTotal;
                 AgentPickTotalPo agentPickTotalPo = new AgentPickTotalPo();
                 agentPickTotalPo.setTotalUnderMoney(agentUnderTotal);
 
