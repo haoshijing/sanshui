@@ -100,6 +100,10 @@ public  class PlayerDataParser {
                     if (curPlayerVersion >= 2) {
                         byte chooseType = byteBuf.readByte();
                     }
+                    if(curPlayerVersion >= 3){
+                        //是否被封号
+                        boolean isForbid = byteBuf.readBoolean();
+                    }
                     boolean needAddRelation = false;
                     if (!isAgent) {
                         needAddRelation = true;
