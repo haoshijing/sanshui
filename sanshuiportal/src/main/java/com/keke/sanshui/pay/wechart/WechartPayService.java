@@ -40,7 +40,7 @@ public class WechartPayService {
         weChartPreOrderVo.setDevice_info("WEB");
         weChartPreOrderVo.setNonce_str(UUID.randomUUID().toString().replace("-",""));
         weChartPreOrderVo.setSign_type("MD5");
-        weChartPreOrderVo.setBody("虚拟-"+payLink.getPickCouponVal()+"豆");
+        weChartPreOrderVo.setBody("虚拟-"+payLink.getPickCouponVal()+"钻石");
         weChartPreOrderVo.setOut_trade_no(selfOrderId);
         weChartPreOrderVo.setTotal_fee(payLink.getPickRmb());
         weChartPreOrderVo.setSpbill_create_ip(IpUtils.getIpAddr(httpServletRequest));
@@ -53,7 +53,7 @@ public class WechartPayService {
         Map<String,String> info = Maps.newHashMap();
         Map<String,String> data = Maps.newHashMap();
         data.put("type","wap");
-        data.put("wap_name","十三水");
+        data.put("wap_name","扑克圈");
         info.put("h5_info", JSON.toJSONString(data));
         weChartPreOrderVo.setScene_info(JSON.toJSONString(info));
 

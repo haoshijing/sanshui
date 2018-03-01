@@ -33,21 +33,25 @@ public class CheckNotSendOrderService {
         executorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                orderService.queryNotSendList().forEach(order -> {
-                    log.info("开始补偿order,orderId = {}",order.getSelfOrderNo());
-                    Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
-                            order.getMoney(), "0");
-                    if(pair.getLeft()){
-                        Order updateOrder = new Order();
-                        updateOrder.setSelfOrderNo(order.getSelfOrderNo());
-                        if(pair.getRight()) {
-                            updateOrder.setOrderStatus(2);
+                try {
+                    orderService.queryNotSendList().forEach(order -> {
+                        log.info("开始补偿order,orderId = {}", order.getSelfOrderNo());
+                        Pair<Boolean, Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                                "0", order.getMoney());
+                        if (pair.getLeft()) {
+                            Order updateOrder = new Order();
+                            updateOrder.setSelfOrderNo(order.getSelfOrderNo());
+                            if (pair.getRight()) {
+                                updateOrder.setOrderStatus(2);
+                            }
+                            updateOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                            updateOrder.setSendTime(System.currentTimeMillis());
+                            orderService.updateOrder(updateOrder);
                         }
-                        updateOrder.setSendStatus(SendStatus.Alread_Send.getCode());
-                        updateOrder.setSendTime(System.currentTimeMillis());
-                        orderService.updateOrder(updateOrder);
-                    }
-                });
+                    });
+                }catch (Exception e){
+
+                }
 
             }
         },10,60, TimeUnit.SECONDS);

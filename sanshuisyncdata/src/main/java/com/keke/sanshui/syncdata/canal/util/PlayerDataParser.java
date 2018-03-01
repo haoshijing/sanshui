@@ -74,8 +74,10 @@ public  class PlayerDataParser {
         byteBuf.writeBytes(deEncryptByteData);
         byte curVersion = byteBuf.readByte();
         PlayerAndAgentData playerAndAgentData = new PlayerAndAgentData();
-        if(curVersion > 1) {
+        log.info("curVersion={}",curVersion);
+        if(curVersion > 0) {
             int count = byteBuf.readIntLE();
+            log.info("count = {}",count);
             try {
                 while (count-- > 0) {
                     byte curPlayerVersion = byteBuf.readByte();
@@ -84,7 +86,7 @@ public  class PlayerDataParser {
                     String otherName = readString(byteBuf);
                     String headId = readString(byteBuf);
                     byte sex = byteBuf.readByte();
-                    Long costMoney = byteBuf.readLongLE();
+                    Integer costMoney = byteBuf.readIntLE();
                     Long invitedGuid = byteBuf.readLongLE();
                     int orderCount = byteBuf.readIntLE();
                     while (orderCount-- > 0) {
@@ -146,6 +148,7 @@ public  class PlayerDataParser {
 
                 }
             } catch (Exception e) {
+                log.error("",e);
                 e.printStackTrace();
             }
         }

@@ -31,6 +31,6 @@
     </dependencies>
 
     <build>
-        <finalName>szmj</finalName>
+        <finalName>poke</finalName>
     </build>
 </project>

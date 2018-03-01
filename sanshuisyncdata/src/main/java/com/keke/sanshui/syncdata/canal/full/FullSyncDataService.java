@@ -94,6 +94,7 @@ public class FullSyncDataService {
         datas.forEach(data -> {
             byte[] bytes = (byte[]) data.get("data");
             PlayerDataParser.PlayerAndAgentData playerAndAgentData = parser.parseFromWorldData(bytes);
+
             playerAndAgentData.getPlayerRelationPos().forEach(playerRelationPo -> {
                 Integer parentId = playerRelationPo.getParentPlayerId().intValue();
                 Integer playerId = playerRelationPo.getPlayerId().intValue();

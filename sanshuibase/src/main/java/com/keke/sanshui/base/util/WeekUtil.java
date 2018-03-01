@@ -18,7 +18,7 @@ public final class WeekUtil {
 
 
     public static int getCurrentWeek(String dateStr){
-        Long startTimestamp = 1517760000000L;
+        Long startTimestamp = 1508688000000L;
         Long endTimestamp = System.currentTimeMillis();
         if(StringUtils.isNotEmpty(dateStr)){
             try {
@@ -40,7 +40,7 @@ public final class WeekUtil {
 //        cal.set(2017,Calendar.OCTOBER,23,0,0,0);
 //        cal.set(Calendar.WEEK_OF_YEAR,cal.get(Calendar.WEEK_OF_YEAR)+(week-1));
 //        return cal.getTimeInMillis();
-        DateTime dateTime = new DateTime(2018,2,5,0,0,0);
+        DateTime dateTime = new DateTime(2017,10,23,0,0,0);
         return dateTime.plusWeeks(week-1).getMillis();
     }
     public static long getWeekEndTimestamp(int week){
@@ -48,7 +48,7 @@ public final class WeekUtil {
 //        cal.set(2017,Calendar.OCTOBER,29,23,59,59);
 //        cal.set(Calendar.WEEK_OF_YEAR,cal.get(Calendar.WEEK_OF_YEAR)+(week-1));
 //        return cal.getTimeInMillis();
-        DateTime dateTime = new DateTime(2018,2,11,23,59,59);
+        DateTime dateTime = new DateTime(2017,10,29,23,59,59);
         return dateTime.plusWeeks(week-1).getMillis();
     }
     public static long getWeekStartTimestamp(){

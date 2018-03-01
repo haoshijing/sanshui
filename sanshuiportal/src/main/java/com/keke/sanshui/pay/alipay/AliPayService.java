@@ -21,7 +21,7 @@ public class AliPayService {
         AlipayTradeWapPayRequest alipayTradeWapPayRequest = new AlipayTradeWapPayRequest();
         AlipayTradeWapPayModel model=new AlipayTradeWapPayModel();
         model.setOutTradeNo(selfOrderId);
-        model.setSubject(new StringBuilder(payLink.getPickCouponVal()).append("豆").toString());
+        model.setSubject(new StringBuilder(payLink.getPickCouponVal()).append("钻石").toString());
         model.setTotalAmount(String.valueOf(payLink.getPickRmb()/100));
         model.setBody("充值"+model.getSubject());
         model.setTimeoutExpress("5m");
