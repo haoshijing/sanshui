@@ -140,7 +140,11 @@ public class PayController {
     @RequestMapping("/wxpay/user/{orderId}")
     String wxSuccess(@PathVariable String orderId, Model model) {
         WXPay wxpay = new WXPay(wxPayConfig);
+        try {
+            Thread.currentThread().sleep(2000);
+        }catch (Exception e){
 
+        }
         Map<String, String> data = new HashMap<String, String>();
         data.put("out_trade_no", orderId);
         try {

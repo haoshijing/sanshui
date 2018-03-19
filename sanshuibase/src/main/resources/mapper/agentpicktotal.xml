@@ -67,6 +67,10 @@
         </if>
     </select>
 
+    <select id="querySum" resultType="java.lang.Long">
+        select sum(totalMoney) from     <include refid="tableName"/> where week = #{week}
+    </select>
+
     <delete id="deleteAgentTotal">
         DELETE  FROM  <include refid="tableName"/>
         WHERE week = #{week}

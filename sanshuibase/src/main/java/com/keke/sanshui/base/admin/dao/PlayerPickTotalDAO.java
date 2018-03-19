@@ -26,4 +26,8 @@ public interface PlayerPickTotalDAO {
      * @return
      */
     Long sumPickUp(@Param("playerIds") List<Integer> playerIds, @Param("week") Integer week);
+
+    Long queryLastWeekNeedCalTotal(Integer week);
+
+    Long querySum(int week);
 }

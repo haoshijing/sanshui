@@ -1,7 +1,6 @@
 package com.keke.sanshui.admin.controller;
 
 import com.keke.sanshui.admin.AbstractController;
-import com.keke.sanshui.admin.auth.AdminAuthCacheService;
 import com.keke.sanshui.admin.auth.AdminAuthInfo;
 import com.keke.sanshui.admin.request.LoginDataRequest;
 import com.keke.sanshui.admin.response.ApiResponse;
@@ -9,7 +8,6 @@ import com.keke.sanshui.admin.response.RetCode;
 import com.keke.sanshui.admin.response.impl.LoginResponse;
 import com.keke.sanshui.admin.service.AdminAgentReadService;
 import com.keke.sanshui.base.admin.service.AdminService;
-import com.keke.sanshui.base.admin.service.AgentService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;

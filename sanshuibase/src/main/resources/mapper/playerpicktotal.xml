@@ -81,4 +81,13 @@
         delete from  <include refid="tableName"/>
          where id = #{id}
     </delete>
+
+    <select id="queryLastWeekNeedCalTotal" resultType="java.lang.Long">
+        select sum(totalMoney) from t_player_pick_total where week = #{week}
+          and playerId  in ( select playerId from t_agent where isNeedAreaCal = 1);
+    </select>
+
+    <select id="querySum" resultType="java.lang.Long">
+       select sum(totalMoney) from     <include refid="tableName"/> where week = #{week}
+    </select>
 </mapper>

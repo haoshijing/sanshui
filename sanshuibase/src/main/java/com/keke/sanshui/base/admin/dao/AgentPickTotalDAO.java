@@ -31,4 +31,6 @@ public interface AgentPickTotalDAO {
     List<AgentPickTotalPo> exportAgent(@Param("week") Integer week);
 
     int deleteAgentTotal(Integer week);
+
+    Long querySum(int week);
 }
