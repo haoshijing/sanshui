@@ -172,7 +172,7 @@ public class GatewayController {
                     }
                     //发送给gameServer
                     Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
-                            "0",order.getMoney());
+                            order.getMoney(),"0");
                     if(pair.getLeft()){
                         Order newUpdateOrder = new Order();
                         newUpdateOrder.setSelfOrderNo(orderId);
@@ -251,7 +251,7 @@ public class GatewayController {
                     }
                     //发送给gameServer
                     Pair<Boolean,Boolean> pair =  gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
-                            "0",order.getMoney());
+                            order.getMoney(),"0");
                     log.info("orderId={},pair = {}",out_trade_no,JSON.toJSONString(pair));
                     if(pair.getLeft()){
                         Order updateSendOrder = new Order();

@@ -27,9 +27,9 @@ public class GateWayService {
     private HttpClient httpClient;
 
     public Pair<Boolean,Boolean> sendToGameServer(String orderId, Integer gUid, String payMoney, String payCoupon) {
-        String sign = SignUtil.createSign(orderId, gUid, payCoupon, gameServerKey);
+        String sign = SignUtil.createSign(orderId, gUid, payMoney, gameServerKey);
         String sendUrl = String.format("%s/?method=PlayerRecharge&OrderId=%s" +
-                "&Guid=%s&RechargeMoney=%s&RechargeGold=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney, payCoupon, sign);
+                "&Guid=%s&RechargeMoney=%s&RechargeDiamond=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney, sign);
         try {
             ContentResponse contentResponse = httpClient.newRequest(sendUrl).timeout(3000, TimeUnit.MILLISECONDS).send();
             JSONObject jsonObject = JSONObject.parseObject(contentResponse.getContentAsString());

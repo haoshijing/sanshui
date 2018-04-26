@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
 @Slf4j
@@ -91,6 +92,7 @@ public class FullSyncDataService {
         log.info("关系开始进行同步");
         String sql = " select data from world_records where type =1 ";
         List<Map<String, Object>> datas = jdbcTemplate.queryForList(sql);
+        AtomicInteger idx = new AtomicInteger(1);
         datas.forEach(data -> {
             byte[] bytes = (byte[]) data.get("data");
             PlayerDataParser.PlayerAndAgentData playerAndAgentData = parser.parseFromWorldData(bytes);
@@ -133,6 +135,7 @@ public class FullSyncDataService {
         String sql = " select * from characters";
         List<Map<String, Object>> datas = jdbcTemplate.queryForList(sql);
         log.info("会员信息进行数据同步");
+        AtomicInteger idx = new AtomicInteger(1);
         datas.forEach(data -> {
             BigInteger playerId = (BigInteger) data.get(PLAYER_ID);
             data.put(PLAYER_ID, playerId.intValue());

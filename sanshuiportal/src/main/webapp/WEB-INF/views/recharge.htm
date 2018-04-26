@@ -6,7 +6,7 @@
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="black" name="apple-mobile-web-app-status-bar-style">
     <meta content="" name="keywords">
-    <title>扑克圈充值界面</title>
+    <title>扑克世界充值界面</title>
     <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/wapBase.css"/>
     <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/common.css"/>
 </head>
@@ -24,7 +24,7 @@
                 <ul id="payList">
                     <#list payLinks as link>
                         <li data="${link.id?c}" class="<#if link_index == 0>current</#if>">
-                            <a href="javascript:changeTo(${link.id?c});"> ${link.pickRmb/100}元 ${link.pickCouponVal?c}豆 </a>
+                            <a href="javascript:changeTo(${link.id?c});"> ${link.pickRmb/100}元 ${link.pickCouponVal?c}钻石 </a>
 
                         </li>
                     </#list>

@@ -37,7 +37,7 @@ public class CheckNotSendOrderService {
                     orderService.queryNotSendList().forEach(order -> {
                         log.info("开始补偿order,orderId = {}", order.getSelfOrderNo());
                         Pair<Boolean, Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
-                                "0", order.getMoney());
+                                order.getMoney(),order.getPrice());
                         if (pair.getLeft()) {
                             Order updateOrder = new Order();
                             updateOrder.setSelfOrderNo(order.getSelfOrderNo());

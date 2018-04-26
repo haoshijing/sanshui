@@ -53,7 +53,7 @@ public class WechartPayService {
         Map<String,String> info = Maps.newHashMap();
         Map<String,String> data = Maps.newHashMap();
         data.put("type","wap");
-        data.put("wap_name","扑克圈");
+        data.put("wap_name","扑克世界");
         info.put("h5_info", JSON.toJSONString(data));
         weChartPreOrderVo.setScene_info(JSON.toJSONString(info));
 

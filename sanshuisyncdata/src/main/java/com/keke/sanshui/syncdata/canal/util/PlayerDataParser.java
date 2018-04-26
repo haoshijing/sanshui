@@ -209,7 +209,7 @@ public  class PlayerDataParser {
 
     private byte[] deEncrypt(byte[] sourceData) {
         byte[] responseData = sourceData;
-        Request request = httpClient.POST("http://121.196.195.248:97/DataDecompressWeb/ClientQuery.aspx?method=DeCompressData");
+        Request request = httpClient.POST("http://www.xiaotian188.com:97/DataDecompressWeb/ClientQuery.aspx?method=DeCompressData");
         request.timeout(5000, TimeUnit.MILLISECONDS).content(new BytesContentProvider(sourceData));
         try {
             ContentResponse response = request.send();
