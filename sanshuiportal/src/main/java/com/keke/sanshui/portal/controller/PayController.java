@@ -267,6 +267,7 @@ public class PayController {
         try {
             // 调用SDK生成表单
             form = client.pageExecute(alipayTradeWapPayRequest).getBody();
+            log.info("form={}",form);
             response.setContentType("text/html;charset=" + AlipayConfig.CHARSET);
             response.getWriter().write(form);//直接将完整的表单html输出到页面
             response.getWriter().flush();

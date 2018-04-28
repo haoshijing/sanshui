@@ -157,7 +157,7 @@ public class SignUtil {
     public final  static  String createSign(String orderId,Integer gUid,String rechargeDiamond,String key){
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("OrderId=").append(orderId).append("&");
-        stringBuilder.append("Guid=").append(gUid).append("&");
+        stringBuilder.append("Guid=").append(gUid);
         stringBuilder.append("&RechargeDiamond=").append(rechargeDiamond);
         stringBuilder.append(key);
         String data =  MD5Util.md5(stringBuilder.toString()).toLowerCase();
@@ -165,21 +165,12 @@ public class SignUtil {
     }
 
     public static void main(String[] args) {
-        PayVo payVo = new PayVo();
-        payVo.setP_attach("10000241509418833398");
-        payVo.setP_no("2017103121001004320256415856");
-        payVo.setP_title("测试商品");
-        payVo.setP_city("杭州");
-        payVo.setP_country("中国");
-        payVo.setP_num("1");
-        payVo.setP_price("0.01");
-        payVo.setP_money("0.01");
-        payVo.setP_province("浙江");
-        payVo.setP_type("alipay");
-        payVo.setP_state("2");
-        payVo.setP_time("2017/10/31 11:00:48");
-        payVo.setP_url("http://game.youthgamer.com:8080/sanshui/goPayPage");
-        System.out.println(SignUtil.createPaySign(payVo,"1dfXbJl2wyz1IAiAEdmjTR5q"));
+
+      String sign =   SignUtil.createSign("761524837249474",
+                76,
+                "1",
+                "fjsoafasdfj;asdfas;dafjasdafsafjasd");
+        System.out.println("sign = [" + sign + "]");
 
     }
 }

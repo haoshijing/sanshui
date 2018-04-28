@@ -31,6 +31,7 @@ public class GateWayService {
         String sendUrl = String.format("%s/?method=PlayerRecharge&OrderId=%s" +
                 "&Guid=%s&RechargeDiamond=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney, sign);
         try {
+            log.info("sendUrl = {}",sendUrl);
             ContentResponse contentResponse = httpClient.newRequest(sendUrl).timeout(3000, TimeUnit.MILLISECONDS).send();
             JSONObject jsonObject = JSONObject.parseObject(contentResponse.getContentAsString());
             log.info("contentResponse = {}", contentResponse.getContentAsString());
