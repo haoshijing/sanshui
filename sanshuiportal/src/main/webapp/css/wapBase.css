@@ -191,7 +191,7 @@ textarea,  /* 1 */
 .icon-back:before { content: "\e631"; }
 .icon-success:before { content: "\e637"; }
 .icon-aliPay:before { content: "\e676"; color:#1296db;font-size:3rem;}
-.icon-wxPay:before { content: "\e600"; color:#62b900;font-size:3rem;}
+.icon-wxPay:before { content: "\e75d"; color:#62b900;font-size:3rem;}
 
 /**
  * 闭合浮动
