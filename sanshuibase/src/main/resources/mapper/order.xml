@@ -64,7 +64,7 @@
     </insert>
 
     <select id="queryNotSendList" resultType="Order">
-        select * from t_order where orderStatus = 3 and sendStatus = 1 order by id asc
+        select * from t_order where orderStatus = 3 order by id asc
     </select>
 
     <update id="updateByOrderId" parameterType="Order">
