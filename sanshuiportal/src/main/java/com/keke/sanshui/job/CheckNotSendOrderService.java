@@ -8,6 +8,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
@@ -27,7 +28,7 @@ public class CheckNotSendOrderService {
     private GateWayService gateWayService;
 
     @EventListener
-    public void startWork(ContextStartedEvent event){
+    public void startWork(ContextRefreshedEvent event){
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(
                 new DefaultThreadFactory("ScanNotSendOrderThread"));
         executorService.scheduleAtFixedRate(new Runnable() {
