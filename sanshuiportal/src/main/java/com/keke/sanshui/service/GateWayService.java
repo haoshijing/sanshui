@@ -36,7 +36,9 @@ public class GateWayService {
             JSONObject jsonObject = JSONObject.parseObject(contentResponse.getContentAsString());
             log.info("contentResponse = {}", contentResponse.getContentAsString());
             if(jsonObject != null){
-                boolean dealOk = StringUtils.equals("Successed",jsonObject.getString("resultCode"));
+                String resultCode = jsonObject.getString("resultCode");
+                boolean dealOk = StringUtils.equals("Successed",resultCode) ||
+                        StringUtils.endsWithIgnoreCase("Begin",resultCode);
                 return Pair.of(true,dealOk);
             }
             return Pair.of(true,false);
