@@ -59,7 +59,7 @@ public class OrderService {
         order.setClientGuid(Integer.valueOf(attach.get("guid")));
         order.setSelfOrderNo(selfOrderId);
         order.setMoney(payLink.getPickCouponVal().toString());
-        order.setTitle(payLink.getPickCouponVal()+"豆");
+        order.setTitle(payLink.getPickCouponVal()+"钻石");
         order.setPrice(String.valueOf(payLink.getPickRmb()));
         order.setOrderStatus(1);
         order.setSendStatus(SendStatus.Not_Send.getCode());

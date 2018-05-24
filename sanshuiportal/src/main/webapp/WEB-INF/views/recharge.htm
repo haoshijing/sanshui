@@ -7,8 +7,8 @@
     <meta content="black" name="apple-mobile-web-app-status-bar-style">
     <meta content="" name="keywords">
     <title>扑克世界充值界面</title>
-    <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/wapBase.css"/>
-    <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/common.css"/>
+    <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/wapBase.css" />
+    <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/common.css" />
 </head>
 <body>
 <div class="WapContent">
@@ -20,26 +20,18 @@
     </header>
     <div class="wrapBox">
         <div class="price_list">
-            <form action="${rc.contextPath}/doNewPay" method="post">
-                <ul id="payList">
+            <form action="${rc.contextPath}/goPayPage" method="post">
+                <ul>
                     <#list payLinks as link>
-                        <li data="${link.id?c}" class="<#if link_index == 0>current</#if>">
-                            <a href="javascript:changeTo(${link.id?c});"> ${link.pickRmb/100}元 ${link.pickCouponVal?c}钻石 </a>
+                        <li   data = "${link.id?c}" class="<#if link_index == 0>current</#if>">
+                            <a href="javascript:changeTo(${link.id?c});">${link.pickCouponVal?c}银豆  ${link.pickRmb/100}元</a>
 
                         </li>
                     </#list>
                 </ul>
-
-                <ul id="payTypeList">
-                    <li data="1" class="current"><a href="javascript:void(0);"><i class="iconfont icon-wxPay"></i></a></li>
-
-                    <li data="2"><a href="javascript:void(0);"><i class="iconfont icon-aliPay"></i></a></li>
-
-                </ul>
-                <input type="hidden" name="guid" value="${guid}">
-                <input type="hidden" name="pickId" id="pickId" value="${defaultPick}">
-                <input type="hidden" name="payType" id="payType" value="${defaultPayType}">
-                <p><input type="submit" value="立刻充值" class="subBtn"/></p>
+                <input type="hidden" name = "guid"  value = "${guid}">
+                <input type="hidden" name = "pickId" id = "pickId" value = "${defaultPick}">
+                <p><input type="submit" value="立刻充值"  class="subBtn" /></p>
             </form>
         </div>
     </div>
@@ -47,16 +39,11 @@
 </body>
 <script type="text/javascript" src="${rc.contextPath}/js/jquery-1.7.1.min.js"></script>
 <script type="text/javascript">
-    $(function () {
-        $("#payList li").click(function () {
+    $(function(){
+        $(".price_list li").click(function(){
             $(this).addClass("current").siblings().removeClass("current");
-            $("#pickId").val($(this).attr("data"));
-        })
-        $("#payTypeList li").click(function () {
-            $(this).addClass("current").siblings().removeClass("current");
-            $("#payType").val($(this).attr("data"));
+            $("#pickId").val( $(this).attr("data"));
         })
     })
-
 </script>
 </html>

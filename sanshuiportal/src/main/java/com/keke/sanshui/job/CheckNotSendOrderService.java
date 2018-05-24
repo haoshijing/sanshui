@@ -50,7 +50,7 @@ public class CheckNotSendOrderService {
                         }
                     });
                 }catch (Exception e){
-
+                    log.error("",e);
                 }
 
             }

@@ -141,7 +141,7 @@ public class PayController {
     String wxSuccess(@PathVariable String orderId, Model model) {
         WXPay wxpay = new WXPay(wxPayConfig);
         try {
-            Thread.currentThread().sleep(2000);
+            Thread.currentThread().sleep(5000);
         }catch (Exception e){
 
         }
@@ -281,47 +281,5 @@ public class PayController {
         return null;
     }
 
-
-    @RequestMapping("/doGo51PayPage")
-    void doGo51PayPage(Integer pickId, Integer guid, String payType, HttpServletResponse response) {
-        log.info("doGo51PayPage pickId={},guid = {}", pickId, guid);
-        String selfOrderId = guid + "" + System.currentTimeMillis();
-        PayLink payLink = payService.getCid(pickId);
-        ZPayRequestVo zPayRequestVo = zPayService.createRequestVo(payLink, payType, selfOrderId);
-        String url = new StringBuilder(ZPAY_BASE_URL).append("/createOrder.e").append("?")
-                .append(zPayRequestVo.getParamUrl()).toString();
-        Map<String, String> attach = Maps.newHashMap();
-        attach.put("guid", guid.toString());
-        orderService.insertOrder(payLink, attach, selfOrderId);
-        try {
-            response.sendRedirect(url);
-        } catch (Exception e) {
-            log.error("send to url {} error ", url, e);
-        }
-
-    }
-
-    @RequestMapping("/goPayPullPage")
-    String doGoPayPullPage(Integer pickId, Integer guid, String token, HttpServletRequest request, Model modelAttribute) {
-        log.info("doGoPayPullPage pickId={},guid = {}", pickId, guid);
-        PaypullRequestVo paypullRequestVo = new PaypullRequestVo();
-        String selfOrderId = guid + "" + System.currentTimeMillis();
-        PayLink payLink = payService.getCid(pickId);
-        Map<String, String> attach = Maps.newHashMap();
-        attach.put("guid", guid.toString());
-        paypullRequestVo.setAmount(payLink.getPickRmb().toString());
-        paypullRequestVo.setSubject(new StringBuilder("充值").append(payLink.getPickCouponVal()).append("豆").toString());
-        paypullRequestVo.setOrderNo(selfOrderId);
-        paypullRequestVo.setExtra(JSON.toJSONString(attach));
-        paypullRequestVo.setAppId(payPullAppId);
-        try {
-            paypullRequestVo.setNotifyUrl(URLEncoder.encode(callbackHost + "/paypuall/callback", "utf-8"));
-        } catch (Exception e) {
-
-        }
-        orderService.insertOrder(payLink, attach, selfOrderId);
-        modelAttribute.addAttribute("paypullRequestVo", paypullRequestVo);
-        return "paypullPage";
-    }
 
 }
