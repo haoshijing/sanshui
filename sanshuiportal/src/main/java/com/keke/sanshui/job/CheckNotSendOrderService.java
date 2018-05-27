@@ -31,7 +31,7 @@ public class CheckNotSendOrderService {
     public void startWork(ContextRefreshedEvent event){
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(
                 new DefaultThreadFactory("ScanNotSendOrderThread"));
-        executorService.scheduleAtFixedRate(new Runnable() {
+        executorService.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -55,6 +55,6 @@ public class CheckNotSendOrderService {
                 }
 
             }
-        },10,60, TimeUnit.SECONDS);
+        },10,120, TimeUnit.SECONDS);
     }
 }
