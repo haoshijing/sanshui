@@ -13,6 +13,8 @@ import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.pay.alipay.AlipayConfig;
 import com.keke.sanshui.pay.fuqianla.FuqianResponseVo;
 import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
+import com.keke.sanshui.pay.paywap.PayWapService;
+import com.keke.sanshui.pay.paywap.ResponseBean;
 import com.keke.sanshui.pay.zpay.ZPayResponseVo;
 import com.keke.sanshui.pay.zpay.ZPayService;
 import com.keke.sanshui.util.SignUtil;
@@ -61,6 +63,9 @@ public class GatewayController {
 
     @Autowired
     FuqianlaPayService fuqianlaPayService;
+
+    @Autowired
+    private PayWapService payWapService;
 
     @Autowired
     AlipayConfig alipayConfig;
@@ -197,7 +202,82 @@ public class GatewayController {
         }catch (Exception e){
             log.error("handleWxNotify error",e);
         }
-
+    }
+    @RequestMapping("/paywap/callback")
+    public void handlePaywapNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ResponseBean rbean = new ResponseBean();
+        rbean.setP1_usercode(request.getParameter("p1_usercode"));
+        rbean.setP2_order(request.getParameter("p2_order"));
+        rbean.setP3_money(request.getParameter("p3_money"));
+        rbean.setP4_status(request.getParameter("p4_status"));
+        rbean.setP5_jtpayorder(request.getParameter("p5_jtpayorder"));
+        rbean.setP6_paymethod(request.getParameter("p6_paymethod"));
+        rbean.setP7_paychannelnum(request.getParameter("p7_paychannelnum"));
+        rbean.setP8_charset(request.getParameter("p8_charset"));
+        rbean.setP9_signtype(request.getParameter("p9_signtype"));
+        rbean.setP10_sign(request.getParameter("p10_sign"));
+        rbean.setP11_remark(request.getParameter("p11_remark"));
+        String sign = payWapService.getResponseSign(rbean);
+        log.info("response = {}", rbean);
+        try {
+            if (StringUtils.endsWithIgnoreCase(sign,rbean.getP10_sign())) {
+                if(StringUtils.endsWithIgnoreCase(rbean.getP4_status(),"1")) {
+                    String orderId = rbean.getP2_order();
+                    Order order = orderService.queryOrderByNo(orderId);
+                    if (order == null) {
+                        log.error("错误的订单,orderId = {}", orderId);
+                        String envName = System.getProperty("env");
+                        if(StringUtils.isEmpty(envName)){
+                            envName = System.getenv("env");
+                        }
+                        if(StringUtils.equals(envName,"test")){
+                            response.getWriter().print("0");
+                            return;
+                        }
+                    }
+                    if(order.getOrderStatus() == 2){
+                        log.info("order deal ready {}",order.getSelfOrderNo());
+                        response.getWriter().print("<xml>\n" +
+                                "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
+                                "  <return_msg><![CDATA[OK]]></return_msg>\n" +
+                                "</xml>");
+                    }
+                    Order updateOrder = new Order();
+                    //已支付
+                    updateOrder.setSelfOrderNo(orderId);
+                    updateOrder.setOrderStatus(3);
+                    updateOrder.setPayState(0);
+                    updateOrder.setPayType("wxpay");
+                    updateOrder.setPayTime(String.valueOf(System.currentTimeMillis()));
+                    updateOrder.setLastUpdateTime(System.currentTimeMillis());
+                    updateOrder.setOrderNo(rbean.getP5_jtpayorder());
+                    int updateStatus = orderService.updateOrder(updateOrder);
+                    if(updateStatus == 0){
+                        log.warn("update data effect 0,{}",JSON.toJSONString(rbean));
+                    }
+                    //发送给gameServer
+                    Pair<Boolean,Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                            order.getMoney(),"0");
+                    if(pair.getLeft()) {
+                        Order newUpdateOrder = new Order();
+                        newUpdateOrder.setSelfOrderNo(orderId);
+                        if (pair.getRight()) {
+                            newUpdateOrder.setOrderStatus(2);
+                        }
+                        newUpdateOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                        newUpdateOrder.setSendTime(System.currentTimeMillis());
+                        orderService.updateOrder(newUpdateOrder);
+                    }
+                    response.flushBuffer();
+                    response.getWriter().println("success");
+                }
+            }else{
+                log.error("sign error , server sign = {} , createSign = {}",rbean.getP10_sign(),sign);
+            }
+        }catch (Exception e){
+            log.error("",e);
+        }
+        return;
     }
 
     @RequestMapping("/alipay/callback")

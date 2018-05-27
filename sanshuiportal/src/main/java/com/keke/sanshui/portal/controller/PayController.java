@@ -18,6 +18,8 @@ import com.keke.sanshui.pay.alipay.AlipayConfig;
 import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
 import com.keke.sanshui.pay.fuqianla.FuqianlaRequestVo;
 import com.keke.sanshui.pay.paypull.PaypullRequestVo;
+import com.keke.sanshui.pay.paywap.PayWapService;
+import com.keke.sanshui.pay.paywap.ResponseBean;
 import com.keke.sanshui.pay.wechart.MyWxConfig;
 import com.keke.sanshui.pay.wechart.WechartPayService;
 import com.keke.sanshui.pay.zpay.ZPayRequestVo;
@@ -63,6 +65,8 @@ public class PayController {
     @Value("${callbackHost}")
     private String callbackHost;
     @Autowired
+    PayWapService payWapService;
+    @Autowired
     private WechartPayService wechartPayService;
     @Resource
     AliPayService aliPayService;
@@ -91,6 +95,35 @@ public class PayController {
         return "recharge";
     }
 
+    @RequestMapping("/paywap/return/{orderId}")
+   public String paywapNotice(@PathVariable String orderId, HttpServletRequest request,Model model) {
+        ResponseBean rbean = new ResponseBean();
+        rbean.setP1_usercode(request.getParameter("p1_usercode"));
+        rbean.setP2_order(request.getParameter("p2_order"));
+        rbean.setP3_money(request.getParameter("p3_money"));
+        rbean.setP4_status(request.getParameter("p4_status"));
+        rbean.setP5_jtpayorder(request.getParameter("p5_jtpayorder"));
+        rbean.setP6_paymethod(request.getParameter("p6_paymethod"));
+        rbean.setP7_paychannelnum(request.getParameter("p7_paychannelnum"));
+        rbean.setP8_charset(request.getParameter("p8_charset"));
+        rbean.setP9_signtype(request.getParameter("p9_signtype"));
+        rbean.setP10_sign(request.getParameter("p10_sign"));
+        rbean.setP11_remark(request.getParameter("p11_remark"));
+        String sign = payWapService.getResponseSign(rbean);
+        log.info("response = {}", rbean);
+        try {
+            if (StringUtils.endsWithIgnoreCase(sign,rbean.getP10_sign())) {
+                if(StringUtils.endsWithIgnoreCase(rbean.getP4_status(),"1")) {
+                    model.addAttribute("message","支付成功");
+                }else{
+                    model.addAttribute("message","支付失败");
+                }
+            }
+        } catch (Exception e) {
+            model.addAttribute("message", "支付未完成");
+        }
+        return "success";
+    }
     @RequestMapping("/pay/user/{orderId}")
     String success(@PathVariable String orderId, Model model) {
         String response = zPayService.queryOrder(orderId);
@@ -207,11 +240,19 @@ public class PayController {
     }
     @RequestMapping("/doNewPay")
     public String doNewPay(HttpServletRequest request,Integer pickId, Integer guid, String payType,HttpServletResponse response) {
-        if(StringUtils.equals(payType,"1")){
-            return doWxPay(request,pickId,guid,response);
-        }else{
-            return doAlipay(request,pickId,guid,response);
-        }
+//        if(StringUtils.equals(payType,"1")){
+//            return doWxPay(request,pickId,guid,response);
+//        }else{
+//            return doAlipay(request,pickId,guid,response);
+//        }
+        return doPayWap(request,pickId,payType,guid,response);
+    }
+
+    private String doPayWap(HttpServletRequest request, Integer pickId, String payType,Integer guid, HttpServletResponse response) {
+        log.info("doPayWap pickId={},guid = {}", pickId, guid);
+        String selfOrderId = guid + "" + System.currentTimeMillis();
+        PayLink payLink = payService.getCid(pickId);
+        return payWapService.submitOrder(request,selfOrderId,payLink,guid,payType);
     }
 
     @RequestMapping("/doWxPay")
