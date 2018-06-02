@@ -252,7 +252,13 @@ public class PayController {
         log.info("doPayWap pickId={},guid = {}", pickId, guid);
         String selfOrderId = guid + "" + System.currentTimeMillis();
         PayLink payLink = payService.getCid(pickId);
-        return payWapService.submitOrder(request,selfOrderId,payLink,guid,payType);
+        String url =  payWapService.submitOrder(request,selfOrderId,payLink,guid,payType);
+        try{
+            response.sendRedirect(url);
+        }catch (Exception e){
+
+        }
+        return null;
     }
 
     @RequestMapping("/doWxPay")

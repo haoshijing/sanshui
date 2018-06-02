@@ -14,7 +14,7 @@ public class PayWapService {
     @Value("${userCode}")
     private String userCode;
 
-    @Value("${payWapSecret}")
+    @Value("${paywapSecret}")
     private String payWapSecret;
 
     @Value("${callbackHost}")
@@ -29,7 +29,7 @@ public class PayWapService {
     public String submitOrder(HttpServletRequest request,String selfOrderId, PayLink payLink, Integer guid, String payType){
        String returnUrl = requestUrl;
         RequestBean rbean = new RequestBean();
-        rbean.setP1_usercode("5010200789");
+        rbean.setP1_usercode(userCode);
         rbean.setP2_order(selfOrderId);
         rbean.setP3_money(String.valueOf(payLink.getPickRmb()));
         rbean.setP4_returnurl(callbackHost+"/paywap/return/"+selfOrderId);//
