@@ -174,7 +174,7 @@ public class PayController {
     String wxSuccess(@PathVariable String orderId, Model model) {
         WXPay wxpay = new WXPay(wxPayConfig);
         try {
-            Thread.currentThread().sleep(2000);
+            Thread.sleep(2000);
         }catch (Exception e){
 
         }
