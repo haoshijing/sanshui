@@ -1,8 +1,10 @@
 package com.keke.sanshui.pay.paywap;
 
 import com.keke.sanshui.base.admin.po.PayLink;
+import com.keke.sanshui.base.util.MD5Tool;
 import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.util.IpUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import javax.servlet.http.HttpServletRequest;
 
 @Repository
+@Slf4j
 public class PayWapService {
     @Value("${userCode}")
     private String userCode;
@@ -62,10 +65,12 @@ public class PayWapService {
         String rawString = bean.p1_usercode + "&" + bean.p2_order + "&"
                 + bean.p3_money + "&" + bean.p4_returnurl + "&"
                 + bean.p5_notifyurl + "&" + bean.p6_ordertime + payWapSecret;
+        log.info("payWapSecret = {}",payWapSecret);
         // return
         // FormsAuthentication.HashPasswordForStoringInConfigFile(rawString,
         // "MD5");
-        return MD5Util.md5(rawString);
+        String data = MD5Tool.encoding(rawString);
+        return data;
     }
     public String getResponseSign(ResponseBean bean) {
         // String rawString = bean.p1_usercode + "&" + bean.p2_order + "&" +
