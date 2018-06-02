@@ -58,6 +58,7 @@ public class PayWapService {
         // form1.Action = requestUrl;
         // response.sendRedirect(requestUrl);
         returnUrl = returnUrl + getUrlCS(rbean);
+        log.info("returnUrl = {}",returnUrl);
         return returnUrl;
     }
     // 获取签名
@@ -65,7 +66,7 @@ public class PayWapService {
         String rawString = bean.p1_usercode + "&" + bean.p2_order + "&"
                 + bean.p3_money + "&" + bean.p4_returnurl + "&"
                 + bean.p5_notifyurl + "&" + bean.p6_ordertime + payWapSecret;
-        log.info("payWapSecret = {}",payWapSecret);
+        log.info("rawString = {}",rawString);
         // return
         // FormsAuthentication.HashPasswordForStoringInConfigFile(rawString,
         // "MD5");
@@ -159,4 +160,6 @@ public class PayWapService {
         // "MD5");
         return rawString;
     }
+
+
 }
