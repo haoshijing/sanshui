@@ -34,7 +34,7 @@ public class PayWapService {
         RequestBean rbean = new RequestBean();
         rbean.setP1_usercode(userCode);
         rbean.setP2_order(selfOrderId);
-        rbean.setP3_money(String.valueOf(payLink.getPickRmb()));
+        rbean.setP3_money(String.valueOf(payLink.getPickRmb()/100));
         rbean.setP4_returnurl(callbackHost+"/paywap/return/"+selfOrderId);//
         rbean.setP5_notifyurl(callbackHost+"/paywap/callback");//
         rbean.setP6_ordertime(String.valueOf(System.currentTimeMillis()));
