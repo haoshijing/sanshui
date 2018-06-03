@@ -1,11 +1,15 @@
 package com.keke.sanshui.pay.paywap;
 
 import com.keke.sanshui.base.admin.po.PayLink;
+import com.keke.sanshui.base.admin.po.order.Order;
+import com.keke.sanshui.base.admin.service.OrderService;
+import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.base.util.MD5Tool;
 import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.util.IpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +28,9 @@ public class PayWapService {
     private String callbackHost;
 
     private static final String requestUrl = "http://pay.paywap.cn/form/pay";// 提交地址
+
+    @Autowired
+    private OrderService orderService;
 
     private static final String WX = "3";
     private static final String ALIPAY = "4";
@@ -59,6 +66,17 @@ public class PayWapService {
         // response.sendRedirect(requestUrl);
         returnUrl = returnUrl + getUrlCS(rbean);
         log.info("returnUrl = {}",returnUrl);
+        Order order = new Order();
+        order.setClientGuid(guid);
+        order.setSelfOrderNo(selfOrderId);
+        order.setMoney(payLink.getPickCouponVal().toString());
+        order.setTitle(payLink.getPickCouponVal()+"钻石");
+        order.setPrice(String.valueOf(payLink.getPickRmb()));
+        order.setOrderStatus(1);
+        order.setSendStatus(SendStatus.Not_Send.getCode());
+        order.setInsertTime(System.currentTimeMillis());
+        order.setLastUpdateTime(System.currentTimeMillis());
+        int insertRet = orderService.saveOrder(order);
         return returnUrl;
     }
     // 获取签名
