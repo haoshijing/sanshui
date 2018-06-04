@@ -23,4 +23,6 @@ public interface OrderDAO {
     List<Order> selectList(@Param("param")QueryOrderPo queryOrderPo);
 
     Long queryCount(@Param("param")QueryOrderPo queryOrderPo);
+
+    Integer querySum(@Param("param") QueryOrderPo queryOrderPo);
 }

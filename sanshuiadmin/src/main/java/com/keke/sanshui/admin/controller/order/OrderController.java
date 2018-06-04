@@ -25,25 +25,37 @@ public class OrderController {
 
     @RequestMapping("/list")
     @ResponseBody
-    public ApiResponse<List<OrderItemVo>> queryList(@RequestBody OrderQueryVo orderQueryVo){
-        try{
-            List<OrderItemVo> list =   adminOrderReadService.queryList(orderQueryVo);
+    public ApiResponse<List<OrderItemVo>> queryList(@RequestBody OrderQueryVo orderQueryVo) {
+        try {
+            List<OrderItemVo> list = adminOrderReadService.queryList(orderQueryVo);
             return new ApiResponse<>(list);
-        }catch (Exception e){
-            log.error("queryList error {}", JSON.toJSONString(orderQueryVo),e);
-            return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(), Lists.newArrayList());
+        } catch (Exception e) {
+            log.error("queryList error {}", JSON.toJSONString(orderQueryVo), e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR, e.getMessage(), Lists.newArrayList());
+        }
+    }
+
+    @RequestMapping("/querySum")
+    @ResponseBody
+    public ApiResponse<Integer> querySum(@RequestBody OrderQueryVo orderQueryVo) {
+        try {
+            Integer sumData = adminOrderReadService.querySum(orderQueryVo);
+            return new ApiResponse<>(sumData);
+        } catch (Exception e) {
+            log.error("querySum error {}", JSON.toJSONString(orderQueryVo), e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR, e.getMessage(), 0);
         }
     }
 
     @RequestMapping("/count")
     @ResponseBody
-    public ApiResponse<Long> queryCount(@RequestBody OrderQueryVo orderQueryVo){
-        try{
-            Long count =  adminOrderReadService.queryCount(orderQueryVo);
+    public ApiResponse<Long> queryCount(@RequestBody OrderQueryVo orderQueryVo) {
+        try {
+            Long count = adminOrderReadService.queryCount(orderQueryVo);
             return new ApiResponse<>(count);
-        }catch (Exception e){
-            log.error("queryCount error {}", JSON.toJSONString(orderQueryVo),e);
-            return new ApiResponse<>(RetCode.SERVER_ERROR,e.getMessage(), 0L);
+        } catch (Exception e) {
+            log.error("queryCount error {}", JSON.toJSONString(orderQueryVo), e);
+            return new ApiResponse<>(RetCode.SERVER_ERROR, e.getMessage(), 0L);
         }
     }
 }

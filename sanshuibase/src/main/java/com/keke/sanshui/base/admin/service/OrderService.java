@@ -84,4 +84,8 @@ public class OrderService {
     public Long selectCount(QueryOrderPo queryOrderPo){
         return orderDAO.queryCount(queryOrderPo);
     }
+
+    public Integer querySum(QueryOrderPo queryOrderPo) {
+        return orderDAO.querySum(queryOrderPo);
+    }
 }

@@ -98,9 +98,16 @@
         where selfOrderNo = #{order.selfOrderNo}
     </update>
 
+    <select id="selectSum" resultType="java.lang.Long">
+        select sum(price) from t_order
+        where orderStatus  in(2,3)
+        and lastUpdateTime BETWEEN #{param.startTimestamp} AND #{param.endTimestamp}
+    </select>
+
+
     <select id="queryPickupSum" resultType="java.lang.Long">
         select sum(price) from t_order
-        where clientGuid = #{guid} and orderStatus = 2
+        where clientGuid = #{guid} and orderStatus in(2,3)
         and lastUpdateTime BETWEEN #{startTimestamp} AND #{endTimestamp}
     </select>
 

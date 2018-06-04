@@ -68,4 +68,10 @@ public class AdminOrderReadService {
         queryOrderPo.setOffset(page * queryOrderPo.getLimit());
         return queryOrderPo;
     }
+
+    public Integer querySum(OrderQueryVo orderQueryVo) {
+        QueryOrderPo queryOrderPo =  parseFromQueryVo(orderQueryVo);
+        Integer sum =  orderService.querySum(queryOrderPo);
+        return sum !=null ?sum :0;
+    }
 }
