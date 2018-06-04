@@ -153,7 +153,7 @@ public class PayWapService {
             rawString = rawString + "&";
         }
         rawString = rawString + "&" + payWapSecret;
-        return MD5Util.md5(rawString);
+        return MD5Tool.encoding(rawString);
     }
     private String getUrlCS(RequestBean bean) {
         String khsbm = "100101";// 客户识别码 【快捷支付的时候需要传递此内容】 【 在您系统里对应用户的唯一标示】
