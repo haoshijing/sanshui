@@ -84,7 +84,6 @@ public class PayWapService {
         String rawString = bean.p1_usercode + "&" + bean.p2_order + "&"
                 + bean.p3_money + "&" + bean.p4_returnurl + "&"
                 + bean.p5_notifyurl + "&" + bean.p6_ordertime + payWapSecret;
-        log.info("rawString = {}",rawString);
         // return
         // FormsAuthentication.HashPasswordForStoringInConfigFile(rawString,
         // "MD5");
@@ -153,6 +152,7 @@ public class PayWapService {
             rawString = rawString + "&";
         }
         rawString = rawString + "&" + payWapSecret;
+        log.info("response raw String = {}",rawString);
         return MD5Tool.encoding(rawString);
     }
     private String getUrlCS(RequestBean bean) {

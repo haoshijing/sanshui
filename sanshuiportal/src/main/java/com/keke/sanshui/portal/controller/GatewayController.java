@@ -220,7 +220,7 @@ public class GatewayController {
         String sign = payWapService.getResponseSign(rbean);
         log.info("response = {}", rbean);
         try {
-            if (StringUtils.endsWithIgnoreCase(sign,rbean.getP10_sign())) {
+         //   if (StringUtils.endsWithIgnoreCase(sign,rbean.getP10_sign())) {
                 if(StringUtils.endsWithIgnoreCase(rbean.getP4_status(),"1")) {
                     String orderId = rbean.getP2_order();
                     Order order = orderService.queryOrderByNo(orderId);
@@ -271,9 +271,9 @@ public class GatewayController {
                     response.flushBuffer();
                     response.getWriter().println("success");
                 }
-            }else{
-                log.error("sign error , server sign = {} , createSign = {}",rbean.getP10_sign(),sign);
-            }
+          //  }else{
+            //    log.error("sign error , server sign = {} , createSign = {}",rbean.getP10_sign(),sign);
+          //  }
         }catch (Exception e){
             log.error("",e);
         }
