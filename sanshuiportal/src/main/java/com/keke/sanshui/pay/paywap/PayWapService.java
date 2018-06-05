@@ -121,9 +121,9 @@ public class PayWapService {
         } else {
             rawString = rawString + "&";
         }
-        if (bean.p5_jtpayorder != null && !bean.p5_jtpayorder.equals("")
-                && !bean.p5_jtpayorder.equals("null")) {
-            rawString = rawString + "&" + bean.p5_jtpayorder;
+        if (bean.p5_payorder != null && !bean.p5_payorder.equals("")
+                && !bean.p5_payorder.equals("null")) {
+            rawString = rawString + "&" + bean.p5_payorder;
         } else {
             rawString = rawString + "&";
         }

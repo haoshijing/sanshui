@@ -38,12 +38,12 @@ public class ResponseBean {
 		this.p4_status = p4_status;
 	}
 
-	public String getP5_jtpayorder() {
-		return p5_jtpayorder;
+	public String getP5_payorder() {
+		return p5_payorder;
 	}
 
-	public void setP5_jtpayorder(String p5_jtpayorder) {
-		this.p5_jtpayorder = p5_jtpayorder;
+	public void setP5_payorder(String p5_payorder) {
+		this.p5_payorder = p5_payorder;
 	}
 
 	public String getP6_paymethod() {
@@ -114,7 +114,7 @@ public class ResponseBean {
 	// / <summary>
 	// / 竣付通订单号
 	// / </summary>
-	public String p5_jtpayorder;
+	public String p5_payorder;
 	// / <summary>
 	// / 商户支付方式
 	// / </summary>

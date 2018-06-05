@@ -210,7 +210,7 @@ public class GatewayController {
         rbean.setP2_order(request.getParameter("p2_order"));
         rbean.setP3_money(request.getParameter("p3_money"));
         rbean.setP4_status(request.getParameter("p4_status"));
-        rbean.setP5_jtpayorder(request.getParameter("p5_jtpayorder"));
+        rbean.setP5_payorder(request.getParameter("p5_payorder"));
         rbean.setP6_paymethod(request.getParameter("p6_paymethod"));
         rbean.setP7_paychannelnum(request.getParameter("p7_paychannelnum"));
         rbean.setP8_charset(request.getParameter("p8_charset"));
@@ -220,7 +220,7 @@ public class GatewayController {
         String sign = payWapService.getResponseSign(rbean);
         log.info("response = {}", rbean);
         try {
-         //   if (StringUtils.endsWithIgnoreCase(sign,rbean.getP10_sign())) {
+           if (StringUtils.endsWithIgnoreCase(sign,rbean.getP10_sign())) {
                 if(StringUtils.endsWithIgnoreCase(rbean.getP4_status(),"1")) {
                     String orderId = rbean.getP2_order();
                     Order order = orderService.queryOrderByNo(orderId);
@@ -250,7 +250,7 @@ public class GatewayController {
                     updateOrder.setPayType(rbean.getP6_paymethod());
                     updateOrder.setPayTime(String.valueOf(System.currentTimeMillis()));
                     updateOrder.setLastUpdateTime(System.currentTimeMillis());
-                    updateOrder.setOrderNo(rbean.getP5_jtpayorder());
+                    updateOrder.setOrderNo(rbean.getP5_payorder());
                     int updateStatus = orderService.updateOrder(updateOrder);
                     if(updateStatus == 0){
                         log.warn("update data effect 0,{}",JSON.toJSONString(rbean));
@@ -271,9 +271,9 @@ public class GatewayController {
                     response.flushBuffer();
                     response.getWriter().println("success");
                 }
-          //  }else{
-            //    log.error("sign error , server sign = {} , createSign = {}",rbean.getP10_sign(),sign);
-          //  }
+           }else{
+               log.error("sign error , server sign = {} , createSign = {}",rbean.getP10_sign(),sign);
+             }
         }catch (Exception e){
             log.error("",e);
         }
