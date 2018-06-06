@@ -59,6 +59,9 @@ public class PayController {
     @Autowired
     private ZPayService zPayService;
 
+    @Value("${defaultPay}")
+    private int defaultPay;
+
     private final static String ZPAY_BASE_URL = "http://pay.csl2016.cn:8000";
 
     @Autowired
@@ -93,7 +96,7 @@ public class PayController {
         modelAttribute.addAttribute("payLinks", payLinks);
         modelAttribute.addAttribute("guid", guid);
         modelAttribute.addAttribute("defaultPick", defaultPick);
-        modelAttribute.addAttribute("defaultPayType", 1);
+        modelAttribute.addAttribute("defaultPayType", defaultPay);
         return "recharge";
     }
 
