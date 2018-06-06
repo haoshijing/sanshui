@@ -37,6 +37,6 @@
     </dependencies>
 
     <build>
-        <finalName>allin</finalName>
+        <finalName>pksj</finalName>
     </build>
 </project>

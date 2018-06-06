@@ -104,7 +104,7 @@ public class PayController {
         rbean.setP2_order(request.getParameter("p2_order"));
         rbean.setP3_money(request.getParameter("p3_money"));
         rbean.setP4_status(request.getParameter("p4_status"));
-        rbean.setP5_jtpayorder(request.getParameter("p5_jtpayorder"));
+        rbean.setP5_payorder(request.getParameter("p5_payorder"));
         rbean.setP6_paymethod(request.getParameter("p6_paymethod"));
         rbean.setP7_paychannelnum(request.getParameter("p7_paychannelnum"));
         rbean.setP8_charset(request.getParameter("p8_charset"));
