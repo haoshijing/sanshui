@@ -242,12 +242,12 @@ public class PayController {
     }
     @RequestMapping("/doNewPay")
     public String doNewPay(HttpServletRequest request,Integer pickId, Integer guid, String payType,HttpServletResponse response) {
-//        if(StringUtils.equals(payType,"1")){
-//            return doWxPay(request,pickId,guid,response);
-//        }else{
-//            return doAlipay(request,pickId,guid,response);
-//        }
-        return doPayWap(request,pickId,payType,guid,response);
+        if(StringUtils.equals(payType,"1")){
+            return doWxPay(request,pickId,guid,response);
+        }else{
+            return doAlipay(request,pickId,guid,response);
+        }
+       // return doPayWap(request,pickId,payType,guid,response);
     }
 
     private String doPayWap(HttpServletRequest request, Integer pickId, String payType,Integer guid, HttpServletResponse response) {
