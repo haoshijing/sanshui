@@ -1,182 +1,78 @@
 package com.keke.sanshui.pay.paywap;
 
+import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
-import com.keke.sanshui.base.admin.po.order.Order;
-import com.keke.sanshui.base.admin.service.OrderService;
-import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.base.util.MD5Tool;
 import com.keke.sanshui.base.util.MD5Util;
+import com.keke.sanshui.pay.paywap.v3.RequestBean;
+import com.keke.sanshui.pay.paywap.v3.ResponseBean;
 import com.keke.sanshui.util.IpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Repository
 @Slf4j
 public class PayWapService {
-    @Value("${userCode}")
-    private String userCode;
+    @Value("${payWapAppId}")
+    private String payWapAppId;
 
     @Value("${paywapSecret}")
     private String payWapSecret;
 
-    @Value("${callbackHost}")
-    private String callbackHost;
-
-    private static final String requestUrl = "http://pay.paywap.cn/form/pay";// 提交地址
-
-    @Autowired
-    private OrderService orderService;
 
     private static final String WX = "3";
     private static final String ALIPAY = "4";
 
 
-    public String submitOrder(HttpServletRequest request,String selfOrderId, PayLink payLink, Integer guid, String payType){
-       String returnUrl = requestUrl;
+    public Map<String, Object> submitOrder(HttpServletRequest request, String selfOrderId, PayLink payLink, Integer guid, String payType) {
+        Map<String,Object> params = Maps.newHashMap();
         RequestBean rbean = new RequestBean();
-        rbean.setP1_usercode(userCode);
-        rbean.setP2_order(selfOrderId);
-        rbean.setP3_money(String.valueOf(payLink.getPickRmb()/100));
-        rbean.setP4_returnurl(callbackHost+"/paywap/return/"+selfOrderId);//
-        rbean.setP5_notifyurl(callbackHost+"/paywap/callback");//
+        rbean.setP1_yingyongnum(payWapAppId);
+        rbean.setP2_ordernumber(selfOrderId);
+        rbean.setP3_money(String.valueOf(payLink.getPickRmb()));
         rbean.setP6_ordertime(String.valueOf(System.currentTimeMillis()));
-        rbean.setP7_sign("");
-        rbean.setP8_signtype("1");
-        if(StringUtils.endsWithIgnoreCase(payType,"1")) {
-            rbean.setP9_paymethod(WX);
-        }else if (StringUtils.endsWithIgnoreCase(payType,"2")){
-            rbean.setP9_paymethod(ALIPAY);
-        }
-        rbean.setP10_paychannelnum("");
-        rbean.setP14_customname(String.valueOf(guid));
-        rbean.setP17_customip(IpUtils.getIpAddr(request));
-        rbean.setP18_product("钻石");
-        rbean.setP20_productnum("1");
-        rbean.setP25_terminal("2");
-        rbean.setP26_iswappay("3");
+        rbean.setP7_productcode("ZFBZFWAP");
 
-        // 生成
-        rbean.setP7_sign(getRequestSign(rbean));
-        // form1.Action = requestUrl;
-        // response.sendRedirect(requestUrl);
-        returnUrl = returnUrl + getUrlCS(rbean);
-        log.info("returnUrl = {}",returnUrl);
-        Order order = new Order();
-        order.setClientGuid(guid);
-        order.setSelfOrderNo(selfOrderId);
-        order.setMoney(payLink.getPickCouponVal().toString());
-        order.setTitle(payLink.getPickCouponVal()+"钻石");
-        order.setPrice(String.valueOf(payLink.getPickRmb()));
-        order.setOrderStatus(1);
-        order.setSendStatus(SendStatus.Not_Send.getCode());
-        order.setInsertTime(System.currentTimeMillis());
-        order.setLastUpdateTime(System.currentTimeMillis());
-        int insertRet = orderService.saveOrder(order);
-        return returnUrl;
+        String sign = MD5Tool.encoding(rbean.getP1_yingyongnum() + "&" + rbean.getP2_ordernumber() + "&" + rbean.getP3_money() + "&" + rbean.getP6_ordertime() + "&" + rbean.getP7_productcode() + "&" + payWapSecret);
+        rbean.setP8_sign("");
+        rbean.setP9_signtype("1");
+        rbean.setP14_customname(String.valueOf(guid));
+        rbean.setP16_customip(IpUtils.getIpAddr(request));
+        rbean.setP17_product("钻石");
+        rbean.setP23_charset("utf-8");
+        rbean.setP25_terminal("2");
+        rbean.setP8_sign(sign);
+        params.put("p1_yingyongnum",rbean.getP1_yingyongnum());
+        params.put("p2_ordernumber",rbean.getP2_ordernumber());
+        params.put("p3_money",rbean.getP3_money());
+        params.put("p6_ordertime",rbean.getP6_ordertime());
+        params.put("p7_productcode",rbean.getP7_productcode());
+        params.put("p8_sign",rbean.getP8_sign());
+        params.put("p9_signtype",rbean.getP9_signtype());
+        params.put("p10_bank_card_code",rbean.getP10_bank_card_code());
+        params.put("p14_customname",rbean.getP14_customname());
+        params.put("p16_customip",rbean.getP16_customip());
+        params.put("p23_charset",rbean.getP23_charset());
+        params.put("p25_terminal",rbean.getP25_terminal());
+        return params;
     }
+
     // 获取签名
-    public String getRequestSign(RequestBean bean) {
-        String rawString = bean.p1_usercode + "&" + bean.p2_order + "&"
-                + bean.p3_money + "&" + bean.p4_returnurl + "&"
-                + bean.p5_notifyurl + "&" + bean.p6_ordertime + payWapSecret;
-        // return
-        // FormsAuthentication.HashPasswordForStoringInConfigFile(rawString,
-        // "MD5");
-        String data = MD5Tool.encoding(rawString);
-        return data;
-    }
     public String getResponseSign(ResponseBean bean) {
         // String rawString = bean.p1_usercode + "&" + bean.p2_order + "&" +
         // bean.p3_money + "&" + bean.p4_status +"&" + bean.p5_jtpayorder + "&"
         // + bean.p6_paymethod
         // +"&"+bean.p7_paychannelnum+"&"+bean.p8_charset+"&"+bean.p9_signtype+"&"+
         // compKey;
-        String rawString = "";
-        if (bean.p1_usercode == null || bean.p1_usercode.equals("")
-                || bean.p1_usercode.equals("null")) {
-            rawString = userCode;
-        } else {
-            rawString = bean.p1_usercode;
-        }
-        if (bean.p2_order != null && !bean.p2_order.equals("")
-                && !bean.p2_order.equals("null")) {
-            rawString = rawString + "&" + bean.p2_order;
-        } else {
-            rawString = rawString + "&";
-        }
-        if (bean.p3_money != null && !bean.p3_money.equals("")
-                && !bean.p3_money.equals("null")) {
-            rawString = rawString + "&" + bean.p3_money;
-        } else {
-            rawString = rawString + "&";
-        }
-        if (bean.p4_status != null && !bean.p4_status.equals("")
-                && !bean.p4_status.equals("null")) {
-            rawString = rawString + "&" + bean.p4_status;
-        } else {
-            rawString = rawString + "&";
-        }
-        if (bean.p5_payorder != null && !bean.p5_payorder.equals("")
-                && !bean.p5_payorder.equals("null")) {
-            rawString = rawString + "&" + bean.p5_payorder;
-        } else {
-            rawString = rawString + "&";
-        }
-        if (bean.p6_paymethod != null && !bean.p6_paymethod.equals("")
-                && !bean.p6_paymethod.equals("null")) {
-            rawString = rawString + "&" + bean.p6_paymethod;
-        } else {
-            rawString = rawString + "&";
-        }
-        if (bean.p7_paychannelnum != null && !bean.p7_paychannelnum.equals("")
-                && !bean.p7_paychannelnum.equals("null")) {
-            rawString = rawString + "&" + bean.p7_paychannelnum;
-        } else {
-            rawString = rawString + "&";
-        }
-        if (bean.p8_charset != null && !bean.p8_charset.equals("")
-                && !bean.p8_charset.equals("null")) {
-            rawString = rawString + "&" + bean.p8_charset;
-        } else {
-            rawString = rawString + "&";
-        }
-        if (bean.p9_signtype != null && !bean.p9_signtype.equals("")
-                && !bean.p9_signtype.equals("null")) {
-            rawString = rawString + "&" + bean.p9_signtype;
-        } else {
-            rawString = rawString + "&";
-        }
-        rawString = rawString + "&" + payWapSecret;
-        log.info("response raw String = {}",rawString);
-        return MD5Tool.encoding(rawString);
-    }
-    private String getUrlCS(RequestBean bean) {
-        String khsbm = "100101";// 客户识别码 【快捷支付的时候需要传递此内容】 【 在您系统里对应用户的唯一标示】
-        // String rawString = bean.p1_usercode + "&" + bean.p2_order + "&" +
-        // bean.p3_money + "&" + bean.p4_returnurl + "&" + bean.p5_notifyurl +
-        // "&" + bean.p6_ordertime + compKey;
-        String rawString = "?p1_usercode=" + bean.p1_usercode + "&p2_order="
-                + bean.p2_order + "&p3_money=" + bean.p3_money
-                + "&p4_returnurl=" + bean.p4_returnurl + "&p5_notifyurl="
-                + bean.p5_notifyurl + "&p6_ordertime=" + bean.p6_ordertime
-                + "&p9_paymethod=" + bean.p9_paymethod + "&p14_customname="
-                + bean.p14_customname + "&p10_paychannelnum="
-                + bean.p10_paychannelnum + "&p17_customip=" + bean.p17_customip
-                + "&p25_terminal=" + bean.p25_terminal + "&p26_iswappay="
-                + bean.p26_iswappay + "&p7_sign=" + bean.getP7_sign();
-		/*
-		 * "&p19_productcat" + bean.p19_productcat + "&p20_productnum" +
-		 * bean.p20_productnum + 卡类
-		 */
-        // return
-        // FormsAuthentication.HashPasswordForStoringInConfigFile(rawString,
-        // "MD5");
-        return rawString;
+
+        String str = MD5Tool.encoding(bean.getP1_yingyongnum() + "&" + bean.getP2_ordernumber() + "&" + bean.getP3_money() + "&" + bean.getP4_zfstate() + "&" + bean.getP5_orderid() + "&" + bean.getP6_productcode() + "&" + bean.getP7_bank_card_code() + "&" + bean.getP8_charset() + "&" + bean.getP9_signtype() + "&" + bean.getP11_pdesc() + "&" + payWapSecret);
+
+        return str;
     }
 
 

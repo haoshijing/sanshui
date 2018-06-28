@@ -11,17 +11,16 @@ import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.github.wxpay.sdk.WXPay;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
-import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PayService;
-import com.keke.sanshui.base.enums.SendStatus;
+import com.keke.sanshui.base.util.HttpTool;
 import com.keke.sanshui.pay.alipay.AliPayService;
 import com.keke.sanshui.pay.alipay.AlipayConfig;
 import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
 import com.keke.sanshui.pay.fuqianla.FuqianlaRequestVo;
 import com.keke.sanshui.pay.paypull.PaypullRequestVo;
 import com.keke.sanshui.pay.paywap.PayWapService;
-import com.keke.sanshui.pay.paywap.ResponseBean;
+import com.keke.sanshui.pay.paywap.v3.ResponseBean;
 import com.keke.sanshui.pay.wechart.MyWxConfig;
 import com.keke.sanshui.pay.wechart.WechartPayService;
 import com.keke.sanshui.pay.zpay.ZPayRequestVo;
@@ -61,6 +60,7 @@ public class PayController {
 
     private final static String ZPAY_BASE_URL = "http://pay.csl2016.cn:8000";
 
+    private static final String requestUrl = "http://order.paywap.cn/jh-web-order/order/receiveOrder";// 提交地址
     @Autowired
     private FuqianlaPayService fuqianlaPayService;
 
@@ -93,29 +93,29 @@ public class PayController {
         modelAttribute.addAttribute("payLinks", payLinks);
         modelAttribute.addAttribute("guid", guid);
         modelAttribute.addAttribute("defaultPick", defaultPick);
-        modelAttribute.addAttribute("defaultPayType", 2);
+        modelAttribute.addAttribute("defaultPayType", 1);
         return "recharge";
     }
 
     @RequestMapping("/paywap/return/{orderId}")
    public String paywapNotice(@PathVariable String orderId, HttpServletRequest request,Model model) {
         ResponseBean rbean = new ResponseBean();
-        rbean.setP1_usercode(request.getParameter("p1_usercode"));
-        rbean.setP2_order(request.getParameter("p2_order"));
+        rbean.setP1_yingyongnum(request.getParameter("p1_yingyongnum"));
+        rbean.setP2_ordernumber(request.getParameter("p2_ordernumber"));
         rbean.setP3_money(request.getParameter("p3_money"));
-        rbean.setP4_status(request.getParameter("p4_status"));
-        rbean.setP5_payorder(request.getParameter("p5_jtpayorder"));
-        rbean.setP6_paymethod(request.getParameter("p6_paymethod"));
-        rbean.setP7_paychannelnum(request.getParameter("p7_paychannelnum"));
+        rbean.setP4_zfstate(request.getParameter("p4_zfstate"));
+        rbean.setP5_orderid(request.getParameter("p5_orderid"));
+        rbean.setP6_productcode(request.getParameter("p6_productcode"));
+        rbean.setP7_bank_card_code(request.getParameter("p7_bank_card_code"));
         rbean.setP8_charset(request.getParameter("p8_charset"));
         rbean.setP9_signtype(request.getParameter("p9_signtype"));
         rbean.setP10_sign(request.getParameter("p10_sign"));
-        rbean.setP11_remark(request.getParameter("p11_remark"));
+        rbean.setP11_pdesc(request.getParameter("p11_pdesc"));
         String sign = payWapService.getResponseSign(rbean);
         log.info("response = {}", rbean);
         try {
             if (StringUtils.endsWithIgnoreCase(sign,rbean.getP10_sign())) {
-                if(StringUtils.endsWithIgnoreCase(rbean.getP4_status(),"1")) {
+                if(StringUtils.endsWithIgnoreCase(rbean.getP4_zfstate(),"1")) {
                     model.addAttribute("message","支付成功");
                 }else{
                     model.addAttribute("message","支付失败");
@@ -254,9 +254,10 @@ public class PayController {
         log.info("doPayWap pickId={},guid = {}", pickId, guid);
         String selfOrderId = guid + "" + System.currentTimeMillis();
         PayLink payLink = payService.getCid(pickId);
-        String url =  payWapService.submitOrder(request,selfOrderId,payLink,guid,payType);
+        Map<String,Object> params =  payWapService.submitOrder(request,selfOrderId,payLink,guid,payType);
         try{
-            response.sendRedirect(url);
+            HttpTool.post(requestUrl,params,"");
+
         }catch (Exception e){
 
         }
@@ -278,10 +279,10 @@ public class PayController {
                 String return_msg = responseData.get("return_msg");
                 if (StringUtils.equals(return_msg, "OK")) {
                     String url = responseData.get("mweb_url");
-                    String prepare_id = responseData.get("prepare_id");
+                    String prepayId = responseData.get("prepay_id");
                     Map<String, String> attach = Maps.newHashMap();
                     attach.put("guid", guid.toString());
-                    attach.put("prepare_id", prepare_id);
+                    attach.put("prepare_id", prepayId);
                     orderService.insertOrder(payLink, attach, selfOrderId);
                     url+="&redirect_url="+wechartPayService.getReturnUrl(selfOrderId);
                     if (StringUtils.isNotEmpty(url)) {
