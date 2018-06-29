@@ -258,8 +258,8 @@ public class PayController {
         PayLink payLink = payService.getCid(pickId);
         RequestBean requestBean =  payWapService.submitOrder(request,selfOrderId,payLink,guid,payType);
 
-        ModelAndView modelAndView = new ModelAndView("payWay");
-        modelAndView.addObject("data",requestBean);
+        ModelAndView modelAndView = new ModelAndView("paywap");
+        modelAndView.addObject("requestBean",requestBean);
        return modelAndView;
     }
 

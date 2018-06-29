@@ -14,7 +14,6 @@ import com.keke.sanshui.pay.alipay.AlipayConfig;
 import com.keke.sanshui.pay.fuqianla.FuqianResponseVo;
 import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
 import com.keke.sanshui.pay.paywap.PayWapService;
-import com.keke.sanshui.pay.paywap.ResponseBean;
 import com.keke.sanshui.pay.paywap.v3.ResponseBean;
 import com.keke.sanshui.pay.zpay.ZPayResponseVo;
 import com.keke.sanshui.pay.zpay.ZPayService;
