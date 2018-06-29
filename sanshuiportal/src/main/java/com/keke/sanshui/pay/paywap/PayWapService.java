@@ -29,7 +29,7 @@ public class PayWapService {
     private static final String ALIPAY = "4";
 
 
-    public Map<String, Object> submitOrder(HttpServletRequest request, String selfOrderId, PayLink payLink, Integer guid, String payType) {
+    public RequestBean submitOrder(HttpServletRequest request, String selfOrderId, PayLink payLink, Integer guid, String payType) {
         Map<String,Object> params = Maps.newHashMap();
         RequestBean rbean = new RequestBean();
         rbean.setP1_yingyongnum(payWapAppId);
@@ -47,19 +47,19 @@ public class PayWapService {
         rbean.setP23_charset("utf-8");
         rbean.setP25_terminal("2");
         rbean.setP8_sign(sign);
-        params.put("p1_yingyongnum",rbean.getP1_yingyongnum());
-        params.put("p2_ordernumber",rbean.getP2_ordernumber());
-        params.put("p3_money",rbean.getP3_money());
-        params.put("p6_ordertime",rbean.getP6_ordertime());
-        params.put("p7_productcode",rbean.getP7_productcode());
-        params.put("p8_sign",rbean.getP8_sign());
-        params.put("p9_signtype",rbean.getP9_signtype());
-        params.put("p10_bank_card_code",rbean.getP10_bank_card_code());
-        params.put("p14_customname",rbean.getP14_customname());
-        params.put("p16_customip",rbean.getP16_customip());
-        params.put("p23_charset",rbean.getP23_charset());
-        params.put("p25_terminal",rbean.getP25_terminal());
-        return params;
+      //  params.put("p1_yingyongnum",rbean.getP1_yingyongnum());
+//        params.put("p2_ordernumber",rbean.getP2_ordernumber());
+//        params.put("p3_money",rbean.getP3_money());
+//        params.put("p6_ordertime",rbean.getP6_ordertime());
+//        params.put("p7_productcode",rbean.getP7_productcode());
+//        params.put("p8_sign",rbean.getP8_sign());
+//        params.put("p9_signtype",rbean.getP9_signtype());
+//        params.put("p10_bank_card_code",rbean.getP10_bank_card_code());
+//        params.put("p14_customname",rbean.getP14_customname());
+//        params.put("p16_customip",rbean.getP16_customip());
+//        params.put("p23_charset",rbean.getP23_charset());
+//        params.put("p25_terminal",rbean.getP25_terminal());
+        return rbean;
     }
 
     // 获取签名

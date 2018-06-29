@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>发起支付页面</title>
+</head>
+<script language="javascript">
+    setTimeout("document.form1.submit()", 1000);
+</script>
+<body>
+<form action="http://order.paywap.cn/jh-web-order/order/receiveOrder">
+    <input name="p1_yingyongnum" value="${requestBean.p1_yingyongnum}" type="hidden" />
+    <input name="p2_ordernumber"  value="${requestBean.p2_ordernumber}" type="hidden" />
+    <input name="p3_money" value="${requestBean.p3_money}" type="hidden" />
+    <input name="p6_ordertime"  value="${requestBean.p6_ordertime}" type="hidden" />
+    <input name="p7_productcode"  value="${requestBean.p7_productcode}" type="hidden" />
+    <input name="p8_sign"  value="${requestBean.p8_sign}" type="hidden" />
+    <input name="p9_signtype"  value="${requestBean.p9_signtype}" type="hidden" />
+    <input name="p10_bank_card_code" value="${requestBean.p10_bank_card_code!''}" type="hidden" />
+    <input name="p14_customname" value="${requestBean.p14_customname}"  type="hidden"/>
+    <input name="p16_customip"  value="${requestBean.p16_customip}" type="hidden" />
+    <input name="p23_charset"  value="${requestBean.p23_charset}" type="hidden" />
+
+    <input name="p25_terminal" value="${requestBean.p25_terminal}" type="hidden" />
+</form>
+<script language="javascript">
+    form1.submit();
+</script>
+</body>
+</html>

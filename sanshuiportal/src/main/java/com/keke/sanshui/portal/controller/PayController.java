@@ -20,6 +20,7 @@ import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
 import com.keke.sanshui.pay.fuqianla.FuqianlaRequestVo;
 import com.keke.sanshui.pay.paypull.PaypullRequestVo;
 import com.keke.sanshui.pay.paywap.PayWapService;
+import com.keke.sanshui.pay.paywap.v3.RequestBean;
 import com.keke.sanshui.pay.paywap.v3.ResponseBean;
 import com.keke.sanshui.pay.wechart.MyWxConfig;
 import com.keke.sanshui.pay.wechart.WechartPayService;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -241,7 +243,7 @@ public class PayController {
         return "fuqian";
     }
     @RequestMapping("/doNewPay")
-    public String doNewPay(HttpServletRequest request,Integer pickId, Integer guid, String payType,HttpServletResponse response) {
+    public ModelAndView doNewPay(HttpServletRequest request,Integer pickId, Integer guid, String payType,HttpServletResponse response) {
 //        if(StringUtils.equals(payType,"1")){
 //            return doWxPay(request,pickId,guid,response);
 //        }else{
@@ -250,18 +252,15 @@ public class PayController {
         return doPayWap(request,pickId,payType,guid,response);
     }
 
-    private String doPayWap(HttpServletRequest request, Integer pickId, String payType,Integer guid, HttpServletResponse response) {
+    private ModelAndView doPayWap(HttpServletRequest request, Integer pickId, String payType,Integer guid, HttpServletResponse response) {
         log.info("doPayWap pickId={},guid = {}", pickId, guid);
         String selfOrderId = guid + "" + System.currentTimeMillis();
         PayLink payLink = payService.getCid(pickId);
-        Map<String,Object> params =  payWapService.submitOrder(request,selfOrderId,payLink,guid,payType);
-        try{
-            HttpTool.post(requestUrl,params,"");
+        RequestBean requestBean =  payWapService.submitOrder(request,selfOrderId,payLink,guid,payType);
 
-        }catch (Exception e){
-
-        }
-        return null;
+        ModelAndView modelAndView = new ModelAndView("payWay");
+        modelAndView.addObject("data",requestBean);
+       return modelAndView;
     }
 
     @RequestMapping("/doWxPay")
