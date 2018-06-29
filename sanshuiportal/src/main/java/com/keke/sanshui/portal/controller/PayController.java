@@ -97,7 +97,7 @@ public class PayController {
         return "recharge";
     }
 
-    @RequestMapping("/paywap/return/{orderId}")
+    @RequestMapping("/paywap/return")
    public String paywapNotice(@PathVariable String orderId, HttpServletRequest request,Model model) {
         ResponseBean rbean = new ResponseBean();
         rbean.setP1_yingyongnum(request.getParameter("p1_yingyongnum"));
