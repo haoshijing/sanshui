@@ -15,6 +15,7 @@ import com.keke.sanshui.pay.fuqianla.FuqianResponseVo;
 import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
 import com.keke.sanshui.pay.paywap.PayWapService;
 import com.keke.sanshui.pay.paywap.ResponseBean;
+import com.keke.sanshui.pay.paywap.v3.ResponseBean;
 import com.keke.sanshui.pay.zpay.ZPayResponseVo;
 import com.keke.sanshui.pay.zpay.ZPayService;
 import com.keke.sanshui.util.SignUtil;
@@ -206,23 +207,23 @@ public class GatewayController {
     @RequestMapping("/paywap/callback")
     public void handlePaywapNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ResponseBean rbean = new ResponseBean();
-        rbean.setP1_usercode(request.getParameter("p1_usercode"));
-        rbean.setP2_order(request.getParameter("p2_order"));
+        rbean.setP1_yingyongnum(request.getParameter("p1_yingyongnum"));
+        rbean.setP2_ordernumber(request.getParameter("p2_ordernumber"));
         rbean.setP3_money(request.getParameter("p3_money"));
-        rbean.setP4_status(request.getParameter("p4_status"));
-        rbean.setP5_payorder(request.getParameter("p5_payorder"));
-        rbean.setP6_paymethod(request.getParameter("p6_paymethod"));
-        rbean.setP7_paychannelnum(request.getParameter("p7_paychannelnum"));
+        rbean.setP4_zfstate(request.getParameter("p4_zfstate"));
+        rbean.setP5_orderid(request.getParameter("p5_orderid"));
+        rbean.setP6_productcode(request.getParameter("p6_productcode"));
+        rbean.setP7_bank_card_code(request.getParameter("p7_bank_card_code"));
         rbean.setP8_charset(request.getParameter("p8_charset"));
         rbean.setP9_signtype(request.getParameter("p9_signtype"));
         rbean.setP10_sign(request.getParameter("p10_sign"));
-        rbean.setP11_remark(request.getParameter("p11_remark"));
+        rbean.setP11_pdesc(request.getParameter("p11_pdesc"));
         String sign = payWapService.getResponseSign(rbean);
         log.info("response = {}", rbean);
         try {
            if (StringUtils.endsWithIgnoreCase(sign,rbean.getP10_sign())) {
-                if(StringUtils.endsWithIgnoreCase(rbean.getP4_status(),"1")) {
-                    String orderId = rbean.getP2_order();
+                if(StringUtils.endsWithIgnoreCase(rbean.getP4_zfstate(),"1")) {
+                    String orderId = rbean.getP2_ordernumber();
                     Order order = orderService.queryOrderByNo(orderId);
                     if (order == null) {
                         log.error("错误的订单,orderId = {}", orderId);
@@ -247,10 +248,10 @@ public class GatewayController {
                     updateOrder.setSelfOrderNo(orderId);
                     updateOrder.setOrderStatus(3);
                     updateOrder.setPayState(0);
-                    updateOrder.setPayType(rbean.getP6_paymethod());
+                    updateOrder.setPayType("1");
                     updateOrder.setPayTime(String.valueOf(System.currentTimeMillis()));
                     updateOrder.setLastUpdateTime(System.currentTimeMillis());
-                    updateOrder.setOrderNo(rbean.getP5_payorder());
+                    updateOrder.setOrderNo(rbean.getP5_orderid());
                     int updateStatus = orderService.updateOrder(updateOrder);
                     if(updateStatus == 0){
                         log.warn("update data effect 0,{}",JSON.toJSONString(rbean));
