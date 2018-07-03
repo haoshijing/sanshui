@@ -1,7 +1,9 @@
 package com.keke.sanshui.pay.colotnet;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
+import com.keke.sanshui.base.coltentutil.SignUtils;
 import com.keke.sanshui.pay.fuqianla.FuqianResponseVo;
 import com.keke.sanshui.pay.fuqianla.FuqianlaRequestVo;
 import com.keke.sanshui.util.SignUtil;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.net.URLEncoder;
+import java.util.Map;
 
 @Repository
 public class ColotnetService {
@@ -40,9 +43,29 @@ public class ColotnetService {
         return requestVo;
     }
 
-    public boolean checkSign(FuqianResponseVo fuqianResponseVo) {
-        String sign = SignUtil.createFullqianResponseSign(fuqianResponseVo,fuqianlaSign);
-        return StringUtils.equals(fuqianResponseVo.getSign_info().toUpperCase(),sign);
+    private String createSign(ColotnetRequestVo colotnetRequestVo){
+        Map<String,String> paramMap = Maps.newConcurrentMap();
+        paramMap.put("requestNo", colotnetRequestVo.getRequestNo());
+        paramMap.put("version", "V1.0");
+        paramMap.put("productId", colotnetRequestVo.getProductId());
+        paramMap.put("merNo", colotnetRequestVo.getMerNo());
+        paramMap.put("orderNo",colotnetRequestVo.getOrderNo());
+        paramMap.put("transId", colotnetRequestVo.getTransId());
+        paramMap.put("orderDate", colotnetRequestVo.getOrderDate());
+        paramMap.put("transAmt", colotnetRequestVo.getTransAmt());
+        paramMap.put("isCompany", "0");
+        paramMap.put("acctNo", "622609757106909090");
+        paramMap.put("bankNo", "");
+        paramMap.put("bankLocalProvinceName", "");
+        paramMap.put("bankLocalCityName", "");
+        paramMap.put("phoneNo", "");
+        paramMap.put("remark", "");
+        try {
+            String signStr = SignUtils.signData(paramMap);
+            colotnetRequestVo.setSignature(signStr);
+            return signStr;
+        }catch (Exception e){
+        }
+        return "";
     }
-
 }
