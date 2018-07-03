@@ -13,6 +13,7 @@ import com.google.common.collect.Maps;
 import com.keke.enums.PayTypeEnums;
 import com.keke.pay.AbstractPayService;
 import com.keke.pay.PayContext;
+import com.keke.pay.impl.colotnet.pojo.ColotnetRequestVo;
 import com.keke.pay.pre.BasePayRequestRes;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.OrderService;
@@ -29,6 +30,10 @@ import com.keke.sanshui.pay.zpay.ZPayService;
 import com.keke.sanshui.util.IpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -215,12 +220,16 @@ public class PayController {
     }
 
     @RequestMapping("/doColotnetPay")
-    public String doColotnetDay(HttpServletRequest request, Integer pickId, Integer guid,String payType, HttpServletResponse response) {
-        log.info("doColotnetDay pickId={},guid = {}", pickId, guid);
+    public String doColotnetPay(HttpServletRequest request, Integer pickId, Integer guid,String payType, HttpServletResponse response) {
+        log.info("doColotnetPay pickId={},guid = {}", pickId, guid);
         PayContext payContext = buildContext(request, PayTypeEnums.COLOTET.getType(),pickId,guid,payType);
         BasePayRequestRes basePayRequestRes  = AbstractPayService.handlerPay(payContext);
         if(basePayRequestRes != null){
             basePayRequestRes.setClientIP(getRealIp(request));
+        }
+        if(basePayRequestRes instanceof ColotnetRequestVo){
+            ColotnetRequestVo colotnetRequestVo = (ColotnetRequestVo)basePayRequestRes;
+            Map<String,String> datas = colotnetRequestVo.toMap();
         }
         return "";
     }
