@@ -10,6 +10,10 @@ import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.github.wxpay.sdk.WXPay;
 import com.google.common.collect.Maps;
+import com.keke.enums.PayTypeEnums;
+import com.keke.pay.AbstractPayService;
+import com.keke.pay.PayContext;
+import com.keke.pay.pre.BasePayRequestRes;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PayService;
@@ -22,6 +26,7 @@ import com.keke.sanshui.pay.wechart.MyWxConfig;
 import com.keke.sanshui.pay.wechart.WechartPayService;
 import com.keke.sanshui.pay.zpay.ZPayRequestVo;
 import com.keke.sanshui.pay.zpay.ZPayService;
+import com.keke.sanshui.util.IpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +50,6 @@ import java.util.Map;
 public class PayController {
     @Autowired
     private PayService payService;
-
-    @Value("${payPullAppId}")
-    private String payPullAppId;
-
     @Autowired
     private OrderService orderService;
 
@@ -141,7 +142,7 @@ public class PayController {
     String wxSuccess(@PathVariable String orderId, Model model) {
         WXPay wxpay = new WXPay(wxPayConfig);
         try {
-            Thread.currentThread().sleep(2000);
+            Thread.sleep(2000);
         }catch (Exception e){
 
         }
@@ -188,7 +189,6 @@ public class PayController {
         }
         orderService.insertOrder(payLink, attach, selfOrderId);
         modelAttribute.addAttribute("url", buildUrl.toString());
-
         return "payPage";
     }
 
@@ -212,6 +212,17 @@ public class PayController {
         }else{
             return doAlipay(request,pickId,guid,response);
         }
+    }
+
+    @RequestMapping("/doColotnetPay")
+    public String doColotnetDay(HttpServletRequest request, Integer pickId, Integer guid,String payType, HttpServletResponse response) {
+        log.info("doColotnetDay pickId={},guid = {}", pickId, guid);
+        PayContext payContext = buildContext(request, PayTypeEnums.COLOTET.getType(),pickId,guid,payType);
+        BasePayRequestRes basePayRequestRes  = AbstractPayService.handlerPay(payContext);
+        if(basePayRequestRes != null){
+            basePayRequestRes.setClientIP(getRealIp(request));
+        }
+        return "";
     }
 
     @RequestMapping("/doWxPay")
@@ -313,7 +324,6 @@ public class PayController {
         paypullRequestVo.setSubject(new StringBuilder("充值").append(payLink.getPickCouponVal()).append("豆").toString());
         paypullRequestVo.setOrderNo(selfOrderId);
         paypullRequestVo.setExtra(JSON.toJSONString(attach));
-        paypullRequestVo.setAppId(payPullAppId);
         try {
             paypullRequestVo.setNotifyUrl(URLEncoder.encode(callbackHost + "/paypuall/callback", "utf-8"));
         } catch (Exception e) {
@@ -324,4 +334,15 @@ public class PayController {
         return "paypullPage";
     }
 
+    protected PayContext buildContext(HttpServletRequest request, Integer payRequestType,Integer pickId, Integer guid,String payType){
+        PayContext payContext = new PayContext();
+        payContext.setPayRequesType(PayTypeEnums.COLOTET.getType());
+        payContext.setGuid(guid);
+        payContext.setPayLinkId(pickId);
+        payContext.setPayType(payType);
+        return payContext;
+    }
+    protected String getRealIp(HttpServletRequest request){
+        return IpUtils.getIpAddr(request);
+    }
 }

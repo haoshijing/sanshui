@@ -12,4 +12,5 @@ public class BasePayRequestRes {
     private String sign;
     private String name;
     private String money;
+    private String clientIP;
 }

@@ -8,6 +8,8 @@ import lombok.Data;
  **/
 @Data
 public class PayContext {
+
+    private Integer payRequesType;
     /**
      * 支付链接id
      */
@@ -20,4 +22,6 @@ public class PayContext {
      * 支付方式
      */
     private String payType;
+
+    private String requestIp;
 }
