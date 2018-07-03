@@ -3,7 +3,7 @@ package com.keke.pay.pre;
 import lombok.Data;
 
 /**
- * 支付响应
+ * 支付请求
  * @author haoshijing
  * @version 2018年07月03日 09:07
  **/
