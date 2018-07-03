@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.coltentutil.SignUtils;
+import com.keke.sanshui.base.coltentutil.StringUtil;
 import com.keke.sanshui.pay.fuqianla.FuqianResponseVo;
 import com.keke.sanshui.pay.fuqianla.FuqianlaRequestVo;
 import com.keke.sanshui.util.SignUtil;
@@ -40,6 +41,11 @@ public class ColotnetService {
         requestVo.setOrderNo(selfOrderId);
         requestVo.setTransAmt(String.valueOf(payLink.getPickRmb()));
         requestVo.setCommodityName(payLink.getPickCouponVal()+"钻石");
+
+        String sign = createSign(requestVo);
+        if(StringUtils.isNotEmpty(sign)){
+            requestVo.setSignature(sign);
+        }
         return requestVo;
     }
 
@@ -62,7 +68,6 @@ public class ColotnetService {
         paramMap.put("remark", "");
         try {
             String signStr = SignUtils.signData(paramMap);
-            colotnetRequestVo.setSignature(signStr);
             return signStr;
         }catch (Exception e){
         }
