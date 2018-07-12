@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 @Repository
@@ -42,7 +44,7 @@ public class PayWapService {
         rbean.setP1_yingyongnum(payWapAppId);
         rbean.setP2_ordernumber(selfOrderId);
         rbean.setP3_money(String.valueOf(payLink.getPickRmb()/100));
-        rbean.setP6_ordertime(String.valueOf(System.currentTimeMillis()));
+        rbean.setP6_ordertime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
         rbean.setP7_productcode("ZFBZZWAP");
 
         String sign = MD5Tool.encoding(rbean.getP1_yingyongnum() + "&" + rbean.getP2_ordernumber() + "&" + rbean.getP3_money() + "&" + rbean.getP6_ordertime() + "&" + rbean.getP7_productcode() + "&" + payWapSecret);
