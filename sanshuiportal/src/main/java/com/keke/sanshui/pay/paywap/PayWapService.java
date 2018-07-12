@@ -43,7 +43,7 @@ public class PayWapService {
         rbean.setP2_ordernumber(selfOrderId);
         rbean.setP3_money(String.valueOf(payLink.getPickRmb()/100));
         rbean.setP6_ordertime(String.valueOf(System.currentTimeMillis()));
-        rbean.setP7_productcode("ZFBZFWAP");
+        rbean.setP7_productcode("ZFBZZWAP");
 
         String sign = MD5Tool.encoding(rbean.getP1_yingyongnum() + "&" + rbean.getP2_ordernumber() + "&" + rbean.getP3_money() + "&" + rbean.getP6_ordertime() + "&" + rbean.getP7_productcode() + "&" + payWapSecret);
         rbean.setP8_sign("");
