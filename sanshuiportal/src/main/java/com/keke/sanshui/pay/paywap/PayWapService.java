@@ -2,6 +2,9 @@ package com.keke.sanshui.pay.paywap;
 
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
+import com.keke.sanshui.base.admin.po.order.Order;
+import com.keke.sanshui.base.admin.service.OrderService;
+import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.base.util.MD5Tool;
 import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.pay.paywap.v3.RequestBean;
@@ -9,6 +12,7 @@ import com.keke.sanshui.pay.paywap.v3.ResponseBean;
 import com.keke.sanshui.util.IpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +27,9 @@ public class PayWapService {
 
     @Value("${paywapSecret}")
     private String payWapSecret;
+
+    @Autowired
+    private OrderService orderService;
 
 
     private static final String WX = "3";
@@ -47,6 +54,18 @@ public class PayWapService {
         rbean.setP23_charset("utf-8");
         rbean.setP25_terminal("2");
         rbean.setP8_sign(sign);
+
+        Order order = new Order();
+        order.setClientGuid(guid);
+        order.setSelfOrderNo(selfOrderId);
+        order.setMoney(payLink.getPickCouponVal().toString());
+        order.setTitle(payLink.getPickCouponVal()+"钻石");
+        order.setPrice(String.valueOf(payLink.getPickRmb()));
+        order.setOrderStatus(1);
+        order.setSendStatus(SendStatus.Not_Send.getCode());
+        order.setInsertTime(System.currentTimeMillis());
+        order.setLastUpdateTime(System.currentTimeMillis());
+        int insertRet = orderService.saveOrder(order);
       //  params.put("p1_yingyongnum",rbean.getP1_yingyongnum());
 //        params.put("p2_ordernumber",rbean.getP2_ordernumber());
 //        params.put("p3_money",rbean.getP3_money());
