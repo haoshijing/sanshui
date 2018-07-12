@@ -34,7 +34,7 @@ public class PayWapService {
         RequestBean rbean = new RequestBean();
         rbean.setP1_yingyongnum(payWapAppId);
         rbean.setP2_ordernumber(selfOrderId);
-        rbean.setP3_money(String.valueOf(payLink.getPickRmb()));
+        rbean.setP3_money(String.valueOf(payLink.getPickRmb()/100));
         rbean.setP6_ordertime(String.valueOf(System.currentTimeMillis()));
         rbean.setP7_productcode("ZFBZFWAP");
 
