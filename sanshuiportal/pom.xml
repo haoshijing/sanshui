@@ -31,6 +31,6 @@
     </dependencies>
 
     <build>
-        <finalName>fenddian</finalName>
+        <finalName>fengdian</finalName>
     </build>
 </project>
