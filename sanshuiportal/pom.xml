@@ -19,9 +19,9 @@
             <version>0.0.3</version>
         </dependency>
         <dependency>
-            <groupId>com.alipay</groupId>
-            <artifactId>sdk-java</artifactId>
-            <version>20170307171631</version>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.keke</groupId>
