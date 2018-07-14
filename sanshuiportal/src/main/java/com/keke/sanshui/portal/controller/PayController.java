@@ -87,7 +87,7 @@ public class PayController {
         modelAttribute.addAttribute("payLinks", payLinks);
         modelAttribute.addAttribute("guid", guid);
         modelAttribute.addAttribute("defaultPick", defaultPick);
-        modelAttribute.addAttribute("defaultPayType", 1);
+        modelAttribute.addAttribute("defaultPayType", 2);
         return "recharge";
     }
 

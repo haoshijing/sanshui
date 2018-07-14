@@ -31,6 +31,6 @@
     </dependencies>
 
     <build>
-        <finalName>pksj</finalName>
+        <finalName>fenddian</finalName>
     </build>
 </project>
