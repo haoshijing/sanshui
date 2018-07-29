@@ -106,6 +106,9 @@ public  class PlayerDataParser {
                         //是否被封号
                         boolean isForbid = byteBuf.readBoolean();
                     }
+                    if(curPlayerVersion >= 6){
+
+                    }
                     boolean needAddRelation = false;
                     if (!isAgent) {
                         needAddRelation = true;
