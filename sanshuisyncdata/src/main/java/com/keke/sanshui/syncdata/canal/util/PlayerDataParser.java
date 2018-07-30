@@ -85,27 +85,27 @@ public  class PlayerDataParser {
                     String name = readString(byteBuf);
                     String otherName = readString(byteBuf);
                     String headId = readString(byteBuf);
-                    byte sex = byteBuf.readByte();
-                    Integer costMoney = byteBuf.readIntLE();
-                    Long invitedGuid = byteBuf.readLongLE();
-                    int orderCount = byteBuf.readIntLE();
-                    while (orderCount-- > 0) {
-                        String orderId = readString(byteBuf);
-                        //log.info("orderId = {}",orderId);
+                    if(curPlayerVersion >= 2) {
+                        byte sex = byteBuf.readByte();
                     }
-                    int childrenCount = byteBuf.readIntLE();
-                    while (childrenCount-- > 0) {
-                        Long childrenId = byteBuf.readLongLE();
-                        //log.info("childrenId = {}",childrenId);
+                    if(curPlayerVersion >= 3) {
+                        Integer costMoney = byteBuf.readIntLE();
                     }
-                    boolean isAgent = byteBuf.readBoolean();
-                    if (curPlayerVersion >= 2) {
-                        byte chooseType = byteBuf.readByte();
+
+                    if(curPlayerVersion >= 4) {
+                        boolean infoSeal = byteBuf.readBoolean();
                     }
-                    if(curPlayerVersion >= 3){
-                        //是否被封号
-                        boolean isForbid = byteBuf.readBoolean();
+                    Long invitedGuid = 0L;
+                    if(curPlayerVersion >= 5) {
+                        boolean isTestUser = byteBuf.readBoolean();
+                        invitedGuid = byteBuf.readLongLE();
                     }
+                    boolean isAgent = false;
+                    if(curPlayerVersion >= 6) {
+                        Integer shareMoney = byteBuf.readIntLE();
+                        isAgent = byteBuf.readBoolean();
+                    }
+
                     boolean needAddRelation = false;
                     if (!isAgent) {
                         needAddRelation = true;
