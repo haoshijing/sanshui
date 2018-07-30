@@ -91,7 +91,6 @@ public  class PlayerDataParser {
                     if(curPlayerVersion >= 3) {
                         Integer costMoney = byteBuf.readIntLE();
                     }
-
                     if(curPlayerVersion >= 4) {
                         boolean infoSeal = byteBuf.readBoolean();
                     }
@@ -105,7 +104,6 @@ public  class PlayerDataParser {
                         Integer shareMoney = byteBuf.readIntLE();
                         isAgent = byteBuf.readBoolean();
                     }
-
                     boolean needAddRelation = false;
                     if (!isAgent) {
                         needAddRelation = true;
@@ -145,7 +143,6 @@ public  class PlayerDataParser {
                         agentPo.setPlayerId(guid.intValue());
                         agentPos.add(agentPo);
                     }
-
                 }
             } catch (Exception e) {
                 log.error("",e);
