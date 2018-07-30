@@ -75,6 +75,7 @@ public class FullSyncDataService {
         druidDataSource.setUrl("jdbc:mysql://" + syncDbIp + ":3306/"+syncDbName+"?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull");
         jdbcTemplate.setDataSource(druidDataSource);
         jdbcTemplate.setLazyInit(false);
+        jdbcTemplate.setQueryTimeout(10);
         log.info("jdbcTemplate is connect {}",jdbcTemplate);
     }
 
