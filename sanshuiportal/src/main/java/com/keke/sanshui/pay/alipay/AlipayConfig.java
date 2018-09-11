@@ -15,10 +15,10 @@ public class AlipayConfig {
     @Value("${callbackHost}")
     private String callbackHost;
 
-    @Value("${rsaPrivateKey}")
+    @Value("${rsaUserPrivateKey}")
     private String rsaPrivateKey;
 
-    @Value("${rsaPublicKey}")
+    @Value("${rsaAlipayPublicKey}")
     private String rsaPublicKey;
 
     // 请求网关地址

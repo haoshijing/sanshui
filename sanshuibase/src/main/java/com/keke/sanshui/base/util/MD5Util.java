@@ -59,7 +59,7 @@ public final class MD5Util {
     }
 
     public static void main(String[] args) {
-        System.out.println(md5(md5("kong198818").toLowerCase()+"123").toLowerCase());
+        System.out.println(md5(md5("123456").toLowerCase()+"123").toLowerCase());
     }
 }
 
