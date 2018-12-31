@@ -34,7 +34,7 @@ password varchar(200) comment '密码',
 saltPassword varchar(200) comment '加密盐值',
 insertTime bigint comment '写入时间',
 lastUpdateTime bigint comment '最后修改时间',
-status int comment '账号状态'
+status int comment '账号状态',
 ) comment '管理员表';
 drop TABLE IF EXISTS t_oper_log;
 create table t_oper_log
@@ -133,7 +133,6 @@ insertTime bigint comment '写入时间',
 lastUpdateTime bigint comment '最后修改时间'
 );
 
-drop table
 
 drop TABLE IF EXISTS  sys_role;
 create table sys_role(
