@@ -7,7 +7,7 @@
         <groupId>com.keke</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sanshui.admin</artifactId>
@@ -17,28 +17,30 @@
             <artifactId>sanshui.base</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot-version}</version>
+        </dependency>
     </dependencies>
     <build>
-        <finalName>ahmjadmin</finalName>
+        <finalName>redpacketadmin</finalName>
         <plugins>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.7.v20170914</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <reload>automatic</reload>
-                    <httpConnector>
-                        <port>8082</port>
-                    </httpConnector>
-                    <systemProperties>
-                        <force>true</force>
-                        <systemProperty>
-                            <name>env</name>
-                            <value>dev</value>
-                        </systemProperty>
-                    </systemProperties>
+                    <includeSystemScope>true</includeSystemScope>
+                    <mainClass>com.yunji.marketserver.application.upload.FileUploadServer</mainClass>
                 </configuration>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

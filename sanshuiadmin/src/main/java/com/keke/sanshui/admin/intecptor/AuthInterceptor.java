@@ -7,6 +7,7 @@ import com.keke.sanshui.admin.auth.AdminAuthInfo;
 import com.keke.sanshui.admin.response.ApiResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
+@Component
 public class AuthInterceptor extends HandlerInterceptorAdapter {
     private static  final String TOKEN = "X-TOKEN";
 

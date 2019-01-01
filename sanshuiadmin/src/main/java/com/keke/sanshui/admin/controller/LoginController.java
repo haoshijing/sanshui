@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,7 +30,7 @@ public class LoginController extends AbstractController{
     @Autowired
     private AdminAgentReadService adminAgentReadService;
 
-    @RequestMapping("/login")
+    @PostMapping("/login")
     @ResponseBody
     public ApiResponse<LoginResponse> login(@RequestBody LoginDataRequest loginDataRequest, HttpServletRequest request){
         LoginResponse loginResponse = new LoginResponse();

@@ -14,14 +14,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Controller
-@RequestMapping("/user")
+@RestController
 @Slf4j
 public class UserController extends AbstractController{
 
@@ -31,8 +28,7 @@ public class UserController extends AbstractController{
     @Autowired
     private AdminAgentWriteService adminAgentWriteService;
 
-    @RequestMapping("/info")
-    @ResponseBody
+    @GetMapping("/info")
     public ApiResponse<UserDataResponse> getUserInfo(HttpServletRequest request){
         UserDataResponse response = new UserDataResponse();
         AdminAuthInfo adminAuthInfo = getToken(request);

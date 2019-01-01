@@ -1,13 +1,14 @@
 package com.keke.sanshui.admin.intecptor;
 
 
+import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
+@Repository
 public class ProcessInterceptor implements HandlerInterceptor {
 
 
