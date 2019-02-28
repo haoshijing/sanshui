@@ -87,25 +87,6 @@ public class AdminAgentController{
         return new ApiResponse<>(RetCode.SERVER_ERROR,"获得失败",Lists.newArrayList());
     }
 
-    @RequestMapping("/obtainChooseAreaAgentList")
-    @ResponseBody
-    public ApiResponse<List<AreaAgentVo>> getCanChooseAreaAgentList(HttpServletRequest request){
-        try{
-            Integer currentAgentId = null;
-            if(request.getParameter("currentAgentId") != null){
-                try {
-                    currentAgentId = Integer.valueOf(request.getParameter("currentAgentId"));
-                }catch (Exception e){
-
-                }
-            }
-            List<AreaAgentVo> agentIds =  adminAgentWriteService.getCanChooseAreaAgent(currentAgentId);
-            return new ApiResponse<>(agentIds);
-        }catch (Exception e){
-            log.error("getCanChooseAgentList error",e);
-        }
-        return new ApiResponse<>(RetCode.SERVER_ERROR,"获得失败",Lists.newArrayList());
-    }
 
     @RequestMapping("/createUpdate")
     @ResponseBody
@@ -119,29 +100,7 @@ public class AdminAgentController{
         return new ApiResponse<>(RetCode.SERVER_ERROR,"设置失败",false);
     }
 
-    @RequestMapping("/obtainUnderPlayer")
-    @ResponseBody
-    public ApiResponse<List<UnderPlayerVo>> queryUnderPlayer(Integer agentGuid){
-        try{
-            List<UnderPlayerVo> underPlayerVos = adminAgentReadService.obtainUnderPlayer(agentGuid);
-            return new ApiResponse<>(underPlayerVos);
-        }catch (Exception e){
-            log.error("queryUnderPlayer {} error", agentGuid, e);
-            return new ApiResponse<>(RetCode.SERVER_ERROR,"",Lists.newArrayList());
-        }
-    }
 
-    @RequestMapping("/obtainUnderAgent")
-    @ResponseBody
-    public ApiResponse<List<UnderAgentVo>> obtainUnderAgent(Integer agentId,Integer week){
-        try{
-            List<UnderAgentVo> underAgentVos = adminAgentReadService.obtainUnderAgent(agentId,week);
-            return new ApiResponse<>(underAgentVos);
-        }catch (Exception e){
-            log.error("obtainUnderAgent {} error", agentId, e);
-            return new ApiResponse<>(RetCode.SERVER_ERROR,"",Lists.newArrayList());
-        }
-    }
     @RequestMapping("/exportAgentPick")
     public void exportAgentPick(String weeks, HttpServletResponse response){
         try{

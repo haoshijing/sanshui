@@ -35,8 +35,8 @@ public class AdminService implements ApplicationContextAware {
             String userPassword = MD5Util.md5(MD5Util.md5(password)+saltEncrypt);
             checkRet =  StringUtils.equals(dbPassword,userPassword);
         }
-        String loginRet =  checkRet?"成功":"失败";
-        operLogPo.setMark("管理员进行登录,登录ip:"+clientIp+"登陆结果:"+loginRet);
+        String loginRet =  checkRet?"success":"fail";
+        operLogPo.setMark("Administrator login system , ip is :"+clientIp+"Result:"+loginRet);
         ctx.publishEvent(new OperLogEvent(ctx,operLogPo));
         return checkRet;
     }
@@ -45,7 +45,7 @@ public class AdminService implements ApplicationContextAware {
         operLogPo.setInsertTime(System.currentTimeMillis());
         operLogPo.setOperType(5);
         operLogPo.setOperTarget(1);
-        operLogPo.setMark("管理员退出了系统");
+        operLogPo.setMark("Administrator logout");
         ctx.publishEvent(new OperLogEvent(ctx,operLogPo));
     }
 

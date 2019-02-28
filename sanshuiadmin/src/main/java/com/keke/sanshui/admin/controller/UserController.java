@@ -45,7 +45,7 @@ public class UserController extends AbstractController{
         return new ApiResponse<>(response);
     }
 
-    @RequestMapping("/updatePwd")
+    @RequestMapping("/user/updatePwd")
     @ResponseBody
     public ApiResponse<Boolean> updatePwd(@RequestBody UpdatePwdRequest updatePwdRequest,HttpServletRequest request){
         try{

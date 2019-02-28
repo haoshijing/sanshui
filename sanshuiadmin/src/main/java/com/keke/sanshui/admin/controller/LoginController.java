@@ -37,7 +37,7 @@ public class LoginController extends AbstractController{
 
         if(StringUtils.isEmpty(loginDataRequest.getName()) ||
                 StringUtils.isEmpty(loginDataRequest.getPassword())){
-            return new ApiResponse<>(RetCode.PARAM_ERROR,"参数错误",loginResponse);
+            return new ApiResponse<>(RetCode.PARAM_ERROR,"param error",loginResponse);
         }
         String clientIp = request.getRemoteAddr();
         Boolean isAdmin = StringUtils.equals(loginDataRequest.getName(),"superadmin");
