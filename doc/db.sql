@@ -133,8 +133,6 @@ insertTime bigint comment '写入时间',
 lastUpdateTime bigint comment '最后修改时间'
 );
 
-drop table
-
 drop TABLE IF EXISTS  sys_role;
 create table sys_role(
   id int primary key ,
