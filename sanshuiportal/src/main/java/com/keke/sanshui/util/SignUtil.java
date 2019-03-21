@@ -3,8 +3,6 @@ package com.keke.sanshui.util;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.base.vo.PayVo;
-import com.keke.sanshui.pay.easyjh.order.EasyJhRequestVo;
-import com.keke.sanshui.pay.easyjh.order.EasyJhResponseVo;
 import com.keke.sanshui.pay.fuqianla.FuqianResponseVo;
 import com.keke.sanshui.pay.zpay.ZPayQueryRequestVO;
 import com.keke.sanshui.pay.zpay.ZPayRequestVo;
@@ -177,42 +175,12 @@ public class SignUtil {
 
     }
 
-    public final static String createEasyJhSign(EasyJhRequestVo requestVo, String signKey) {
-        Field[] fields = EasyJhRequestVo.class.getDeclaredFields();
-        SortedMap<String, String> sortedMap = Maps.newTreeMap();
-        for (Field field : fields) {
-            if (!field.getName().equals("sign")) {
-                field.setAccessible(true);
-                String data = (String) ReflectionUtils.getField(field, requestVo);
-                if (StringUtils.isEmpty(data)) {
-                    data = "";
-                }
-                sortedMap.put(field.getName(), data);
-            }
-        }
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<String, String> entry : sortedMap.entrySet()) {
-            if (stringBuilder.toString().length() != 0) {
-                stringBuilder.append("&");
-            }
-            stringBuilder.append(entry.getKey()).append("=").append(entry.getValue());
-        }
-        stringBuilder.append("&key=").append(signKey);
-        String md5Sign = MD5Util.md5(stringBuilder.toString()).toUpperCase();
-        return md5Sign;
-    }
 
-    public final static String createEasyJhResponseSign(EasyJhResponseVo responseVo, String signKey) {
-        Field[] fields = EasyJhResponseVo.class.getDeclaredFields();
+    public final static String createSign(Map<String, String> data, String signKey) {
         SortedMap<String, String> sortedMap = Maps.newTreeMap();
-        for (Field field : fields) {
-            if (!field.getName().equals("sign")) {
-                field.setAccessible(true);
-                String data = (String) ReflectionUtils.getField(field, responseVo);
-                if (StringUtils.isEmpty(data)) {
-                    data = "";
-                }
-                sortedMap.put(field.getName(), data);
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            if (!StringUtils.endsWithIgnoreCase("sign", entry.getKey())) {
+                sortedMap.put(entry.getKey(), entry.getValue());
             }
         }
         StringBuilder stringBuilder = new StringBuilder();

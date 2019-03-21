@@ -8,9 +8,11 @@ import com.keke.sanshui.pay.alipay.AlipayConfig;
 import com.keke.sanshui.pay.easyjh.EasyJhPayService;
 import com.keke.sanshui.pay.easyjh.order.EasyJhRequestVo;
 import com.keke.sanshui.pay.easyjh.order.EasyJhResponseVo;
+import com.keke.sanshui.pay.easyjh.query.OrderQueryRequestVo;
+import com.keke.sanshui.pay.easyjh.query.OrderQueryResponseVo;
 import com.keke.sanshui.pay.wechart.MyWxConfig;
-import com.keke.sanshui.pay.zpay.ZPayService;
 import com.keke.sanshui.util.IpUtils;
+import com.keke.sanshui.util.SignUtil;
 import com.keke.sanshui.util.easyjh.XmlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -42,14 +47,16 @@ public class PayController {
     private OrderService orderService;
 
     @Autowired
-    private ZPayService zPayService;
-
-    @Autowired
     private EasyJhPayService easyJhPayService;
 
     @Value("${callbackHost}")
     private String callbackHost;
 
+    @Value("${easyJhAppId}")
+    private String appId;
+
+    @Value("${easyJhAppEncryptKey}")
+    private String signKey;
     @Autowired
     AlipayConfig alipayConfig;
 
@@ -109,7 +116,8 @@ public class PayController {
             EasyJhRequestVo requestVo = easyJhPayService.createRequestVo(payLink, payType, selfOrderId, String.valueOf(guid), IpUtils.getIpAddr(request));
             String xml_data = XmlUtils.toXml(requestVo.toMap());
 
-            String data = httpClient.POST("http://open.eyouc.net/gateway/soa").header("Content-Type", "text/xml;charset=UTF-8")
+            String data = httpClient.POST("http://open.eyouc.net/gateway/soa")
+                    .header("Content-Type", "text/xml;charset=UTF-8")
                     .content(new StringContentProvider(xml_data)).send().getContentAsString();
             Map<String, String> map = XmlUtils.parse(data);
             EasyJhResponseVo responseVo = EasyJhResponseVo.buildFromMap(map);
@@ -125,4 +133,33 @@ public class PayController {
         return "payPage";
     }
 
+    @GetMapping("/easyjhpay/{orderId}")
+    public String easyjhpayQuery(@PathVariable String orderId, ModelMap modelMap) {
+        OrderQueryRequestVo requestVo = new OrderQueryRequestVo();
+        requestVo.setOut_trade_no(orderId);
+        requestVo.setMerchant_id(appId);
+        requestVo.setSign(SignUtil.createSign(requestVo.toMap(), signKey));
+        String xml_data = XmlUtils.toXml(requestVo.toMap());
+        String showMessage = "支付结果未知";
+        try {
+            String data = httpClient.POST("http://open.eyouc.net /gateway/paystatus")
+                    .header("Content-Type", "text/xml;charset=UTF-8")
+                    .content(new StringContentProvider(xml_data)).send().getContentAsString();
+            Map<String, String> map = XmlUtils.parse(data);
+            OrderQueryResponseVo responseVo = OrderQueryResponseVo.buildFromMap(map);
+            if (responseVo != null) {
+                if (StringUtils.equalsIgnoreCase("0", responseVo.getStatus())) {
+                    if (StringUtils.equalsIgnoreCase(responseVo.getResult_code(), "1")) {
+                        showMessage = "支付成功";
+                    } else {
+                        showMessage = responseVo.getMessage();
+                    }
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        modelMap.addAttribute("message", showMessage);
+        return "success";
+    }
 }

@@ -6,14 +6,9 @@
 
 package com.keke.sanshui.pay.easyjh.order;
 
-import com.google.common.collect.Maps;
+import com.keke.sanshui.pay.easyjh.BaseWithMapVo;
 import lombok.Data;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.SortedMap;
 import java.util.UUID;
 
 /**
@@ -21,7 +16,7 @@ import java.util.UUID;
  * @version 2019-03-21
  */
 @Data
-public class EasyJhRequestVo {
+public class EasyJhRequestVo extends BaseWithMapVo {
     private String version = "1.0";
     private String charset = "UTF-8";
     private String merchant_id;
@@ -38,20 +33,4 @@ public class EasyJhRequestVo {
     private String biz_content;
     private String attach;
     private String sign;
-
-    public Map<String, String> toMap() {
-        SortedMap<String, String> sortedMap = Maps.newTreeMap();
-        for (Field field : EasyJhRequestVo.class.getDeclaredFields()) {
-
-            field.setAccessible(true);
-            String data = (String) ReflectionUtils.getField(field, this);
-            if (StringUtils.isEmpty(data)) {
-                data = "";
-            }
-            sortedMap.put(field.getName(), data);
-
-        }
-        return sortedMap;
-    }
-
 }

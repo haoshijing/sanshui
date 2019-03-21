@@ -6,6 +6,7 @@
 
 package com.keke.sanshui.pay.easyjh.order;
 
+import com.keke.sanshui.pay.easyjh.BaseWithMapVo;
 import lombok.Data;
 import org.springframework.util.ReflectionUtils;
 
@@ -17,7 +18,7 @@ import java.util.Map;
  * @version 2019-03-21
  */
 @Data
-public class EasyJhResponseVo {
+public class EasyJhResponseVo extends BaseWithMapVo {
     private String version;
     private String charset;
     private String sign_type;

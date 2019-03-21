@@ -8,6 +8,7 @@ package com.keke.sanshui.pay.easyjh;
 
 import com.alibaba.fastjson.JSONObject;
 import com.keke.sanshui.base.admin.po.PayLink;
+import com.keke.sanshui.pay.easyjh.callback.EasyJhCallbackVo;
 import com.keke.sanshui.pay.easyjh.order.EasyJhRequestVo;
 import com.keke.sanshui.pay.easyjh.order.EasyJhResponseVo;
 import com.keke.sanshui.util.SignUtil;
@@ -53,7 +54,7 @@ public class EasyJhPayService {
 
         try {
             requestVo.setReturn_url(URLEncoder.encode(callbackHost + "/easyjhpay/" + orderId, "UTF-8"));
-            requestVo.setNotify_url(URLEncoder.encode(callbackHost + "/gateway/easyjhpay/notify", "UTF-8"));
+            requestVo.setNotify_url(URLEncoder.encode(callbackHost + "/easyJh/callback", "UTF-8"));
 
             JSONObject bizContent = new JSONObject();
             bizContent.put("mch_app_id", "game");
@@ -66,14 +67,18 @@ public class EasyJhPayService {
         } catch (Exception e) {
 
         }
-        String sign = SignUtil.createEasyJhSign(requestVo, signKey);
+        String sign = SignUtil.createSign(requestVo.toMap(), signKey);
         requestVo.setSign(sign);
         return requestVo;
     }
 
     public boolean checkSign(EasyJhResponseVo responseVo) {
-        String sign = SignUtil.createEasyJhResponseSign(responseVo, signKey);
+        String sign = SignUtil.createSign(responseVo.toMap(), signKey);
         return StringUtils.equalsIgnoreCase(responseVo.getSign(), sign);
     }
 
+    public boolean checkCallbackSign(EasyJhCallbackVo easyJhCallbackVo) {
+        String sign = SignUtil.createSign(easyJhCallbackVo.toMap(), signKey);
+        return StringUtils.equalsIgnoreCase(easyJhCallbackVo.getSign(), sign);
+    }
 }
