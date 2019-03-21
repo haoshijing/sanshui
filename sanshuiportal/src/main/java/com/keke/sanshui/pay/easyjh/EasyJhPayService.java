@@ -53,7 +53,7 @@ public class EasyJhPayService {
 
         try {
             requestVo.setReturn_url(URLEncoder.encode(callbackHost + "/easyjhpay/" + orderId, "UTF-8"));
-            requestVo.setReturn_url(URLEncoder.encode(callbackHost + "/gateway/easyjhpay/notify", "UTF-8"));
+            requestVo.setNotify_url(URLEncoder.encode(callbackHost + "/gateway/easyjhpay/notify", "UTF-8"));
 
             JSONObject bizContent = new JSONObject();
             bizContent.put("mch_app_id", "game");
@@ -73,7 +73,7 @@ public class EasyJhPayService {
 
     public boolean checkSign(EasyJhResponseVo responseVo) {
         String sign = SignUtil.createEasyJhResponseSign(responseVo, signKey);
-        return StringUtils.equals(responseVo.getSign(), sign);
+        return StringUtils.equalsIgnoreCase(responseVo.getSign(), sign);
     }
 
 }

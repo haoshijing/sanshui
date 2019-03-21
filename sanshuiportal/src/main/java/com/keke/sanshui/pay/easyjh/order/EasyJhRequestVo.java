@@ -41,15 +41,15 @@ public class EasyJhRequestVo {
 
     public Map<String, String> toMap() {
         SortedMap<String, String> sortedMap = Maps.newTreeMap();
-        for (Field field : this.getClass().getFields()) {
-            if (!field.getName().equals("sign")) {
-                field.setAccessible(true);
-                String data = (String) ReflectionUtils.getField(field, this);
-                if (StringUtils.isEmpty(data)) {
-                    data = "";
-                }
-                sortedMap.put(field.getName(), data);
+        for (Field field : EasyJhRequestVo.class.getDeclaredFields()) {
+
+            field.setAccessible(true);
+            String data = (String) ReflectionUtils.getField(field, this);
+            if (StringUtils.isEmpty(data)) {
+                data = "";
             }
+            sortedMap.put(field.getName(), data);
+
         }
         return sortedMap;
     }

@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -99,7 +99,7 @@ public class PayController {
     }
 
 
-    @GetMapping("/goEasyJhPay")
+    @PostMapping("/goEasyJhPay")
     public String doEasyJhPay(Integer pickId, String payType, Integer guid, HttpServletRequest request, HttpServletResponse httpServletResponse) {
         PayLink payLink = payService.getCid(pickId);
         Map<String, String> attach = Maps.newHashMap();
@@ -112,7 +112,6 @@ public class PayController {
             String data = httpClient.POST("http://open.eyouc.net/gateway/soa").header("Content-Type", "text/xml;charset=UTF-8")
                     .content(new StringContentProvider(xml_data)).send().getContentAsString();
             Map<String, String> map = XmlUtils.parse(data);
-
             EasyJhResponseVo responseVo = EasyJhResponseVo.buildFromMap(map);
             boolean checkSignOk = easyJhPayService.checkSign(responseVo);
             if (checkSignOk && StringUtils.equalsIgnoreCase("0", responseVo.getStatus())) {
@@ -121,7 +120,7 @@ public class PayController {
                 return null;
             }
         } catch (Exception e) {
-            log.error("submit error pId = {}, guid = {},payType = {}", pickId, guid, payType);
+            log.error("submit error pId = {}, guid = {},payType = {}", pickId, guid, payType, e);
         }
         return "payPage";
     }

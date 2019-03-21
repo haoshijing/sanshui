@@ -31,7 +31,7 @@ public class EasyJhResponseVo {
 
     public static EasyJhResponseVo buildFromMap(Map map) {
         EasyJhResponseVo easyJhResponseVo = new EasyJhResponseVo();
-        for (Field field : EasyJhResponseVo.class.getFields()) {
+        for (Field field : EasyJhResponseVo.class.getDeclaredFields()) {
             if (map.containsKey(field.getName())) {
                 field.setAccessible(true);
                 ReflectionUtils.setField(field, easyJhResponseVo, map.get(field.getName()));

@@ -41,6 +41,7 @@
                 </ul>
                 <input type="hidden" name="guid" value="${guid}">
                 <input type="hidden" name="pickId" id="pickId" value="${defaultPick}">
+                <input type="hidden" name="payType" id="payType" value="1">
                 <p><input type="submit" value="立刻充值" class="subBtn"/></p>
             </form>
         </div>
@@ -50,7 +51,7 @@
 <script type="text/javascript" src="${rc.contextPath}/js/jquery-1.7.1.min.js"></script>
 <script type="text/javascript">
     $(function () {
-        $(".price_list li").click(function () {
+        $("#payList li").click(function () {
             $(this).addClass("current").siblings().removeClass("current");
             $("#pickId").val($(this).attr("data"));
         })
