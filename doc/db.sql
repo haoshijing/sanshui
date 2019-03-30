@@ -2,7 +2,8 @@ DROP TABLE IF EXISTS pay_link;
 create table pay_link (
 id int primary key auto_increment comment '主键id',
 cIdNo varchar(500) comment '二维支付链接地址',
-pickCouponVal int comment '支付豆',
+pickCouponVal int comment '金币值',
+moreCouponVal int comment '附加金币值',
 pickRmb int comment '支付人民币值,单位分'
 );
 

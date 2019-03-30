@@ -52,6 +52,11 @@ public class EasyJhPayService {
         requestVo.setTotal_fee(String.valueOf(payLink.getPickRmb() * 1.0 / 100));
         requestVo.setOut_trade_no(orderId);
 
+        JSONObject attach = new JSONObject();
+        attach.put("card",payLink.getPickCouponVal());
+        attach.put("more",payLink.getMoreCouponVal());
+        requestVo.setAttach(attach.toString());
+
         try {
             requestVo.setReturn_url(URLEncoder.encode(callbackHost + "/easyjhpay/" + orderId, "UTF-8"));
             requestVo.setNotify_url(URLEncoder.encode(callbackHost + "/easyJh/callback", "UTF-8"));

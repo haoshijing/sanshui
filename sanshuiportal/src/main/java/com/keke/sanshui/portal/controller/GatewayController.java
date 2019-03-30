@@ -2,6 +2,7 @@ package com.keke.sanshui.portal.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
@@ -74,9 +75,16 @@ public class GatewayController {
                     if (updateStatus == 0) {
                         log.warn("update data effect 0,{}", JSON.toJSONString(responseVo));
                     }
+
+                    String attach = responseVo.getAttach();
+                    JSONObject jsonObject = JSON.parseObject(attach);
+
+                    String card = jsonObject.getString("card");
+
+                    String more = jsonObject.getString("more");
                     //发送给gameServer
                     Pair<Boolean, Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
-                            order.getMoney(), "0");
+                            order.getMoney(), card,more);
                     if (pair.getLeft()) {
                         Order newUpdateOrder = new Order();
                         newUpdateOrder.setSelfOrderNo(orderId);

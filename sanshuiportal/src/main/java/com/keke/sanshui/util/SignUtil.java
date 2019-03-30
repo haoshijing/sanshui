@@ -155,24 +155,16 @@ public class SignUtil {
         return md5Sign;
     }
 
-    public final static String createSign(String orderId, Integer gUid, String rechargeDiamond, String key) {
+    public final static String createSign(String orderId, Integer gUid, String payMoney,String card,String more, String key) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("OrderId=").append(orderId).append("&");
         stringBuilder.append("Guid=").append(gUid);
-        stringBuilder.append("&RechargeDiamond=").append(rechargeDiamond);
+        stringBuilder.append("&Money=").append(payMoney);
+        stringBuilder.append("&Card").append(card);
+        stringBuilder.append("&More=").append(more);
         stringBuilder.append(key);
         String data = MD5Util.md5(stringBuilder.toString()).toLowerCase();
         return data;
-    }
-
-    public static void main(String[] args) {
-
-        String sign = SignUtil.createSign("761524837249474",
-                76,
-                "1",
-                "fjsoafasdfj;asdfas;dafjasdafsafjasd");
-        System.out.println("sign = [" + sign + "]");
-
     }
 
 

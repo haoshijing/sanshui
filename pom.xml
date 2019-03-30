@@ -193,6 +193,6 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>sanshui</finalName>
+        <finalName>pay</finalName>
     </build>
 </project>

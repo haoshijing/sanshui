@@ -26,10 +26,10 @@ public class GateWayService {
     @Autowired
     private HttpClient httpClient;
 
-    public Pair<Boolean,Boolean> sendToGameServer(String orderId, Integer gUid, String payMoney, String payCoupon) {
-        String sign = SignUtil.createSign(orderId, gUid, payMoney, gameServerKey);
+    public Pair<Boolean,Boolean> sendToGameServer(String orderId, Integer gUid, String payMoney, String payCoupon,String moreCoupon) {
+        String sign = SignUtil.createSign(orderId, gUid, payMoney,payCoupon,moreCoupon, gameServerKey);
         String sendUrl = String.format("%s/?method=PlayerRecharge&OrderId=%s" +
-                "&Guid=%s&RechargeDiamond=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney, sign);
+                "&Guid=%s&Money=%s&Card=%s&More=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney,payCoupon,moreCoupon, sign);
         try {
             log.info("sendUrl = {}",sendUrl);
             ContentResponse contentResponse = httpClient.newRequest(sendUrl).timeout(3000, TimeUnit.MILLISECONDS).send();
