@@ -58,8 +58,8 @@ public class EasyJhPayService {
         requestVo.setAttach(attach.toString());
 
         try {
-            requestVo.setReturn_url(URLEncoder.encode(callbackHost + "/easyjhpay/" + orderId, "UTF-8"));
-            requestVo.setNotify_url(URLEncoder.encode(callbackHost + "/easyJh/callback", "UTF-8"));
+            requestVo.setReturn_url(callbackHost + "/easyjhpay/" + orderId);
+            requestVo.setNotify_url(callbackHost + "/easyJh/callback");
 
             JSONObject bizContent = new JSONObject();
             bizContent.put("mch_app_id", "game");

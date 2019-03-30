@@ -3,6 +3,7 @@ package com.keke.sanshui.portal.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Map;
 
 @Controller
@@ -41,10 +43,17 @@ public class GatewayController {
 
     @RequestMapping(value = "/easyJh/callback")
     public void easyJhCallback(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String responseXml = new String(getRequestPostBytes(request));
-        log.info("responseXml = {}", responseXml);
-        Map<String, String> map = XmlUtils.parse(responseXml);
-        EasyJhCallbackVo responseVo = EasyJhCallbackVo.buildFromMap(map);
+        String responseStr = new String(getRequestPostBytes(request));
+        log.info("response = {}", response);
+        Map<String, String> params = Maps.newHashMap();
+        String[] arr = responseStr.split("&");
+        for(int i = 0; i < arr.length; i++){
+            String[] arr1 = arr[i].split("=");
+            if(arr1.length > 2){
+                params.put(arr1[0], URLDecoder.decode(arr1[1]));
+            }
+        }
+        EasyJhCallbackVo responseVo = EasyJhCallbackVo.buildFromMap(params);
         boolean matchSign = easyJhPayService.checkCallbackSign(responseVo);
         if (matchSign) {
             //支付成功,发送给游戏服务
@@ -98,7 +107,7 @@ public class GatewayController {
                     /**
                      * 发送给服务器支付成功
                      */
-                    response.getWriter().print("0");
+                    response.getWriter().write("success");
                 } catch (Exception e) {
                     log.error(" update error ", e);
                 }
