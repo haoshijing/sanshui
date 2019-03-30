@@ -1,3 +1,5 @@
+
+
 DROP TABLE IF EXISTS pay_link;
 create table pay_link (
 id int primary key auto_increment comment '主键id',

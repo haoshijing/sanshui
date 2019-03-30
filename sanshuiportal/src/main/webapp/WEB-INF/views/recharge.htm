@@ -25,7 +25,7 @@
                     <#list payLinks as link>
                         <li data="${link.id?c}" class="<#if link_index == 0>current</#if>">
                             <a href="javascript:changeTo(${link.id?c});">${link.pickCouponVal?c}钻石
-                                (额外赠送${link.pickCouponVal?c})
+                                (绑定赠送${link.pickCouponVal?c})
                                 ${link.pickRmb/100}元</a>
 
                         </li>

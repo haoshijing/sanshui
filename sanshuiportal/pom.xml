@@ -42,7 +42,7 @@
     </dependencies>
 
     <build>
-        <finalName>payPortal</finalName>
+        <finalName>pay</finalName>
         <plugins>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>

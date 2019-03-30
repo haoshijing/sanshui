@@ -183,7 +183,7 @@ public class SignUtil {
             stringBuilder.append(entry.getKey()).append("=").append(entry.getValue());
         }
         stringBuilder.append("&key=").append(signKey);
-        String md5Sign = MD5Util.md5(stringBuilder.toString());
+        String md5Sign = MD5Util.md5(stringBuilder.toString()).toUpperCase();
         return md5Sign;
     }
 }

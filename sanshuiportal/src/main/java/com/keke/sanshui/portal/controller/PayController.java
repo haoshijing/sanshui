@@ -119,6 +119,7 @@ public class PayController {
             String data = httpClient.POST("http://open.eyouc.net/gateway/soa")
                     .header("Content-Type", "text/xml;charset=UTF-8")
                     .content(new StringContentProvider(xml_data)).send().getContentAsString();
+            log.info("data = {}",data);
             Map<String, String> map = XmlUtils.parse(data);
             EasyJhResponseVo responseVo = EasyJhResponseVo.buildFromMap(map);
             boolean checkSignOk = easyJhPayService.checkSign(responseVo);
