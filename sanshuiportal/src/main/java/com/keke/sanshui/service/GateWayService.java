@@ -28,7 +28,7 @@ public class GateWayService {
 
     public Pair<Boolean,Boolean> sendToGameServer(String orderId, Integer gUid, String payMoney, String payCoupon,String moreCoupon) {
         String sign = SignUtil.createSign(orderId, gUid, payMoney,payCoupon,moreCoupon, gameServerKey);
-        String sendUrl = String.format("%s/?method=PlayerRecharge&OrderId=%s" +
+        String sendUrl = String.format("%s/?Method=PlayerRecharge&OrderId=%s" +
                 "&Guid=%s&Money=%s&Card=%s&More=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney,payCoupon,moreCoupon, sign);
         try {
             log.info("sendUrl = {}",sendUrl);

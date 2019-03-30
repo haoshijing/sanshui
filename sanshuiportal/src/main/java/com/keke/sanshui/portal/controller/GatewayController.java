@@ -44,16 +44,30 @@ public class GatewayController {
     @RequestMapping(value = "/easyJh/callback")
     public void easyJhCallback(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String responseStr = new String(getRequestPostBytes(request));
-        log.info("response = {}", response);
         Map<String, String> params = Maps.newHashMap();
         String[] arr = responseStr.split("&");
         for(int i = 0; i < arr.length; i++){
             String[] arr1 = arr[i].split("=");
-            if(arr1.length > 2){
+            if(arr1.length == 2){
                 params.put(arr1[0], URLDecoder.decode(arr1[1]));
             }
         }
-        EasyJhCallbackVo responseVo = EasyJhCallbackVo.buildFromMap(params);
+        log.info("params = {}",params);
+        EasyJhCallbackVo responseVo = new EasyJhCallbackVo();
+
+        responseVo.setAttach(params.get("attach"));
+        responseVo.setBody(params.get("body"));
+        responseVo.setTrade_status(params.get("trade_status"));
+        responseVo.setMerchant_id(params.get("merchant_id"));
+        responseVo.setOut_trade_no(params.get("out_trade_no"));
+        responseVo.setSubject(params.get("subject"));
+        responseVo.setTotal_fee(params.get("total_fee"));
+        responseVo.setTrade_result(params.get("trade_result"));
+        responseVo.setTrade_time(params.get("trade_time"));
+        responseVo.setTrade_no(params.get("trade_no"));
+        responseVo.setSign(params.get("sign"));
+        responseVo.setMerchant_id(params.get("merchant_id"));
+        log.info("get responseVo = {}",responseVo);
         boolean matchSign = easyJhPayService.checkCallbackSign(responseVo);
         if (matchSign) {
             //支付成功,发送给游戏服务
@@ -93,7 +107,7 @@ public class GatewayController {
                     String more = jsonObject.getString("more");
                     //发送给gameServer
                     Pair<Boolean, Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
-                            order.getMoney(), card,more);
+                            responseVo.getTotal_fee(), card,more);
                     if (pair.getLeft()) {
                         Order newUpdateOrder = new Order();
                         newUpdateOrder.setSelfOrderNo(orderId);

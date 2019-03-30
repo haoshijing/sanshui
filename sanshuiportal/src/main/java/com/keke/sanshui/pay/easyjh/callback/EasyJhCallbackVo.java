@@ -7,6 +7,7 @@
 package com.keke.sanshui.pay.easyjh.callback;
 
 import com.keke.sanshui.pay.easyjh.BaseWithMapVo;
+import com.keke.sanshui.pay.easyjh.order.EasyJhResponseVo;
 import lombok.Data;
 import org.springframework.util.ReflectionUtils;
 
@@ -33,7 +34,7 @@ public class EasyJhCallbackVo extends BaseWithMapVo {
 
     public static EasyJhCallbackVo buildFromMap(Map map) {
         EasyJhCallbackVo callbackVo = new EasyJhCallbackVo();
-        for (Field field : EasyJhCallbackVo.class.getDeclaredFields()) {
+        for (Field field : EasyJhResponseVo.class.getDeclaredFields()) {
             if (map.containsKey(field.getName())) {
                 field.setAccessible(true);
                 ReflectionUtils.setField(field, callbackVo, map.get(field.getName()));

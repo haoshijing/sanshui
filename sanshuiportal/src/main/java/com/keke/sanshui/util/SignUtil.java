@@ -160,10 +160,12 @@ public class SignUtil {
         stringBuilder.append("OrderId=").append(orderId).append("&");
         stringBuilder.append("Guid=").append(gUid);
         stringBuilder.append("&Money=").append(payMoney);
-        stringBuilder.append("&Card").append(card);
+        stringBuilder.append("&Card=").append(card);
         stringBuilder.append("&More=").append(more);
         stringBuilder.append(key);
-        String data = MD5Util.md5(stringBuilder.toString()).toLowerCase();
+        String md5Str = stringBuilder.toString();
+        log.info("md5Str = {}", md5Str);
+        String data = MD5Util.md5(md5Str).toUpperCase();
         return data;
     }
 

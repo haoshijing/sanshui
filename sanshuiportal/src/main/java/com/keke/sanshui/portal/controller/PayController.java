@@ -84,27 +84,6 @@ public class PayController {
         return "recharge";
     }
 
-    @RequestMapping("/goPayPage")
-    String doGoPayPage(Integer pickId, Integer guid, String token, HttpServletRequest request, Model modelAttribute) {
-        StringBuilder buildUrl = new StringBuilder();
-        PayLink payLink = payService.getCid(pickId);
-        Map<String, String> attach = Maps.newHashMap();
-        attach.put("guid", guid.toString());
-        String selfOrderId = guid + "" + System.currentTimeMillis();
-        buildUrl.append(payLink.getCIdNo()).append(".js?type=div");
-        buildUrl.append("&attach=").append(selfOrderId);
-        try {
-            //buildUrl.append("&redirect=http://game.youthgamer.com:8080/sanshui/pay/user/sucess");
-            buildUrl.append("&callback=").append(URLEncoder.encode(callbackHost + "/pay/callback", "utf-8"));
-        } catch (Exception e) {
-
-        }
-        orderService.insertOrder(payLink, attach, selfOrderId);
-        modelAttribute.addAttribute("url", buildUrl.toString());
-
-        return "payPage";
-    }
-
 
     @PostMapping("/goEasyJhPay")
     public String doEasyJhPay(Integer pickId, String payType, Integer guid, HttpServletRequest request, HttpServletResponse httpServletResponse) {
@@ -124,7 +103,7 @@ public class PayController {
             EasyJhResponseVo responseVo = EasyJhResponseVo.buildFromMap(map);
             boolean checkSignOk = easyJhPayService.checkSign(responseVo);
             if (checkSignOk && StringUtils.equalsIgnoreCase("0", responseVo.getStatus())) {
-                orderService.insertOrder(payLink, attach, selfOrderId);
+                orderService.insertOrder(payLink, attach,requestVo.getAttach(), selfOrderId);
                 httpServletResponse.sendRedirect(responseVo.getPay_info());
                 return null;
             }

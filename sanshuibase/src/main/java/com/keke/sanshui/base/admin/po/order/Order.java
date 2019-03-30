@@ -61,4 +61,6 @@ public class Order {
      * 发送给游戏服务器的时间
      */
     private Long sendTime;
+
+    private String attach;
 }
