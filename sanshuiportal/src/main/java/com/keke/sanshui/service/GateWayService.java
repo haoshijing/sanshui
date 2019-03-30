@@ -37,8 +37,9 @@ public class GateWayService {
             log.info("contentResponse = {}", contentResponse.getContentAsString());
             if(jsonObject != null){
                 String resultCode = jsonObject.getString("resultCode");
-                boolean dealOk = StringUtils.equals("Successed",resultCode) ||
-                        StringUtils.endsWithIgnoreCase("Begin",resultCode);
+                boolean dealOk = StringUtils.equalsIgnoreCase("Successed",resultCode) ||
+                        StringUtils.equalsIgnoreCase("Begin",resultCode) ||
+                        StringUtils.equalsIgnoreCase("OrderIdExist", resultCode);
                 return Pair.of(true,dealOk);
             }
             return Pair.of(true,false);

@@ -107,7 +107,7 @@ public class GatewayController {
                     String more = jsonObject.getString("more");
                     //发送给gameServer
                     Pair<Boolean, Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
-                            responseVo.getTotal_fee(), card,more);
+                            String.valueOf(Integer.valueOf(order.getPrice())/100), card,more);
                     if (pair.getLeft()) {
                         Order newUpdateOrder = new Order();
                         newUpdateOrder.setSelfOrderNo(orderId);
