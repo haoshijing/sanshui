@@ -15,7 +15,7 @@
     <header>
         <div class="topWrap">
             <div class="back" onClick="javascript:history.go(-1)"><i class="iconfont icon-back"></i></div>
-            <div class="hTitle">充值 - ${guid}</div>
+            <div class="hTitle">充值(推荐支付宝支付) - ${guid}</div>
 
         </div>
     </header>
@@ -26,7 +26,7 @@
                     <#list payLinks as link>
                         <li data="${link.id?c}" class="<#if link_index == 0>current</#if>">
                             <a href="javascript:changeTo(${link.id?c});">${link.pickCouponVal?c}钻石
-                                (绑定赠送${link.pickCouponVal?c})
+                                (绑定赠送${link.moreCouponVal?c})
                                 ${link.pickRmb/100}元</a>
 
                         </li>
