@@ -9,6 +9,8 @@ import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
 import com.keke.sanshui.pay.easyjh.EasyJhPayService;
 import com.keke.sanshui.pay.easyjh.callback.EasyJhCallbackVo;
+import com.keke.sanshui.pay.huayue.HuayuePayService;
+import com.keke.sanshui.pay.huayue.callback.EastYCallbackVo;
 import com.keke.sanshui.service.GateWayService;
 import com.keke.sanshui.util.easyjh.XmlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,78 @@ public class GatewayController {
 
     @Autowired
     private EasyJhPayService easyJhPayService;
+
+    @Autowired
+    private HuayuePayService huayuePayService;
+
+    @RequestMapping(value = "/huayue/callback")
+    public void huayueCallback(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String responseStr = new String(getRequestPostBytes(request));
+        log.info("responseStr = {}",responseStr);
+        EastYCallbackVo callbackVo = JSONObject.parseObject(responseStr,EastYCallbackVo.class);
+        boolean matchSign = huayuePayService.checkCallbackSign(callbackVo);
+        if (matchSign) {
+            //支付成功,发送给游戏服务
+            if (StringUtils.equalsIgnoreCase(callbackVo.getCode(), "400028")) {
+                try {
+                    String orderId = callbackVo.getOrderId();
+                    Order order = orderService.queryOrderByNo(orderId);
+                    if (order == null) {
+                        log.error("错误的订单,orderId = {}", orderId);
+                        String envName = System.getProperty("env");
+                        if (StringUtils.isEmpty(envName)) {
+                            envName = System.getenv("env");
+                        }
+                        if (StringUtils.equals(envName, "test")) {
+                            response.getWriter().print("0");
+                            return;
+                        }
+                    }
+                    Order updateOrder = new Order();
+                    //已支付
+                    updateOrder.setSelfOrderNo(orderId);
+                    updateOrder.setOrderStatus(3);
+                    updateOrder.setPayState(Integer.valueOf(callbackVo.getCode()));
+                    updateOrder.setPayTime(String.valueOf(callbackVo.getDateTime()));
+                    updateOrder.setLastUpdateTime(System.currentTimeMillis());
+                    updateOrder.setOrderNo(callbackVo.getOutTradeNo());
+                    int updateStatus = orderService.updateOrder(updateOrder);
+                    if (updateStatus == 0) {
+                        log.warn("update data effect 0,{}", JSON.toJSONString(callbackVo));
+                    }
+
+
+                    String attach =    order.getAttach();
+                    JSONObject jsonObject = JSON.parseObject(attach);
+
+                    String card = jsonObject.getString("card");
+
+                    String more = jsonObject.getString("more");
+                    //发送给gameServer
+                    Pair<Boolean, Boolean> pair = gateWayService.sendToGameServer(order.getSelfOrderNo(), order.getClientGuid(),
+                            String.valueOf(Integer.valueOf(order.getPrice())/100), card,more);
+                    if (pair.getLeft()) {
+                        Order newUpdateOrder = new Order();
+                        newUpdateOrder.setSelfOrderNo(orderId);
+                        if (pair.getRight()) {
+                            newUpdateOrder.setOrderStatus(2);
+                        }
+                        newUpdateOrder.setSendStatus(SendStatus.Alread_Send.getCode());
+                        newUpdateOrder.setSendTime(System.currentTimeMillis());
+                        orderService.updateOrder(newUpdateOrder);
+                    }
+                    /**
+                     * 发送给服务器支付成功
+                     */
+                    response.getWriter().write("success");
+                } catch (Exception e) {
+                    log.error(" update error ", e);
+                }
+            }
+        } else {
+            log.error("秘钥匹配不上{}", callbackVo);
+        }
+    }
 
     @RequestMapping(value = "/easyJh/callback")
     public void easyJhCallback(HttpServletRequest request, HttpServletResponse response) throws Exception {

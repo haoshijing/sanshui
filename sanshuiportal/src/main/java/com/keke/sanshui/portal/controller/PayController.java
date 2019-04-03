@@ -1,5 +1,7 @@
 package com.keke.sanshui.portal.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.OrderService;
@@ -10,6 +12,10 @@ import com.keke.sanshui.pay.easyjh.order.EasyJhRequestVo;
 import com.keke.sanshui.pay.easyjh.order.EasyJhResponseVo;
 import com.keke.sanshui.pay.easyjh.query.OrderQueryRequestVo;
 import com.keke.sanshui.pay.easyjh.query.OrderQueryResponseVo;
+import com.keke.sanshui.pay.huayue.HuayuePayService;
+import com.keke.sanshui.pay.huayue.order.EastYOrderRequestVo;
+import com.keke.sanshui.pay.huayue.order.EastYOrderResponseVo;
+import com.keke.sanshui.pay.huayue.query.EastYQueryVo;
 import com.keke.sanshui.pay.wechart.MyWxConfig;
 import com.keke.sanshui.util.IpUtils;
 import com.keke.sanshui.util.SignUtil;
@@ -17,7 +23,9 @@ import com.keke.sanshui.util.easyjh.XmlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.util.Fields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -49,6 +57,9 @@ public class PayController {
     @Autowired
     private EasyJhPayService easyJhPayService;
 
+    @Autowired
+    private HuayuePayService huayuePayService;
+
     @Value("${callbackHost}")
     private String callbackHost;
 
@@ -59,9 +70,6 @@ public class PayController {
     private String signKey;
     @Autowired
     AlipayConfig alipayConfig;
-
-    @Autowired
-    MyWxConfig wxPayConfig;
 
     @Autowired
     private HttpClient httpClient;
@@ -82,6 +90,60 @@ public class PayController {
         modelAttribute.addAttribute("defaultPick", defaultPick);
         modelAttribute.addAttribute("defaultPayType", 1);
         return "recharge";
+    }
+
+    @GetMapping("/goEastYPay")
+    public String goEastYPay(Integer pickId, String payType, Integer guid, HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        PayLink payLink = payService.getCid(pickId);
+        Map<String, String> attach = Maps.newHashMap();
+        attach.put("guid", guid.toString());
+        attach.put("more", payLink.getMoreCouponVal().toString());
+        attach.put("card", payLink.getPickCouponVal().toString());
+        String selfOrderId = guid + "" + System.currentTimeMillis();
+        try {
+            EastYOrderRequestVo requestVo = huayuePayService.createRequestVo(payLink, payType, selfOrderId, String.valueOf(guid), IpUtils.getIpAddr(request));
+            Fields fields = new Fields();
+
+            for(Map.Entry<String,String> entry :requestVo.toMap().entrySet()){
+                fields.add(entry.getKey(),entry.getValue());
+            }
+
+            String data = httpClient.POST("http://pay.sytpay.cn/index.php/Api/Index/createOrder")
+                    .content(new FormContentProvider(fields)).send().getContentAsString();
+            log.info("data = {}",data);
+            EastYOrderResponseVo responseVo = JSONObject.parseObject(data,EastYOrderResponseVo.class);
+            if(huayuePayService.checkSign(responseVo) && responseVo.getCode() == 0){
+                orderService.insertOrder(payLink, attach, JSON.toJSONString(attach), selfOrderId);
+                String url = responseVo.getUrl();
+                httpServletResponse.sendRedirect(url);
+            }
+        } catch (Exception e) {
+            log.error("submit error pId = {}, guid = {},payType = {}", pickId, guid, payType, e);
+        }
+        return "payPage";
+    }
+
+    @GetMapping("/huayue/{orderId}")
+    public String eastYQuery(@PathVariable String orderId, ModelMap modelMap) {
+        EastYQueryVo queryRequestVo = huayuePayService.createQueryOrderRequest(orderId);
+        String showMessage = "支付结果未知";
+        try {
+            String data = httpClient.GET(String.format("api.hypay.xyz/index.php/Api/Check/index?partner=%s" + "&orderId=%s&sign=%s",
+                    queryRequestVo.getPartner(),
+                    queryRequestVo.getOrderId(),
+                    queryRequestVo.getSign())).getContentAsString();
+
+            JSONObject jsonObject = JSON.parseObject(data);
+            if(jsonObject != null){
+                if(jsonObject.containsKey("status")){
+                    showMessage = jsonObject.getString("status");
+                }
+            }
+        }catch (Exception e){
+
+        }
+        modelMap.addAttribute("message", showMessage);
+        return "succes";
     }
 
 
