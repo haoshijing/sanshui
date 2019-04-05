@@ -41,6 +41,7 @@ public class HuayuePayService {
             requestVo.setPayType("1");
             requestVo.setPayMethod("11");
         }
+        requestVo.setVersion("1.0");
         requestVo.setOutcome("yes");
         requestVo.setSignType("MD5" );
         requestVo.setProductName("充值" + payLink.getPickCouponVal() + "钻石");

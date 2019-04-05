@@ -92,6 +92,7 @@ public class PayController {
         return "recharge";
     }
 
+    @PostMapping("/goEastYPay")
     @GetMapping("/goEastYPay")
     public String goEastYPay(Integer pickId, String payType, Integer guid, HttpServletRequest request, HttpServletResponse httpServletResponse) {
         PayLink payLink = payService.getCid(pickId);
@@ -105,8 +106,9 @@ public class PayController {
             Fields fields = new Fields();
 
             for(Map.Entry<String,String> entry :requestVo.toMap().entrySet()){
-                fields.add(entry.getKey(),entry.getValue());
+                fields.put(entry.getKey(),entry.getValue());
             }
+            fields.put("sign",requestVo.getSign());
 
             String data = httpClient.POST("http://pay.sytpay.cn/index.php/Api/Index/createOrder")
                     .content(new FormContentProvider(fields)).send().getContentAsString();
