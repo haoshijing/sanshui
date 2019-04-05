@@ -38,8 +38,8 @@ public class HuayuePayService {
             requestVo.setPayType("21");
             requestVo.setPayMethod("2");
         } else if (StringUtils.equalsIgnoreCase(payType, "2")) {
-            requestVo.setPayType("1");
-            requestVo.setPayMethod("11");
+            requestVo.setPayType("11");
+            requestVo.setPayMethod("1");
         }
         requestVo.setVersion("1.0");
         requestVo.setOutcome("yes");

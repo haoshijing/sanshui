@@ -7,11 +7,13 @@ import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.order.Order;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.enums.SendStatus;
+import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.pay.easyjh.EasyJhPayService;
 import com.keke.sanshui.pay.easyjh.callback.EasyJhCallbackVo;
 import com.keke.sanshui.pay.huayue.HuayuePayService;
 import com.keke.sanshui.pay.huayue.callback.EastYCallbackVo;
 import com.keke.sanshui.service.GateWayService;
+import com.keke.sanshui.util.StringUti;
 import com.keke.sanshui.util.easyjh.XmlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.Base64;
 import java.util.Map;
 
 @Controller
@@ -33,6 +36,10 @@ public class GatewayController {
 
     @Value("${pkey}")
     private String pkey;
+
+    @Value("${huayueKey}")
+    private String signKey;
+
 
     @Autowired
     private OrderService orderService;
@@ -50,13 +57,24 @@ public class GatewayController {
     public void huayueCallback(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String responseStr = new String(getRequestPostBytes(request));
         log.info("responseStr = {}",responseStr);
-        EastYCallbackVo callbackVo = JSONObject.parseObject(responseStr,EastYCallbackVo.class);
-        boolean matchSign = huayuePayService.checkCallbackSign(callbackVo);
+        JSONObject jo = JSON.parseObject(responseStr);
+        JSONObject paramJson = jo.getJSONObject("paramsJson");
+        String base64 = new String(Base64.getEncoder().encode(StringUti.parseJson(paramJson).getBytes()));
+        String md5 = MD5Util.md5(base64);
+        boolean matchSign = false;
+        if(jo.containsKey("sign")) {
+            String sign = jo.getString("sign");
+            String res = (MD5Util.md5(signKey + md5)).toUpperCase();
+
+            matchSign = StringUtils.equals(sign,res);
+        }
+
         if (matchSign) {
             //支付成功,发送给游戏服务
-            if (StringUtils.equalsIgnoreCase(callbackVo.getCode(), "400028")) {
+            if (StringUtils.equalsIgnoreCase(paramJson.getString("code"), "000000")) {
                 try {
-                    String orderId = callbackVo.getOrderId();
+                    paramJson = paramJson.getJSONObject("data");
+                    String orderId = paramJson.getString("orderId");
                     Order order = orderService.queryOrderByNo(orderId);
                     if (order == null) {
                         log.error("错误的订单,orderId = {}", orderId);
@@ -73,13 +91,15 @@ public class GatewayController {
                     //已支付
                     updateOrder.setSelfOrderNo(orderId);
                     updateOrder.setOrderStatus(3);
-                    updateOrder.setPayState(Integer.valueOf(callbackVo.getCode()));
-                    updateOrder.setPayTime(String.valueOf(callbackVo.getDateTime()));
+                    updateOrder.setPayState(1);
+
+                    updateOrder.setPayTime(String.valueOf(paramJson.getString("dateTime")));
                     updateOrder.setLastUpdateTime(System.currentTimeMillis());
-                    updateOrder.setOrderNo(callbackVo.getOutTradeNo());
+                    String orderNo = paramJson.getString("outTradeNo");
+                    updateOrder.setOrderNo(orderNo);
                     int updateStatus = orderService.updateOrder(updateOrder);
                     if (updateStatus == 0) {
-                        log.warn("update data effect 0,{}", JSON.toJSONString(callbackVo));
+                        log.warn("update data effect 0,{}", JSON.toJSONString(paramJson));
                     }
 
 
@@ -111,7 +131,7 @@ public class GatewayController {
                 }
             }
         } else {
-            log.error("秘钥匹配不上{}", callbackVo);
+            log.error("秘钥匹配不上{}", paramJson.toJSONString());
         }
     }
 

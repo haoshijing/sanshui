@@ -16,6 +16,7 @@ public class EastYCallbackVo extends BaseWithMapVo {
     private String dateTime;
     private String trade_no;
     private String outTradeNo;
+    private String sign;
 
 
 }
