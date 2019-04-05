@@ -103,21 +103,19 @@ public class PayController {
         String selfOrderId = guid + "" + System.currentTimeMillis();
         try {
             EastYOrderRequestVo requestVo = huayuePayService.createRequestVo(payLink, payType, selfOrderId, String.valueOf(guid), IpUtils.getIpAddr(request));
-            Fields fields = new Fields();
 
-            for(Map.Entry<String,String> entry :requestVo.toMap().entrySet()){
-                fields.put(entry.getKey(),entry.getValue());
-            }
-            fields.put("sign",requestVo.getSign());
-
-            String data = httpClient.POST("http://pay.sytpay.cn/index.php/Api/Index/createOrder")
-                    .content(new FormContentProvider(fields)).send().getContentAsString();
+            String requestUrl = "http://api.hypay.xyz/index.php/Api/Index/createOrder?"+requestVo.toStr();
+            requestUrl += "sign="+requestVo.getSign();
+            log.info("requestUrl={}",requestUrl);
+            String data = httpClient.GET(requestUrl)
+                    .getContentAsString();
             log.info("data = {}",data);
             EastYOrderResponseVo responseVo = JSONObject.parseObject(data,EastYOrderResponseVo.class);
             if(huayuePayService.checkSign(responseVo) && responseVo.getCode() == 0){
                 orderService.insertOrder(payLink, attach, JSON.toJSONString(attach), selfOrderId);
                 String url = responseVo.getUrl();
                 httpServletResponse.sendRedirect(url);
+                return  null;
             }
         } catch (Exception e) {
             log.error("submit error pId = {}, guid = {},payType = {}", pickId, guid, payType, e);

@@ -1,9 +1,14 @@
 package com.keke.sanshui.pay.huayue.order;
 
+import com.google.common.collect.Maps;
 import com.keke.sanshui.pay.easyjh.BaseWithMapVo;
 import lombok.Data;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.SortedMap;
 
 @Data
 public class EastYOrderRequestVo extends BaseWithMapVo {
@@ -29,5 +34,19 @@ public class EastYOrderRequestVo extends BaseWithMapVo {
         sortedMap.remove("productName");
         sortedMap.remove("productDesc");
         return sortedMap;
+    }
+
+    public String toStr(){
+        StringBuilder stringBuilder = new StringBuilder(2048);
+        for (Field field : this.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            String data = (String) ReflectionUtils.getField(field, this);
+            if (StringUtils.isEmpty(data)) {
+                data = "";
+            }
+            stringBuilder.append(field.getName()).append("=").append(data).append("&");
+
+        }
+        return stringBuilder.toString();
     }
 }

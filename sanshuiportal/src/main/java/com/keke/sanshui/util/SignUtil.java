@@ -170,7 +170,11 @@ public class SignUtil {
     }
 
 
-    public final static String createSign(Map<String, String> data, String signKey) {
+    public final static String createSign(Map<String, String> data, String signKeyValue) {
+        return createSign(data,"key",signKeyValue);
+    }
+
+    public final static String createSign(Map<String, String> data, String signKeyKey,String signKeyValue) {
         SortedMap<String, String> sortedMap = Maps.newTreeMap();
         for (Map.Entry<String, String> entry : data.entrySet()) {
             if (!StringUtils.endsWithIgnoreCase("sign", entry.getKey())) {
@@ -184,7 +188,10 @@ public class SignUtil {
             }
             stringBuilder.append(entry.getKey()).append("=").append(entry.getValue());
         }
-        stringBuilder.append("&key=").append(signKey);
+        if(!StringUtils.isEmpty(signKeyKey)) {
+            stringBuilder.append("&").append(signKeyKey).append("=");
+        }
+        stringBuilder.append(signKeyValue);
         String md5Sign = MD5Util.md5(stringBuilder.toString()).toUpperCase();
         return md5Sign;
     }

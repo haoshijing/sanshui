@@ -47,10 +47,7 @@ public class HuayuePayService {
         requestVo.setProductName("充值" + payLink.getPickCouponVal() + "钻石");
         requestVo.setOrderAmount(String.valueOf(payLink.getPickRmb() * 1.0 / 100));
 
-        JSONObject attach = new JSONObject();
-        attach.put("card",payLink.getPickCouponVal());
-        attach.put("more",payLink.getMoreCouponVal());
-        requestVo.setProductDesc(attach.toString());
+        requestVo.setProductDesc("充值" + payLink.getPickCouponVal() + "钻石");
 
         try {
             requestVo.setReturnUrl(URLEncoder.encode(callbackHost + "/huayue/" + orderId,"UTF-8"));
@@ -59,7 +56,7 @@ public class HuayuePayService {
         } catch (Exception e) {
 
         }
-        String sign = SignUtil.createSign(requestVo.toSignMap(), signKey);
+        String sign = SignUtil.createSign(requestVo.toSignMap(), "",signKey);
         requestVo.setSign(sign);
         return requestVo;
     }

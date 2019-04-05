@@ -11,5 +11,5 @@ public class EastYOrderResponseVo extends BaseWithMapVo {
     private String merchant;
     private String orderId;
     private Integer code;
-
+    private String sign;
 }
