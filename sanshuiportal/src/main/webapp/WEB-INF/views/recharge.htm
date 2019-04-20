@@ -6,7 +6,7 @@
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="black" name="apple-mobile-web-app-status-bar-style">
     <meta content="" name="keywords">
-    <title>蛋蛋钓蟹充值界面</title>
+    <title>欢乐十三水充值界面</title>
     <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/wapBase.css"/>
     <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/common.css"/>
 </head>
@@ -22,6 +22,14 @@
     <div class="wrapBox">
         <div class="price_list">
             <form action="${rc.contextPath}/goEastYPay" method="post">
+
+                <ul>
+                    <li>
+                    赠送游戏id(可修改ID 赠送给玩家，注意核对id，错误不补。):
+                        <input type = "text" id = "zsGuid" name ="zsGuid" style="background-color : #c1c1c1"/>
+                    </li>
+                </ul>
+
                 <ul id="payList">
                     <#list payLinks as link>
                         <li data="${link.id?c}" class="<#if link_index == 0>current</#if>">
@@ -36,9 +44,6 @@
 
                 <ul id="payTypeList">
                     <li data="1" class="current"><a href="javascript:void(0);"><i class="iconfont icon-aliPay"></i></a>
-                    </li>
-
-                    <li data="2"><a href="javascript:void(0);"><i class="iconfont icon-wxPay"></i></a>
                     </li>
 
                 </ul>
@@ -56,7 +61,15 @@
 </body>
 <script type="text/javascript" src="${rc.contextPath}/js/jquery-1.7.1.min.js"></script>
 <script type="text/javascript">
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
+    }
     $(function () {
+        var guid = getQueryString("guid")
+        $("#zsGuid").val(guid)
         $("#payList li").click(function () {
             $(this).addClass("current").siblings().removeClass("current");
             $("#pickId").val($(this).attr("data"));
@@ -65,6 +78,7 @@
             $(this).addClass("current").siblings().removeClass("current");
             $("#payType").val($(this).attr("data"));
         })
+
     })
 </script>
 </html>

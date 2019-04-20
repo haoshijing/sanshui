@@ -19,6 +19,7 @@ import com.keke.sanshui.pay.huayue.query.EastYQueryVo;
 import com.keke.sanshui.pay.wechart.MyWxConfig;
 import com.keke.sanshui.util.IpUtils;
 import com.keke.sanshui.util.SignUtil;
+import com.keke.sanshui.util.StringUti;
 import com.keke.sanshui.util.easyjh.XmlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -94,10 +95,14 @@ public class PayController {
 
     @PostMapping("/goEastYPay")
     @GetMapping("/goEastYPay")
-    public String goEastYPay(Integer pickId, String payType, Integer guid, HttpServletRequest request, HttpServletResponse httpServletResponse) {
+    public String goEastYPay(Integer pickId, String payType, Integer guid, String zsGuid, HttpServletRequest request, HttpServletResponse httpServletResponse) {
         PayLink payLink = payService.getCid(pickId);
         Map<String, String> attach = Maps.newHashMap();
-        attach.put("guid", guid.toString());
+        if(StringUtils.isNotEmpty(zsGuid)) {
+            attach.put("guid", zsGuid);
+        }else{
+            attach.put("guid", guid.toString());
+        }
         attach.put("more", payLink.getMoreCouponVal().toString());
         attach.put("card", payLink.getPickCouponVal().toString());
         String selfOrderId = guid + "" + System.currentTimeMillis();
