@@ -118,9 +118,9 @@ public class GatewayController {
     }
 
     private boolean sendToGameServer(String orderId, Integer gUid, String payMoney, String payCoupon) {
-        String sign = SignUtil.createSign(orderId, gUid, payMoney, gameServerKey);
+        String sign = SignUtil.createSign(orderId, gUid, payMoney, gameServerKey, payCoupon);
         String sendUrl = String.format("%s/?method=PlayerRecharge&OrderId=%s" +
-                "&Guid=%s&RechargeMoney=%s&RechargeGold=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney, payCoupon, sign);
+                "&Guid=%s&Money=%s&Card=%s&More=0&Sign=%s", gameServerHost,orderId, gUid, payMoney, payCoupon, sign);
         try {
             ContentResponse contentResponse = httpClient.newRequest(sendUrl).timeout(3000, TimeUnit.MILLISECONDS).send();
             log.info("contentResponse = {}", contentResponse.getContentAsString());
