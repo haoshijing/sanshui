@@ -6,7 +6,7 @@
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="black" name="apple-mobile-web-app-status-bar-style">
     <meta content="" name="keywords">
-    <title>欢乐十三水充值界面</title>
+    <title>新剡越十三水充值</title>
     <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/wapBase.css"/>
     <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/common.css"/>
 </head>
@@ -15,26 +15,26 @@
     <header>
         <div class="topWrap">
             <div class="back" onClick="javascript:history.go(-1)"><i class="iconfont icon-back"></i></div>
-            <div class="hTitle">充值 - ${guid}</div>
+            <div class="hTitle">充值 - <span id = "czData">${guid}</span></div>
 
         </div>
     </header>
     <div class="wrapBox">
         <div class="price_list">
             <form action="${rc.contextPath}/goEastYPay" method="post">
-
+                <!--
                 <ul>
                     <li>
-                    赠送游戏id(可修改ID 赠送给玩家，注意核对id，错误不补。):
-                        <input type = "text" id = "zsGuid" name ="zsGuid" style="background-color : #c1c1c1"/>
+                    赠送游戏id(可修改ID 赠送给玩家，注意核对id，错误不补):
                     </li>
+                    <li><input type = "text" id = "zsGuid" name ="zsGuid" style="background-color : #c1c1c1"/></li>
                 </ul>
+                -->
 
                 <ul id="payList">
                     <#list payLinks as link>
                         <li data="${link.id?c}" class="<#if link_index == 0>current</#if>">
                             <a href="javascript:changeTo(${link.id?c});">${link.pickCouponVal?c}钻石
-                                (绑定代理多送${link.moreCouponVal?c})
                                 ${link.pickRmb/100}元</a>
 
                         </li>
