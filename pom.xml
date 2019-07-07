@@ -192,6 +192,6 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>pay</finalName>
+        <finalName>pay1</finalName>
     </build>
 </project>

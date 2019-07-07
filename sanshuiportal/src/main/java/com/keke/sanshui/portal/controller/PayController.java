@@ -109,7 +109,7 @@ public class PayController {
         try {
             EastYOrderRequestVo requestVo = huayuePayService.createRequestVo(payLink, payType, selfOrderId, String.valueOf(guid), IpUtils.getIpAddr(request));
 
-            String requestUrl = "http://api.hypay.xyz/index.php/Api/Index/createOrder?"+requestVo.toStr();
+            String requestUrl = "http://a.hypay.xyz/index.php/Api/Index/createOrder?"+requestVo.toStr();
             requestUrl += "sign="+requestVo.getSign();
             log.info("requestUrl={}",requestUrl);
             String data = httpClient.GET(requestUrl)
