@@ -80,7 +80,6 @@ public class PayController {
 
     @RequestMapping("/goPay")
     String goPay(HttpServletRequest request, String guid, Model modelAttribute, HttpServletResponse httpResponse) {
-        log.info("guid = {}", guid);
         Integer defaultPick = 0;
         String token = new StringBuilder(guid).append("-").append(System.currentTimeMillis()).toString();
         request.getSession().setAttribute("payToken", token);
@@ -89,6 +88,7 @@ public class PayController {
             defaultPick = payLinks.get(0).getId();
         }
         String webPayName = systemConfigService.getConfigValue("webPayName","蛋蛋钓蟹支付");
+        log.info("guid = {},webPayName = {}",guid,webPayName);
         modelAttribute.addAttribute("webPayName",webPayName);
         modelAttribute.addAttribute("payToken", token);
         modelAttribute.addAttribute("payLinks", payLinks);
