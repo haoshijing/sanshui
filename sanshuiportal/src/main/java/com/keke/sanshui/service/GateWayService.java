@@ -1,6 +1,7 @@
 package com.keke.sanshui.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.keke.sanshui.base.cache.SystemConfigService;
 import com.keke.sanshui.util.SignUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,16 +18,15 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class GateWayService {
 
-    @Value("${gameServerKey}")
-    private String gameServerKey;
-
-    @Value("${gameServerHost}")
-    private String gameServerHost;
-
     @Autowired
     private HttpClient httpClient;
 
+    @Autowired
+    private SystemConfigService systemConfigService;
+
     public Pair<Boolean,Boolean> sendToGameServer(String orderId, Integer gUid, String payMoney, String payCoupon,String moreCoupon) {
+        String gameServerKey = systemConfigService.getConfigValue("gameServerKey","hlsoafasdfj;hldfas;hlfjasdafsafjahl");
+        String gameServerHost = systemConfigService.getConfigValue("gameServerHost","http://dbl.mall224200.com:830");
         String sign = SignUtil.createSign(orderId, gUid, payMoney,payCoupon,moreCoupon, gameServerKey);
         String sendUrl = String.format("%s/?Method=PlayerRecharge&OrderId=%s" +
                 "&Guid=%s&Money=%s&Card=%s&More=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney,payCoupon,moreCoupon, sign);

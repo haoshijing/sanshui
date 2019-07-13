@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PayService;
+import com.keke.sanshui.base.cache.SystemConfigService;
 import com.keke.sanshui.pay.alipay.AlipayConfig;
 import com.keke.sanshui.pay.easyjh.EasyJhPayService;
 import com.keke.sanshui.pay.easyjh.order.EasyJhRequestVo;
@@ -60,7 +61,6 @@ public class PayController {
 
     @Autowired
     private HuayuePayService huayuePayService;
-
     @Value("${callbackHost}")
     private String callbackHost;
 
@@ -75,6 +75,9 @@ public class PayController {
     @Autowired
     private HttpClient httpClient;
 
+    @Autowired
+    private SystemConfigService systemConfigService;
+
     @RequestMapping("/goPay")
     String goPay(HttpServletRequest request, String guid, Model modelAttribute, HttpServletResponse httpResponse) {
         log.info("guid = {}", guid);
@@ -85,6 +88,8 @@ public class PayController {
         if (payLinks.size() > 0) {
             defaultPick = payLinks.get(0).getId();
         }
+        String webPayName = systemConfigService.getConfigValue("webPayName","蛋蛋钓蟹支付");
+        modelAttribute.addAttribute("webPayName",webPayName);
         modelAttribute.addAttribute("payToken", token);
         modelAttribute.addAttribute("payLinks", payLinks);
         modelAttribute.addAttribute("guid", guid);
@@ -108,8 +113,8 @@ public class PayController {
         String selfOrderId = guid + "" + System.currentTimeMillis();
         try {
             EastYOrderRequestVo requestVo = huayuePayService.createRequestVo(payLink, payType, selfOrderId, String.valueOf(guid), IpUtils.getIpAddr(request));
-
-            String requestUrl = "http://a.hypay.xyz/index.php/Api/Index/createOrder?"+requestVo.toStr();
+            String sourceUrl = systemConfigService.getConfigValue("sourceUrl","http://api.hypay.xyz/index.php/Api/Index");
+            String requestUrl = sourceUrl+"/createOrder?"+requestVo.toStr();
             requestUrl += "sign="+requestVo.getSign();
             log.info("requestUrl={}",requestUrl);
             String data = httpClient.GET(requestUrl)
