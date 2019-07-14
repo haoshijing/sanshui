@@ -2,6 +2,7 @@ package com.keke.sanshui.pay.huayue;
 
 import com.alibaba.fastjson.JSONObject;
 import com.keke.sanshui.base.admin.po.PayLink;
+import com.keke.sanshui.base.cache.SystemConfigService;
 import com.keke.sanshui.base.util.MD5Util;
 import com.keke.sanshui.pay.easyjh.callback.EasyJhCallbackVo;
 import com.keke.sanshui.pay.easyjh.order.EasyJhRequestVo;
@@ -12,6 +13,7 @@ import com.keke.sanshui.pay.huayue.order.EastYOrderResponseVo;
 import com.keke.sanshui.pay.huayue.query.EastYQueryVo;
 import com.keke.sanshui.util.SignUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,11 +25,13 @@ public class HuayuePayService {
 
     @Value("${huayueId}")
     private String appId;
-    @Value("${callbackHost}")
-    private String callbackHost;
+
 
     @Value("${huayueKey}")
     private String signKey;
+
+    @Autowired
+    private SystemConfigService systemConfigService;
 
 
     public EastYOrderRequestVo createRequestVo(PayLink payLink, String payType, String orderId, String guid, String ip) {
@@ -50,6 +54,7 @@ public class HuayuePayService {
         requestVo.setProductDesc("充值" + payLink.getPickCouponVal() + "钻石");
 
         try {
+            String callbackHost = systemConfigService.getConfigValue("callbackHost","");
             requestVo.setReturnUrl(URLEncoder.encode(callbackHost + "/huayue/" + orderId,"UTF-8"));
             requestVo.setNotifyUrl(callbackHost + "/huayue/callback");
 
