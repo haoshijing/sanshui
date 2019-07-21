@@ -2,10 +2,19 @@ package com.keke.sanshui.portal.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.request.AlipayTradeWapPayRequest;
+import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.github.wxpay.sdk.WXPay;
+import com.github.wxpay.sdk.WXPayConfig;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.OrderService;
 import com.keke.sanshui.base.admin.service.PayService;
+import com.keke.sanshui.base.cache.SystemConfigService;
 import com.keke.sanshui.pay.alipay.AliPayService;
 import com.keke.sanshui.pay.alipay.AlipayConfig;
 import com.keke.sanshui.pay.fuqianla.FuqianlaPayService;
@@ -31,9 +40,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,17 +62,10 @@ public class PayController {
     private OrderService orderService;
 
     @Autowired
-    private ZPayService zPayService;
-
-    private final static String ZPAY_BASE_URL = "http://pay.csl2016.cn:8000";
-
-    @Autowired
-    private FuqianlaPayService fuqianlaPayService;
-
-    @Value("${callbackHost}")
-    private String callbackHost;
-    @Autowired
     private WechartPayService wechartPayService;
+
+    @Autowired
+    private WXPayConfig wxPayConfig;
     @Resource
     AliPayService aliPayService;
 
@@ -94,18 +99,6 @@ public class PayController {
         return "recharge";
     }
 
-    @RequestMapping("/pay/user/{orderId}")
-    String success(@PathVariable String orderId, Model model) {
-        String response = zPayService.queryOrder(orderId);
-        log.info("response = {}", response);
-        try {
-            Map<String, String> data = JSON.parseObject(response, Map.class);
-            model.addAttribute("message", data.get("message"));
-        } catch (Exception e) {
-            model.addAttribute("message", "支付未完成");
-        }
-        return "success";
-    }
     @RequestMapping("/alipay/user/{orderId}")
     String alipaySuccess(HttpServletRequest request ,@PathVariable String orderId, Model model) {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", alipayConfig.getAppId(),
@@ -184,30 +177,18 @@ public class PayController {
         buildUrl.append(payLink.getCIdNo()).append(".js?type=div");
         buildUrl.append("&attach=").append(selfOrderId);
         try {
+            String callbackHost = systemConfigService.getConfigValue("callbackHost");
             //buildUrl.append("&redirect=http://game.youthgamer.com:8080/sanshui/pay/user/sucess");
             buildUrl.append("&callback=").append(URLEncoder.encode(callbackHost + "/pay/callback", "utf-8"));
         } catch (Exception e) {
 
         }
-        orderService.insertOrder(payLink, attach, selfOrderId);
+        orderService.insertOrder(payLink, attach, JSON.toJSONString(attach), selfOrderId);
         modelAttribute.addAttribute("url", buildUrl.toString());
 
         return "payPage";
     }
 
-    @RequestMapping("/doFuQianLa")
-    public String doFuQianLa(Integer pickId, Integer guid, String payType, Model modelAttribute) {
-        log.info("doFuQianLa pickId={},guid = {}", pickId, guid);
-        String selfOrderId = guid + "" + System.currentTimeMillis();
-        PayLink payLink = payService.getCid(pickId);
-        FuqianlaRequestVo payRequest = fuqianlaPayService.createRequestVo(payLink, payType, selfOrderId);
-        Map<String, String> attach = Maps.newHashMap();
-        attach.put("guid", guid.toString());
-        payRequest.setGuid(guid.toString());
-        orderService.insertOrder(payLink, attach, selfOrderId);
-        modelAttribute.addAttribute("payRequest", payRequest);
-        return "fuqian";
-    }
     @RequestMapping("/doNewPay")
     public String doNewPay(HttpServletRequest request,Integer pickId, Integer guid, String payType,HttpServletResponse response) {
         if(StringUtils.equals(payType,"1")){
@@ -236,7 +217,7 @@ public class PayController {
                     Map<String, String> attach = Maps.newHashMap();
                     attach.put("guid", guid.toString());
                     attach.put("prepare_id", prepare_id);
-                    orderService.insertOrder(payLink, attach, selfOrderId);
+                    orderService.insertOrder(payLink, attach, JSON.toJSONString(attach), selfOrderId);
                     url+="&redirect_url="+wechartPayService.getReturnUrl(selfOrderId);
                     if (StringUtils.isNotEmpty(url)) {
                         response.sendRedirect(url);
@@ -265,7 +246,7 @@ public class PayController {
         AlipayTradeWapPayRequest alipayTradeWapPayRequest = aliPayService.getPayRequest(payLink,selfOrderId);
         Map<String, String> attach = Maps.newHashMap();
         attach.put("guid", guid.toString());
-        orderService.insertOrder(payLink, attach, selfOrderId);
+        orderService.insertOrder(payLink, attach, JSON.toJSONString(attach), selfOrderId);
         String form = "";
         try {
             // 调用SDK生成表单
@@ -284,47 +265,5 @@ public class PayController {
         return null;
     }
 
-
-    @RequestMapping("/doGo51PayPage")
-    void doGo51PayPage(Integer pickId, Integer guid, String payType, HttpServletResponse response) {
-        log.info("doGo51PayPage pickId={},guid = {}", pickId, guid);
-        String selfOrderId = guid + "" + System.currentTimeMillis();
-        PayLink payLink = payService.getCid(pickId);
-        ZPayRequestVo zPayRequestVo = zPayService.createRequestVo(payLink, payType, selfOrderId);
-        String url = new StringBuilder(ZPAY_BASE_URL).append("/createOrder.e").append("?")
-                .append(zPayRequestVo.getParamUrl()).toString();
-        Map<String, String> attach = Maps.newHashMap();
-        attach.put("guid", guid.toString());
-        orderService.insertOrder(payLink, attach, selfOrderId);
-        try {
-            response.sendRedirect(url);
-        } catch (Exception e) {
-            log.error("send to url {} error ", url, e);
-        }
-
-    }
-
-    @RequestMapping("/goPayPullPage")
-    String doGoPayPullPage(Integer pickId, Integer guid, String token, HttpServletRequest request, Model modelAttribute) {
-        log.info("doGoPayPullPage pickId={},guid = {}", pickId, guid);
-        PaypullRequestVo paypullRequestVo = new PaypullRequestVo();
-        String selfOrderId = guid + "" + System.currentTimeMillis();
-        PayLink payLink = payService.getCid(pickId);
-        Map<String, String> attach = Maps.newHashMap();
-        attach.put("guid", guid.toString());
-        paypullRequestVo.setAmount(payLink.getPickRmb().toString());
-        paypullRequestVo.setSubject(new StringBuilder("充值").append(payLink.getPickCouponVal()).append("豆").toString());
-        paypullRequestVo.setOrderNo(selfOrderId);
-        paypullRequestVo.setExtra(JSON.toJSONString(attach));
-        paypullRequestVo.setAppId(payPullAppId);
-        try {
-            paypullRequestVo.setNotifyUrl(URLEncoder.encode(callbackHost + "/paypuall/callback", "utf-8"));
-        } catch (Exception e) {
-
-        }
-        orderService.insertOrder(payLink, attach, selfOrderId);
-        modelAttribute.addAttribute("paypullRequestVo", paypullRequestVo);
-        return "paypullPage";
-    }
 
 }

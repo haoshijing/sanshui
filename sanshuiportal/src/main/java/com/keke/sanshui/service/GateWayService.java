@@ -25,8 +25,8 @@ public class GateWayService {
     private SystemConfigService systemConfigService;
 
     public Pair<Boolean,Boolean> sendToGameServer(String orderId, Integer gUid, String payMoney, String payCoupon,String moreCoupon) {
-        String gameServerKey = systemConfigService.getConfigValue("gameServerKey","hlsoafasdfj;hldfas;hlfjasdafsafjahl");
-        String gameServerHost = systemConfigService.getConfigValue("gameServerHost","http://dbl.mall224200.com:830");
+        String gameServerKey = systemConfigService.getConfigValue("gameServerKey","sysssfasdfj;hldfas;yyssssdafsafjahl");
+        String gameServerHost = systemConfigService.getConfigValue("gameServerHost","http://sss.cn-newworld.com:3344");
         String sign = SignUtil.createSign(orderId, gUid, payMoney,payCoupon,moreCoupon, gameServerKey);
         String sendUrl = String.format("%s/?Method=PlayerRecharge&OrderId=%s" +
                 "&Guid=%s&Money=%s&Card=%s&More=%s&Sign=%s", gameServerHost,orderId, gUid, payMoney,payCoupon,moreCoupon, sign);
