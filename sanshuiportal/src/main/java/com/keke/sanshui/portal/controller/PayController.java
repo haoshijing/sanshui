@@ -2,13 +2,6 @@ package com.keke.sanshui.portal.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alipay.api.AlipayApiException;
-import com.alipay.api.AlipayClient;
-import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.request.AlipayTradeQueryRequest;
-import com.alipay.api.request.AlipayTradeWapPayRequest;
-import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.github.wxpay.sdk.WXPay;
 import com.google.common.collect.Maps;
 import com.keke.sanshui.base.admin.po.PayLink;
 import com.keke.sanshui.base.admin.service.OrderService;
@@ -24,19 +17,23 @@ import com.keke.sanshui.pay.zpay.ZPayRequestVo;
 import com.keke.sanshui.pay.zpay.ZPayService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.util.Fields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +68,10 @@ public class PayController {
     AlipayConfig alipayConfig;
 
     @Autowired
-    MyWxConfig wxPayConfig;
+    private HttpClient httpClient;
+
+    @Autowired
+    private SystemConfigService systemConfigService;
 
     @RequestMapping("/goPay")
     String goPay(HttpServletRequest request, String guid, Model modelAttribute, HttpServletResponse httpResponse) {
@@ -83,6 +83,9 @@ public class PayController {
         if (payLinks.size() > 0) {
             defaultPick = payLinks.get(0).getId();
         }
+        String webPayName = systemConfigService.getConfigValue("webPayName","蛋蛋钓蟹支付");
+        log.info("guid = {},webPayName = {}",guid,webPayName);
+        modelAttribute.addAttribute("webPayName",webPayName);
         modelAttribute.addAttribute("payToken", token);
         modelAttribute.addAttribute("payLinks", payLinks);
         modelAttribute.addAttribute("guid", guid);

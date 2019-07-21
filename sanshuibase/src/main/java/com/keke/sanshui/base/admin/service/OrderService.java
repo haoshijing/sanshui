@@ -54,7 +54,7 @@ public class OrderService {
        return orderDAO.updateByOrderId(updateOrder);
     }
 
-    public int insertOrder(PayLink payLink, Map<String,String> attach, String selfOrderId) {
+    public int insertOrder(PayLink payLink, Map<String,String> attach,String orderAttach, String selfOrderId) {
         Order order = new Order();
         order.setClientGuid(Integer.valueOf(attach.get("guid")));
         order.setSelfOrderNo(selfOrderId);
@@ -62,6 +62,7 @@ public class OrderService {
         order.setTitle(payLink.getPickCouponVal()+"豆");
         order.setPrice(String.valueOf(payLink.getPickRmb()));
         order.setOrderStatus(1);
+        order.setAttach(orderAttach);
         order.setSendStatus(SendStatus.Not_Send.getCode());
         order.setInsertTime(System.currentTimeMillis());
         order.setLastUpdateTime(System.currentTimeMillis());

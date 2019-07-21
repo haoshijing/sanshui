@@ -6,7 +6,7 @@
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="black" name="apple-mobile-web-app-status-bar-style">
     <meta content="" name="keywords">
-    <title>沸点扑克充值界面</title>
+    <title>${webPayName!'蛋蛋钓蟹支付'}</title>
     <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/wapBase.css"/>
     <link type="text/css" rel="stylesheet" href="${rc.contextPath}/css/common.css"/>
 </head>
@@ -16,30 +16,41 @@
         <div class="topWrap">
             <div class="back" onClick="javascript:history.go(-1)"><i class="iconfont icon-back"></i></div>
             <div class="hTitle">充值 - ${guid}</div>
+
         </div>
     </header>
     <div class="wrapBox">
         <div class="price_list">
-            <form action="${rc.contextPath}/doNewPay" method="post">
+            <form action="${rc.contextPath}/goEastYPay" method="post">
+                <ul>
+                    <li>
+                        赠送游戏id(可修改ID 赠送给玩家，注意核对id，错误不补。):
+                        <input type = "text" id = "zsGuid" name ="zsGuid" style="background-color : #c1c1c1"/>
+                    </li>
+                </ul>
                 <ul id="payList">
                     <#list payLinks as link>
                         <li data="${link.id?c}" class="<#if link_index == 0>current</#if>">
-                            <a href="javascript:changeTo(${link.id?c});"> ${link.pickRmb/100}元 ${link.pickCouponVal?c}钻石 </a>
+                            <a href="javascript:changeTo(${link.id?c});">${link.pickCouponVal?c}钻石
+                                (绑定代理多送${link.moreCouponVal?c})
+                                ${link.pickRmb/100}元</a>
 
                         </li>
                     </#list>
                 </ul>
 
+
                 <ul id="payTypeList">
-
-                    <li data="1" class="current"><a href="javascript:void(0);"><i class="iconfont icon-wxPay"></i></a></li>
-
-                    <li data="2"><a href="javascript:void(0);"><i class="iconfont icon-aliPay"></i></a></li>
+                    <li data="1" class="current"><a href="javascript:void(0);"><i class="iconfont icon-aliPay"></i></a>
+                    </li>
 
                 </ul>
+                <ui>
+                    <li>推荐支付宝支付</li>
+                </ui>
                 <input type="hidden" name="guid" value="${guid}">
                 <input type="hidden" name="pickId" id="pickId" value="${defaultPick}">
-                <input type="hidden" name="payType" id="payType" value="${defaultPayType}">
+                <input type="hidden" name="payType" id="payType" value="1">
                 <p><input type="submit" value="立刻充值" class="subBtn"/></p>
             </form>
         </div>
@@ -48,7 +59,15 @@
 </body>
 <script type="text/javascript" src="${rc.contextPath}/js/jquery-1.7.1.min.js"></script>
 <script type="text/javascript">
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
+    }
     $(function () {
+        var guid = getQueryString("guid")
+        $("#zsGuid").val(guid)
         $("#payList li").click(function () {
             $(this).addClass("current").siblings().removeClass("current");
             $("#pickId").val($(this).attr("data"));
@@ -57,7 +76,7 @@
             $(this).addClass("current").siblings().removeClass("current");
             $("#payType").val($(this).attr("data"));
         })
-    })
 
+    })
 </script>
 </html>

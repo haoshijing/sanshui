@@ -13,9 +13,14 @@ public class PayLink {
      */
     private String cIdNo;
     /**
-     * 充值豆值
+     * 充值金币
      */
     private Integer pickCouponVal;
+
+    /**
+     * 额外赠送金币
+     */
+    private Integer moreCouponVal;
 
     /**
      * 充值人民币值

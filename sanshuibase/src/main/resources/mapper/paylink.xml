@@ -34,7 +34,7 @@
     </insert>
 
     <select id="selectAll" resultType="PayLink">
-        select id , pickCouponVal , cIdNo ,pickRmb  from pay_link order by  pickCouponVal asc
+        select *  from pay_link order by  pickCouponVal asc
     </select>
     <insert id="insert" parameterType="PayLink">
         INSERT INTO pay_link(

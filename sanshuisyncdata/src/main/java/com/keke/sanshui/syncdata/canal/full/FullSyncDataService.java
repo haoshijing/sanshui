@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
-import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -51,11 +50,14 @@ public class FullSyncDataService {
     @Value("${sync.db.ip}")
     private String syncDbIp;
 
-    @Value("${sync.db.name}")
-    private String syncDbName;
+    @Value("${sync.db.username}")
+    private String syncDbUserName;
 
     @Value("${sync.db.password}")
     private String syncDbPassword;
+
+    @Value("${sync.db.name}")
+    private String syncDbName;
 
     private static final String PLAYER_ID = "guid";
 
@@ -66,10 +68,14 @@ public class FullSyncDataService {
     @PostConstruct
     public void init() {
         DruidDataSource druidDataSource = new DruidDataSource();
-        druidDataSource.setUsername(syncDbName);
+        druidDataSource.setUsername(syncDbUserName);
         druidDataSource.setPassword(syncDbPassword);
-        druidDataSource.setUrl("jdbc:mysql://" + syncDbIp + ":3306/waterthirteen?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull");
+        druidDataSource.setTimeBetweenConnectErrorMillis(2000);
+        druidDataSource.setUrl("jdbc:mysql://" + syncDbIp + ":3306/"+syncDbName+"?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull");
         jdbcTemplate.setDataSource(druidDataSource);
+        jdbcTemplate.setLazyInit(false);
+        jdbcTemplate.setQueryTimeout(10);
+        log.info("jdbcTemplate is connect {}",jdbcTemplate);
     }
 
     @EventListener
@@ -85,7 +91,7 @@ public class FullSyncDataService {
                     log.error("", e);
                 }
             }
-        }, 10000, 60000, TimeUnit.MILLISECONDS);
+        }, 500, 60000, TimeUnit.MILLISECONDS);
     }
 
     public void syncRelation() {
@@ -162,5 +168,6 @@ public class FullSyncDataService {
                 e.printStackTrace();
             }
         });
+        log.info("会员信息进行数据同步结束");
     }
 }
